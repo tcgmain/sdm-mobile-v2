@@ -1,0 +1,339 @@
+// ignore_for_file: library_prefixes, use_key_in_widget_constructors, library_private_types_in_public_api, unused_element, avoid_unnecessary_containers, sort_child_properties_last
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:clipboard/clipboard.dart';
+import 'package:sdm/view/home_view.dart';
+import 'package:sdm/widgets/app_button.dart';
+import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:sdm/blocs/login_bloc.dart';
+import 'package:sdm/models/login.dart';
+import 'package:sdm/networking/response.dart';
+import 'package:sdm/utils/constants.dart';
+import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/text_field.dart' as textField;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late LoginBloc _loginBloc;
+  bool _showPassword = true;
+  var usernameController = TextEditingController(text: '');
+  var passwordController = TextEditingController(text: '');
+  String deviceId = "";
+  bool _saveCredentials = false;
+  bool _dialogShown = false;
+
+  _togglePasswordVisibility() {
+    setState(() {
+      _showPassword = !_showPassword;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loginBloc = LoginBloc();
+    _fetchDeviceId();
+    _loadCredentials();
+  }
+
+  @override
+  void dispose() {
+    _loginBloc.dispose();
+    super.dispose();
+  }
+
+  Future<String?> _getId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if (Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId; // unique ID on Android
+    }
+    return null;
+  }
+
+  Future<void> _saveCredentialsToPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', usernameController.text);
+    await prefs.setString('password', passwordController.text);
+    await prefs.setBool('saveCredentials', _saveCredentials);
+  }
+
+  Future<void> _fetchDeviceId() async {
+    deviceId = (await _getId())!;
+    setState(() {}); // Trigger a rebuild to show the device ID
+  }
+
+  Future<void> _loadCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      usernameController.text = prefs.getString('username') ?? '';
+      passwordController.text = prefs.getString('password') ?? '';
+      _saveCredentials = prefs.getBool('saveCredentials') ?? false;
+    });
+  }
+
+  Future<void> _clearCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
+    await prefs.remove('password');
+    await prefs.remove('saveCredentials');
+  }
+
+  Widget loginButton(BuildContext context) {
+    return CommonAppButton(
+      buttonText: "Login",
+      onPressed: () async {
+        setState(() {
+          _dialogShown =
+              false; // Reset _dialogShown state for each login attempt
+        });
+
+        String? deviceId = await _getId();
+        print("THIS IS DEVICE ID:  $deviceId");
+
+        _loginBloc.login(usernameController.text.toString(),
+            passwordController.text.toString(), deviceId.toString());
+        if (_saveCredentials) {
+          _saveCredentialsToPrefs();
+        } else {
+          _clearCredentials();
+        }
+      },
+    );
+  }
+
+  //This is for pop up message
+  Widget deviceInfoButton(BuildContext context, String deviceId) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.info_outline_rounded,
+          color: Color.fromARGB(255, 18, 175, 167)),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'Device ID',
+          enabled: true,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Device ID: $deviceId"),
+              IconButton(
+                icon: const Icon(Icons.copy),
+                onPressed: () {
+                  FlutterClipboard.copy(deviceId).then((result) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Device ID copied to clipboard')),
+                    );
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.9), BlendMode.dstATop),
+              image: AssetImage('images/background.png'),
+            ),
+          ),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: deviceInfoButton(context, deviceId),
+              ),
+              Center(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    shape: BoxShape.rectangle,
+                    color: Colors.transparent,
+                  ),
+                  height: 600,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 1.0, horizontal: 40.0),
+                  constraints: const BoxConstraints(
+                    maxWidth: 550,
+                  ),
+                  child: ListView(children: [
+                    const SizedBox(height: 50.0),
+                    logo(context),
+                    const SizedBox(height: 50.0),
+                    textField.TextField(
+                        controller: usernameController,
+                        obscureText: false,
+                        inputType: 'none',
+                        isRequired: true,
+                        fillColor: CustomColors.textFieldFillColor,
+                        filled: true,
+                        labelText: "Username",
+                        onChangedFunction: () {}),
+                    const SizedBox(height: 20.0),
+                    textField.TextField(
+                        controller: passwordController,
+                        obscureText: _showPassword,
+                        inputType: 'none',
+                        isRequired: true,
+                        function: _togglePasswordVisibility,
+                        fillColor: CustomColors.textFieldFillColor,
+                        filled: true,
+                        labelText: "Password",
+                        suffixIcon: getPasswordSuffixIcon(
+                            _togglePasswordVisibility, _showPassword),
+                        onChangedFunction: () {}),
+                    const SizedBox(height: 10.0),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _saveCredentials,
+                          onChanged: (value) {
+                            setState(() {
+                              _saveCredentials = value!;
+                            });
+                          },
+                          side: WidgetStateBorderSide.resolveWith(
+                            (states) => const BorderSide(
+                              color: CustomColors.checkBoxColor, // Border color
+                              width: 1.0, // Border width
+                            ),
+                          ),
+                          fillColor: WidgetStateProperty.resolveWith<Color?>(
+                            (Set<WidgetState> states) {
+                              if (states.contains(WidgetState.selected)) {
+                                return Colors
+                                    .transparent; // Transparent fill color when selected
+                              }
+                              return Colors
+                                  .transparent; // Transparent fill color when not selected
+                            },
+                          ),
+                          checkColor: CustomColors.checkBoxColor, // Color of the check mark
+                        ),
+                        const Text(
+                          "Save Credentials",
+                          style: TextStyle(color: CustomColors.checkBoxColor),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
+                    loginButton(context),
+                    const SizedBox(height: 20.0),
+                    loginResponse()
+                  ]),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget logo(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 50.0,
+          child: Image.asset('images/logo.png'),
+        ),
+      ],
+    );
+  }
+
+  // Widget loginButton(BuildContext context) {
+  //   getServerIp() async {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String serverIp = (prefs.getString('serverIp')).toString();
+  //     return serverIp;
+  //   }
+
+  //   return ButtonTheme(
+  //     minWidth: 600.0,
+  //     height: 50.0,
+  //     child: ElevatedButton(
+  //         child: Text("Login",
+  //             style: TextStyle(
+  //                 color: CustomColors.buttonTextColor,
+  //                 fontSize: getFontSize())),
+  //         style: ElevatedButton.styleFrom(
+  //           backgroundColor: CustomColors.buttonColor,
+  //           minimumSize: const Size(50, 50),
+  //         ),
+  //         onPressed: () async {
+  //           if (usernameController.text.toString() == "" &&
+  //               passwordController.text.toString() == "") {
+  //             showErrorAlertDialog(context, "Enter username and password.");
+  //           } else {
+  //             String? deviceId = await _getId();
+  //             print("THIS IS DEVICE ID:  $deviceId");
+
+  //             _loginBloc.login(usernameController.text.toString(),
+  //                 passwordController.text.toString(), deviceId.toString());
+  //           }
+  //         }),
+  //   );
+  // }
+
+  Widget loginResponse() {
+    return StreamBuilder<Response<Login>>(
+      stream: _loginBloc.loginStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              return Loading(loadingMessage: snapshot.data!.message.toString());
+
+            case Status.COMPLETED:
+              if (snapshot.data!.data!.ylogver == true) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+
+                usernameController = TextEditingController(text: '');
+                passwordController = TextEditingController(text: '');
+              } else {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(
+                      context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
+                });
+              }
+
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(
+                    context, snapshot.data!.message.toString());
+              });
+          }
+        }
+        return Container();
+      },
+    );
+  }
+}
