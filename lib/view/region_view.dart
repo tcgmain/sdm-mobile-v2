@@ -11,7 +11,7 @@ class _RegionViewState extends State<RegionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("ttt"),
+      body: Text("This is region page"),
     );
   }
 }

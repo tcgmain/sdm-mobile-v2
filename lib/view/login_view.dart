@@ -1,19 +1,19 @@
 // ignore_for_file: library_prefixes, use_key_in_widget_constructors, library_private_types_in_public_api, unused_element, avoid_unnecessary_containers, sort_child_properties_last
 
-import 'dart:convert';
 import 'dart:io';
 import 'package:clipboard/clipboard.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/error_alert.dart';
-import 'package:sdm/widgets/text_field.dart';
+import 'package:sdm/widgets/login_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/login_bloc.dart';
 import 'package:sdm/models/login.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:sdm/widgets/text_field.dart' as textField;
+import 'package:sdm/widgets/login_text_field.dart' as textField;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -96,15 +96,13 @@ class _LoginPageState extends State<LoginPage> {
       buttonText: "Login",
       onPressed: () async {
         setState(() {
-          _dialogShown =
-              false; // Reset _dialogShown state for each login attempt
+          _dialogShown = false; // Reset _dialogShown state for each login attempt
         });
 
         String? deviceId = await _getId();
         print("THIS IS DEVICE ID:  $deviceId");
 
-        _loginBloc.login(usernameController.text.toString(),
-            passwordController.text.toString(), deviceId.toString());
+        _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
         if (_saveCredentials) {
           _saveCredentialsToPrefs();
         } else {
@@ -117,8 +115,7 @@ class _LoginPageState extends State<LoginPage> {
   //This is for pop up message
   Widget deviceInfoButton(BuildContext context, String deviceId) {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.info_outline_rounded,
-          color: Color.fromARGB(255, 18, 175, 167)),
+      icon: const Icon(Icons.info_outline_rounded, color: CustomColors.buttonTextColor),
       itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
         PopupMenuItem<String>(
           value: 'Device ID',
@@ -132,8 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   FlutterClipboard.copy(deviceId).then((result) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Device ID copied to clipboard')),
+                      const SnackBar(content: Text('Device ID copied to clipboard')),
                     );
                   });
                 },
@@ -149,105 +145,118 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: LayoutBuilder(builder: (context, constraints) {
-        return Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.9), BlendMode.dstATop),
-              image: AssetImage('images/background.png'),
+      body: SafeArea(
+        child: LayoutBuilder(builder: (context, constraints) {
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.9), BlendMode.dstATop),
+                image: const AssetImage('images/background.png'),
+              ),
             ),
-          ),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: deviceInfoButton(context, deviceId),
-              ),
-              Center(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    shape: BoxShape.rectangle,
-                    color: Colors.transparent,
-                  ),
-                  height: 600,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 1.0, horizontal: 40.0),
-                  constraints: const BoxConstraints(
-                    maxWidth: 550,
-                  ),
-                  child: ListView(children: [
-                    const SizedBox(height: 50.0),
-                    logo(context),
-                    const SizedBox(height: 50.0),
-                    textField.TextField(
-                        controller: usernameController,
-                        obscureText: false,
-                        inputType: 'none',
-                        isRequired: true,
-                        fillColor: CustomColors.textFieldFillColor,
-                        filled: true,
-                        labelText: "Username",
-                        onChangedFunction: () {}),
-                    const SizedBox(height: 20.0),
-                    textField.TextField(
-                        controller: passwordController,
-                        obscureText: _showPassword,
-                        inputType: 'none',
-                        isRequired: true,
-                        function: _togglePasswordVisibility,
-                        fillColor: CustomColors.textFieldFillColor,
-                        filled: true,
-                        labelText: "Password",
-                        suffixIcon: getPasswordSuffixIcon(
-                            _togglePasswordVisibility, _showPassword),
-                        onChangedFunction: () {}),
-                    const SizedBox(height: 10.0),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _saveCredentials,
-                          onChanged: (value) {
-                            setState(() {
-                              _saveCredentials = value!;
-                            });
-                          },
-                          side: WidgetStateBorderSide.resolveWith(
-                            (states) => const BorderSide(
-                              color: CustomColors.checkBoxColor, // Border color
-                              width: 1.0, // Border width
-                            ),
-                          ),
-                          fillColor: WidgetStateProperty.resolveWith<Color?>(
-                            (Set<WidgetState> states) {
-                              if (states.contains(WidgetState.selected)) {
-                                return Colors
-                                    .transparent; // Transparent fill color when selected
-                              }
-                              return Colors
-                                  .transparent; // Transparent fill color when not selected
-                            },
-                          ),
-                          checkColor: CustomColors.checkBoxColor, // Color of the check mark
-                        ),
-                        const Text(
-                          "Save Credentials",
-                          style: TextStyle(color: CustomColors.checkBoxColor),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30.0),
-                    loginButton(context),
-                    const SizedBox(height: 20.0),
-                    loginResponse()
-                  ]),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: deviceInfoButton(context, deviceId),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+                Center(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      shape: BoxShape.rectangle,
+                      color: Colors.transparent,
+                    ),
+                    height: 600,
+                    padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 60.0),
+                    constraints: const BoxConstraints(
+                      maxWidth: 550,
+                    ),
+                    child: ListView(children: [
+                      const SizedBox(height: 40.0),
+                      logo(context),
+                      const SizedBox(height: 100.0),
+                      textField.TextField(
+                          controller: usernameController,
+                          obscureText: false,
+                          inputType: 'none',
+                          isRequired: true,
+                          fillColor: CustomColors.textFieldFillColor,
+                          filled: true,
+                          labelText: "Username",
+                          onChangedFunction: () {}),
+                      const SizedBox(height: 20.0),
+                      textField.TextField(
+                          controller: passwordController,
+                          obscureText: _showPassword,
+                          inputType: 'none',
+                          isRequired: true,
+                          function: _togglePasswordVisibility,
+                          fillColor: CustomColors.textFieldFillColor,
+                          filled: true,
+                          labelText: "Password",
+                          suffixIcon: getPasswordSuffixIcon(_togglePasswordVisibility, _showPassword),
+                          onChangedFunction: () {}),
+                      const SizedBox(height: 10.0),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: _saveCredentials,
+                            onChanged: (value) {
+                              setState(() {
+                                _saveCredentials = value!;
+                              });
+                            },
+                            side: WidgetStateBorderSide.resolveWith(
+                              (states) => const BorderSide(
+                                color: CustomColors.checkBoxColor, // Border color
+                                width: 1.0, // Border width
+                              ),
+                            ),
+                            fillColor: WidgetStateProperty.resolveWith<Color?>(
+                              (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.selected)) {
+                                  return Colors.transparent; // Transparent fill color when selected
+                                }
+                                return Colors.transparent; // Transparent fill color when not selected
+                              },
+                            ),
+                            checkColor: CustomColors.checkBoxColor, // Color of the check mark
+                          ),
+                          const Text(
+                            "Save Credentials",
+                            style: TextStyle(color: CustomColors.checkBoxColor),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30.0),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 40, right: 40),
+                        child: loginButton(context),
+                      ),
+                      const SizedBox(height: 20.0),
+                      loginResponse()
+                    ]),
+                  ),
+                ),
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      "SDM - SALES DATA MANAGEMENT",
+                      style: TextStyle(color: CustomColors.appNameTextColor, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -255,46 +264,12 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         SizedBox(
-          height: 50.0,
-          child: Image.asset('images/logo.png'),
+          height: 60.0,
+          child: Image.asset('images/tokyo_logo.png'),
         ),
       ],
     );
   }
-
-  // Widget loginButton(BuildContext context) {
-  //   getServerIp() async {
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String serverIp = (prefs.getString('serverIp')).toString();
-  //     return serverIp;
-  //   }
-
-  //   return ButtonTheme(
-  //     minWidth: 600.0,
-  //     height: 50.0,
-  //     child: ElevatedButton(
-  //         child: Text("Login",
-  //             style: TextStyle(
-  //                 color: CustomColors.buttonTextColor,
-  //                 fontSize: getFontSize())),
-  //         style: ElevatedButton.styleFrom(
-  //           backgroundColor: CustomColors.buttonColor,
-  //           minimumSize: const Size(50, 50),
-  //         ),
-  //         onPressed: () async {
-  //           if (usernameController.text.toString() == "" &&
-  //               passwordController.text.toString() == "") {
-  //             showErrorAlertDialog(context, "Enter username and password.");
-  //           } else {
-  //             String? deviceId = await _getId();
-  //             print("THIS IS DEVICE ID:  $deviceId");
-
-  //             _loginBloc.login(usernameController.text.toString(),
-  //                 passwordController.text.toString(), deviceId.toString());
-  //           }
-  //         }),
-  //   );
-  // }
 
   Widget loginResponse() {
     return StreamBuilder<Response<Login>>(
@@ -303,7 +278,14 @@ class _LoginPageState extends State<LoginPage> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Loading(loadingMessage: snapshot.data!.message.toString());
+              return Column(
+                children: [
+                  LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ],
+              );
 
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
@@ -319,16 +301,14 @@ class _LoginPageState extends State<LoginPage> {
                 passwordController = TextEditingController(text: '');
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(
-                      context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
+                  showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
                 });
               }
 
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(
-                    context, snapshot.data!.message.toString());
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
           }
         }

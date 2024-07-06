@@ -34,6 +34,7 @@ class TextField extends StatelessWidget {
   Widget build(BuildContext context) {
     FocusNode myFocusNode = FocusNode();
     return TextFormField(
+      style: const TextStyle(color: CustomColors.textFieldTextColor, fontWeight: FontWeight.bold),
       onChanged: (value) {
         onChangedFunction();
       },
@@ -42,17 +43,21 @@ class TextField extends StatelessWidget {
       focusNode: myFocusNode,
       autofocus: autoFocus == true ? true : false,
       decoration: InputDecoration(
-          contentPadding: const EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
-          border: const OutlineInputBorder(),
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+          contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 15.0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50.0),
+            borderSide: BorderSide.none,
+          ),
           suffixIcon: suffixIcon,
           fillColor: fillColor,
           filled: filled,
           labelText: labelText,
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: CustomColors.buttonColor, width: 2.0),
-            borderRadius: BorderRadius.circular(5.0),
+            borderSide: const BorderSide(color: CustomColors.textFieldBorderColor, width: 2.0),
+            borderRadius: BorderRadius.circular(50.0),
           ),
-          labelStyle: TextStyle(color: myFocusNode.hasFocus ? CustomColors.appBarColor1 : CustomColors.appBarColor1)),
+          labelStyle: TextStyle(color: myFocusNode.hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
 
       // ignore: missing_return
       validator: (v) {

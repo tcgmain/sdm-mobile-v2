@@ -24,8 +24,8 @@ class CommonAppButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          side: BorderSide(
-            color: CustomColors.buttonBorderColor.withOpacity(0.6),
+          side: const BorderSide(
+            color: CustomColors.buttonBorderColor,
             width: 1,
           ),
           elevation: 10,
@@ -35,15 +35,13 @@ class CommonAppButton extends StatelessWidget {
         onPressed: onPressed,
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
-                CustomColors.buttonColor1.withOpacity(0.3),
-                CustomColors.buttonColor2.withOpacity(0.3),
-                CustomColors.buttonColor3.withOpacity(0.3),
-                CustomColors.buttonColor4.withOpacity(0.3),
+                CustomColors.buttonColor3,
+                CustomColors.buttonColor2,
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
             borderRadius: BorderRadius.circular(20),
           ),

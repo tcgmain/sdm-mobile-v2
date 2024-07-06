@@ -1,0 +1,39 @@
+import 'dart:async';
+import 'package:sdm/models/route.dart';
+import 'package:sdm/networking/response.dart';
+import 'package:sdm/repository/route_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class RouteBloc {
+  late RouteRepository _routeRepository;
+  StreamController? _routeController;
+
+  StreamSink<ResponseList<Routes>> get routeSink => _routeController!.sink as StreamSink<ResponseList<Routes>>;
+  Stream<ResponseList<Routes>> get routeStream => _routeController!.stream as Stream<ResponseList<Routes>>;
+
+  RouteBloc() {
+    _routeController = StreamController<ResponseList<Routes>>.broadcast();
+    _routeRepository = RouteRepository();
+  }
+
+  getRoute(String selectedDate) async {
+    routeSink.add(ResponseList.loading(''));
+    try {
+      //Getting username from local storage
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String userName = (prefs.getString('username')).toString();
+
+      List<Routes> res = await _routeRepository.getRoute(userName.toUpperCase(), selectedDate);
+      routeSink.add(ResponseList.completed(res));
+      print("ROUTE SUCCESS");
+    } catch (e) {
+      routeSink.add(ResponseList.error(e.toString()));
+      print("ROUTE ERROR");
+      print(e);
+    }
+  }
+
+  dispose() {
+    _routeController?.close();
+  }
+}

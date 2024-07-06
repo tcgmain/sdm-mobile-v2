@@ -9,13 +9,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBackButtonPressed;
+  final bool isHomePage;
 
   const CommonAppBar({
-    super.key,
+    Key? key,
     required this.title,
     required this.onBackButtonPressed,
     required String userName,
-  });
+    required this.isHomePage,
+  }) : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -44,45 +46,53 @@ class _CommonAppBarState extends State<CommonAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      iconTheme: const IconThemeData(
-    color: Colors.white
-  ),
-flexibleSpace: Container(
-  decoration: const BoxDecoration(
-    gradient: LinearGradient(colors: [
-      CustomColors.appBarColor1,
-      CustomColors.appBarColor2
-    ])
-  ),
-),
-      //backgroundColor: CustomColors.appBarColor1,
-      title: Text(widget.title,
-          style: const TextStyle(color: CustomColors.appBarTextColor)),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: widget.onBackButtonPressed,
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.home),
-          onPressed: () {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                      (Route<dynamic> route) => false,
-                    ));
-          },
+      iconTheme: const IconThemeData(color: Colors.white),
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              CustomColors.appBarColor3,
+              CustomColors.appBarColor2,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
+      ),
+      title: Text(
+        widget.title,
+        style: const TextStyle(color: CustomColors.appBarTextColor),
+      ),
+      leading: widget.isHomePage
+          ? null
+          : IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: widget.onBackButtonPressed,
+            ),
+      actions: [
+        if (!widget.isHomePage)
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  (Route<dynamic> route) => false,
+                );
+              });
+            },
+          ),
         PopupMenuButton<String>(
           onSelected: (String result) {
             if (result == 'logout') {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                        (Route<dynamic> route) => false,
-                      ));
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (Route<dynamic> route) => false,
+                );
+              });
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[

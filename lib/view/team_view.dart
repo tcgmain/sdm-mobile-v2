@@ -11,7 +11,7 @@ class _TeamViewState extends State<TeamView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("ggg"),
+      body: Text("This is teams page"),
     );
   }
 }

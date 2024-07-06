@@ -4,7 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/region_view.dart';
-import 'package:sdm/view/routes_view.dart';
+import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   final List<Widget> _pages = [
-    const RoutesView(),
+    const RouteView(),
     const RegionView(),
     const TeamView(),
   ];

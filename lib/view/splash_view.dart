@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/login_view.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -10,36 +12,43 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
-
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => LoginPage()));
-      
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.black, 
-                Colors.grey.shade800, 
-                Colors.black],
-              stops: const [0.0, 0.5, 1.0],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-        ),
-        child: const Column(
+            image: DecorationImage(
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.9), BlendMode.dstATop),
+          image: const AssetImage('images/background.png'),
+        )),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Tokyo Cement Group", style: TextStyle(color: Colors.white),)],
+          children: [
+            SizedBox(
+              height: 50.0,
+              child: Image.asset('images/tokyo_logo.png'),
+            ),
+            SizedBox(
+              height: 130.0,
+              child: Image.asset('images/sdm_logo.png'),
+            ),
+            const SizedBox(height: 100),
+            LoadingAnimationWidget.staggeredDotsWave(
+              color: Colors.white,
+              size: 40,
+            ),
+          ],
         ),
       ),
     );
