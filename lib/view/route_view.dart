@@ -8,13 +8,14 @@ import 'package:sdm/blocs/route_bloc.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/organization_view.dart';
+import 'package:sdm/view/route_organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/date_picker_calender.dart';
 import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteView extends StatefulWidget {
   const RouteView({super.key});
@@ -101,7 +102,7 @@ class _RouteViewState extends State<RouteView> {
                 children: [
                   Text(
                     'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}',
-                    style: TextStyle(fontSize: getFontSizeLarge(), color: Colors.white),
+                    style: TextStyle(fontSize: getFontSize(), color: Colors.white),
                   ),
                   CommonAppButton(
                     buttonText: 'Select Date',
@@ -109,7 +110,7 @@ class _RouteViewState extends State<RouteView> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Expanded(
@@ -123,19 +124,13 @@ class _RouteViewState extends State<RouteView> {
 
                         case Status.COMPLETED:
                           int noOfRoutes = snapshot.data!.data!.length;
-                          print("snapshot.data!.data!.length");
-                          print(snapshot.data!.data!.length);
                           if (noOfRoutes == 0) {
-                              return Center(
-                                child: Text(
-                                  "No routes have been assigned for this date.",
-                                  style: TextStyle(
-                                    fontSize: getFontSize(),
-                                    color: CustomColors.textColor
-                                  ),
-                                ),
-                              );
-
+                            return Center(
+                              child: Text(
+                                "No routes have been assigned for this date.",
+                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                              ),
+                            );
                           } else {
                             return ListView.builder(
                               itemCount: snapshot.data!.data!.length,
@@ -144,36 +139,14 @@ class _RouteViewState extends State<RouteView> {
                                 final routeNumb = route.yplrouteNummer?.toString() ?? 'Unnamed Route';
                                 final routeName = route.yplrouteNamebspr?.toString() ?? 'Unnamed Route';
                                 return Padding(
-                                  padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5),
-                                    child: Stack(
-                                      children: [
-                                        Positioned.fill(
-                                            child: Container(
-                                          decoration: const BoxDecoration(
-                                              gradient: LinearGradient(
-                                            colors: <Color>[
-                                              Colors.black,
-                                              Colors.black26,
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          )),
-                                        )),
-                                        TextButton(
-                                          
-                                          onPressed: () {},
-                                          style: TextButton.styleFrom(
-                                              foregroundColor: Colors.white,
-                                              padding: const EdgeInsets.all(15),
-                                              textStyle: TextStyle(fontSize: getFontSize())),
-                                          child: Text(route.yplrouteNamebspr.toString()),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                    padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                   
+                                    child: ListButton(
+                                      displayName: routeName,
+                                      onPressed: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => RouteOrganizationView(routeNummer: routeNumb,)));
+                                      },
+                                    ));
                               },
                             );
                           }

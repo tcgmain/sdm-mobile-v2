@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sdm/blocs/organization_bloc.dart';
-import 'package:sdm/models/organization.dart';
+import 'package:sdm/blocs/route_organization_bloc.dart';
+import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -8,30 +8,33 @@ import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:sdm/widgets/search_field.dart';
 
-class OrganizationView extends StatefulWidget {
-  const OrganizationView({super.key});
+class RouteOrganizationView extends StatefulWidget {
+  final String routeNummer;
+
+  const RouteOrganizationView({
+    Key? key,
+    required this.routeNummer,
+  }) : super(key: key);
 
   @override
-  State<OrganizationView> createState() => _OrganizationViewState();
+  State<RouteOrganizationView> createState() => _RouteOrganizationViewState();
 }
 
-class _OrganizationViewState extends State<OrganizationView> {
-  late OrganizationBloc _organizationBloc;
-  final TextEditingController _searchController = TextEditingController();
+class _RouteOrganizationViewState extends State<RouteOrganizationView> {
+  late RouteOrganizationBloc _routeOrganizationBloc;
+  
 
   @override
   void initState() {
     super.initState();
-    _organizationBloc = OrganizationBloc();
-    _organizationBloc.getOrganization();
+    _routeOrganizationBloc = RouteOrganizationBloc();
+    _routeOrganizationBloc.getRouteOrganization(widget.routeNummer);
   }
 
   @override
   void dispose() {
-    _organizationBloc.dispose();
-    _searchController.dispose();
+    _routeOrganizationBloc.dispose();
     super.dispose();
   }
 
@@ -42,15 +45,15 @@ class _OrganizationViewState extends State<OrganizationView> {
         title: 'Organizations',
         onBackButtonPressed: () {},
         userName: '',
-        isHomePage: true,
+        isHomePage: false,
       ),
       body: SafeArea(
         child: BackgroundImage(
           child: Column(
             children: [
               Expanded(
-                child: StreamBuilder<ResponseList<Organization>>(
-                  stream: _organizationBloc.organizationStream,
+                child: StreamBuilder<ResponseList<RouteOrganization>>(
+                  stream: _routeOrganizationBloc.routeOrganizationStream,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       switch (snapshot.data!.status!) {
@@ -58,11 +61,11 @@ class _OrganizationViewState extends State<OrganizationView> {
                           return Loading(loadingMessage: snapshot.data!.message.toString());
 
                         case Status.COMPLETED:
-                          int noOfRoutes = snapshot.data!.data!.length;
-                          if (noOfRoutes == 0) {
+                          int noOfOrganizations = snapshot.data!.data!.length;
+                          if (noOfOrganizations == 0) {
                             return Center(
                               child: Text(
-                                "No organizations have been assigned for you.",
+                                "No organizations have been assigned for this route.",
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
                             );

@@ -12,7 +12,6 @@ import 'package:sdm/blocs/login_bloc.dart';
 import 'package:sdm/models/login.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/login_text_field.dart' as textField;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
