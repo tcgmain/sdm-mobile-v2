@@ -84,3 +84,20 @@ getHorizontalTitleGap() {
   double horizontalTitleGap = 5.0;
   return horizontalTitleGap;
 }
+
+Color getColor(String colorText) {
+  switch (colorText) {
+    case 'RED':
+      return Colors.red;
+    case 'GREEN':
+      return Colors.green;
+    case 'ORANGE':
+      return Colors.orange;
+    case 'BLUE':
+      return Colors.blue;
+    case 'YELLOW':
+      return Colors.yellow;
+    default:
+      return Colors.grey; // Default color if the value is unknown
+  }
+}

@@ -6,13 +6,13 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/error_alert.dart';
-import 'package:sdm/widgets/login_text_field.dart';
+import 'package:sdm/widgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/login_bloc.dart';
 import 'package:sdm/models/login.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/widgets/login_text_field.dart' as textField;
+import 'package:sdm/widgets/text_field.dart' as textField;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 

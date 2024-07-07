@@ -7,7 +7,8 @@ class CommonAppButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onPressed;
 
-  const CommonAppButton({super.key, 
+  const CommonAppButton({
+    super.key,
     required this.buttonText,
     required this.onPressed,
   });
@@ -33,7 +34,7 @@ class CommonAppButton extends StatelessWidget {
           padding: EdgeInsets.zero,
         ),
         onPressed: onPressed,
-        child: Container(
+        child: Ink(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
@@ -45,13 +46,16 @@ class CommonAppButton extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          alignment: Alignment.center,
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              color: CustomColors.buttonTextColor,
-              fontSize: getFontSize(),
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+            alignment: Alignment.center,
+            child: Text(
+              buttonText,
+              style: TextStyle(
+                color: CustomColors.buttonTextColor,
+                fontSize: getFontSize(),
+              ),
             ),
           ),
         ),

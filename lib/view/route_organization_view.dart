@@ -3,6 +3,7 @@ import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -23,7 +24,6 @@ class RouteOrganizationView extends StatefulWidget {
 
 class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   late RouteOrganizationBloc _routeOrganizationBloc;
-  
 
   @override
   void initState() {
@@ -94,10 +94,21 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                     child: ListButton(
                                       displayName: organizationName,
                                       onPressed: () {
-                                        // Navigator.of(context).push(MaterialPageRoute(
-                                        //     builder: (context) => RouteOrganizationView(
-                                        //           routeNummer: routeNumb,
-                                        //         )));
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context) => MarkVisitView(
+                                                  organizationNummer: organizationNummer,
+                                                  organizationName: organizationName,
+                                                  organizationPhone1: organizationPhone1,
+                                                  organizationPhone2: organizationPhone2,
+                                                  organizationAddress1: organizationAddress1,
+                                                  organizationAddress2: organizationAddress2,
+                                                  organizationAddress3: organizationAddress3,
+                                                  organizationAddress4: organizationAddress4,
+                                                  organizationColour: organizationColour,
+                                                  organizationLongitude: organizationLongitude,
+                                                  organizationLatitude: organizationLatitude,
+                                                  organizationDistance: organizationDistance,
+                                                )));
                                       },
                                     ));
                               },

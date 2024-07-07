@@ -3,13 +3,14 @@ import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/search_field.dart';
-import 'package:sdm/widgets/login_text_field.dart' as textField;
+import 'package:sdm/widgets/text_field.dart' as textField;
 
 class OrganizationView extends StatefulWidget {
   const OrganizationView({super.key});
@@ -63,22 +64,15 @@ class _OrganizationViewState extends State<OrganizationView> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                // child: TextField(
-                //   controller: _searchController,
-                //   decoration: const InputDecoration(
-                //     labelText: 'Search',
-                //     border: OutlineInputBorder(),
-                //   ),
-                // ),
-                child:          textField.TextField(
-                          controller: _searchController,
-                          obscureText: false,
-                          inputType: 'none',
-                          isRequired: true,
-                          fillColor: CustomColors.textFieldFillColor,
-                          filled: true,
-                          labelText: "Type to search organizations...",
-                          onChangedFunction: () {}),
+                child: textField.TextField(
+                    controller: _searchController,
+                    obscureText: false,
+                    inputType: 'none',
+                    isRequired: true,
+                    fillColor: CustomColors.textFieldFillColor,
+                    filled: true,
+                    labelText: "Type to search organizations...",
+                    onChangedFunction: () {}),
               ),
               Expanded(
                 child: StreamBuilder<ResponseList<Organization>>(
@@ -104,18 +98,40 @@ class _OrganizationViewState extends State<OrganizationView> {
                             return ListView.builder(
                               itemCount: _filteredOrganizations!.length,
                               itemBuilder: (context, index) {
-                                final organization = _filteredOrganizations![index];
-                                final organizationName = organization.namebspr?.toString() ?? 'Unnamed Route';
+                                final organizations = snapshot.data!.data![index];
+                                final organizationNummer = organizations.orgnummer.toString() ?? 'Unnamed Route';
+                                final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
+                                final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
+                                final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
+                                final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
+                                final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
+                                final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
+                                final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
 
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 3, top: 3),
                                   child: ListButton(
                                     displayName: organizationName,
                                     onPressed: () {
-                                      // Navigator.of(context).push(MaterialPageRoute(
-                                      //     builder: (context) => RouteOrganizationView(
-                                      //           routeNummer: routeNumb,
-                                      //         )));
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context) => MarkVisitView(
+                                                  organizationNummer: organizationNummer,
+                                                  organizationName: organizationName,
+                                                  organizationPhone1: organizationPhone1,
+                                                  organizationPhone2: organizationPhone2,
+                                                  organizationAddress1: organizationAddress1,
+                                                  organizationAddress2: organizationAddress2,
+                                                  organizationAddress3: organizationAddress3,
+                                                  organizationAddress4: organizationAddress4,
+                                                  organizationColour: organizationColour,
+                                                  organizationLongitude: organizationLongitude,
+                                                  organizationLatitude: organizationLatitude,
+                                                  organizationDistance: organizationDistance,
+                                                )));
                                     },
                                   ),
                                 );
