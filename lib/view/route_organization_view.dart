@@ -43,7 +43,9 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Organizations',
-        onBackButtonPressed: () {},
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
         userName: '',
         isHomePage: false,
       ),
