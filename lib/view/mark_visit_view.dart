@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sdm/utils/constants.dart';
@@ -7,6 +8,7 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MarkVisitView extends StatefulWidget {
@@ -22,6 +24,7 @@ class MarkVisitView extends StatefulWidget {
   final String organizationLongitude;
   final String organizationLatitude;
   final String organizationDistance;
+  final String organizationMail;
 
   const MarkVisitView({
     Key? key,
@@ -37,6 +40,7 @@ class MarkVisitView extends StatefulWidget {
     required this.organizationLongitude,
     required this.organizationLatitude,
     required this.organizationDistance,
+    required this.organizationMail,
   }) : super(key: key);
 
   @override
@@ -45,7 +49,7 @@ class MarkVisitView extends StatefulWidget {
 
 class _MarkVisitViewState extends State<MarkVisitView> {
   String _locationMessage = "";
-  late double organizationLatitude = double.parse(widget.organizationLatitude); 
+  late double organizationLatitude = double.parse(widget.organizationLatitude);
   late double organizationLongitude = double.parse(widget.organizationLongitude);
   late double organizationDistance = double.parse(widget.organizationDistance);
   bool _isWithinRadius = false;
@@ -93,12 +97,8 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     double currentLat = position.latitude;
     double currentLon = position.longitude;
 
-    // setState(() {
-    //   _locationMessage = "Latitude: $currentLat, Longitude: $currentLon";
-    // });
-
-    // Check if the current location is within the radius
-    bool isWithin = LocationUtils.isWithinRadius(currentLat, currentLon, organizationLatitude, organizationLongitude, organizationDistance);
+    bool isWithin = LocationUtils.isWithinRadius(
+        currentLat, currentLon, organizationLatitude, organizationLongitude, organizationDistance);
 
     if (isWithin) {
       setState(() {
@@ -109,6 +109,21 @@ class _MarkVisitViewState extends State<MarkVisitView> {
       setState(() {
         _locationMessage += "You are not within the ${widget.organizationDistance} range of this organization.";
       });
+    }
+  }
+
+  void _launchEmail(String email) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: 'subject=Subject&body=Body',
+    );
+    if (await canLaunch(emailUri.toString())) {
+      await launch(emailUri.toString());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No email clients installed or could not launch email app')),
+      );
     }
   }
 
@@ -150,18 +165,15 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
+              widget.organizationAddress1.isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         const Icon(
                           Icons.location_on,
                           color: CustomColors.textColor,
-                          size: 35,
+                          size: 25,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -175,65 +187,128 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                                   fontSize: getFontSize(),
                                 ),
                               ),
-                              Text(
-                                widget.organizationAddress2,
-                                style: TextStyle(
-                                  color: CustomColors.textColor,
-                                  fontSize: getFontSize(),
-                                ),
-                              ),
-                              Text(
-                                widget.organizationAddress3,
-                                style: TextStyle(
-                                  color: CustomColors.textColor,
-                                  fontSize: getFontSize(),
-                                ),
-                              ),
-                              Text(
-                                widget.organizationAddress4,
-                                style: TextStyle(
-                                  color: CustomColors.textColor,
-                                  fontSize: getFontSize(),
-                                ),
-                              ),
+                              widget.organizationAddress2.isNotEmpty
+                                  ? Text(
+                                      widget.organizationAddress2,
+                                      style: TextStyle(
+                                        color: CustomColors.textColor,
+                                        fontSize: getFontSize(),
+                                      ),
+                                    )
+                                  : Container(),
+                              widget.organizationAddress3.isNotEmpty
+                                  ? Text(
+                                      widget.organizationAddress3,
+                                      style: TextStyle(
+                                        color: CustomColors.textColor,
+                                        fontSize: getFontSize(),
+                                      ),
+                                    )
+                                  : Container(),
+                              widget.organizationAddress4.isNotEmpty
+                                  ? Text(
+                                      widget.organizationAddress4,
+                                      style: TextStyle(
+                                        color: CustomColors.textColor,
+                                        fontSize: getFontSize(),
+                                      ),
+                                    )
+                                  : Container(),
                             ],
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [CustomColors.buttonColor3, CustomColors.buttonColor2],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        _showCallOptions(context);
-                      },
-                      icon: const Icon(Icons.call, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
+                    )
+                  : Container(),
+              const SizedBox(height: 10),
+              widget.organizationPhone1.isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        const Icon(
+                          Icons.phone,
+                          color: CustomColors.textColor,
+                          size: 25,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.organizationPhone1,
+                          style: TextStyle(
+                            color: CustomColors.textColor,
+                            fontSize: getFontSize(),
+                          ),
+                        ),
+                        widget.organizationPhone2.isNotEmpty
+                            ? Text(
+                                " / ${widget.organizationPhone2}",
+                                style: TextStyle(
+                                  color: CustomColors.textColor,
+                                  fontSize: getFontSize(),
+                                ),
+                              )
+                            : Container(),
+                        const Spacer(),
+                        CommonAppButton(
+                          buttonText: '  Call   ',
+                          onPressed: () {
+                            _showCallOptions(context);
+                          },
+                        ),
+                      ],
+                    )
+                  : Container(),
+              const SizedBox(height: 5),
+
+              widget.organizationMail.isNotEmpty
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        const Icon(
+                          Icons.mail,
+                          color: CustomColors.textColor,
+                          size: 25,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.organizationMail,
+                          style: TextStyle(
+                            color: CustomColors.textColor,
+                            fontSize: getFontSize(),
+                          ),
+                        ),
+                        const Spacer(),
+                        CommonAppButton(
+                          buttonText: '  Mail  ',
+                          onPressed: () {
+                            _launchEmail(widget.organizationMail);
+                          },
+                        ),
+                      ],
+                    )
+                  : Container(),
+
               const SizedBox(height: 15),
               MapWidget(
-                latitude: double.parse(widget.organizationLatitude), 
+                latitude: double.parse(widget.organizationLatitude),
                 longitude: double.parse(widget.organizationLongitude),
               ),
               const SizedBox(height: 16),
               if (_isWithinRadius)
-              CommonAppButton(
-                buttonText: 'Mark Visit',
-                onPressed: () {},
-              ),
-              Text(_locationMessage, style: TextStyle(color: Colors.red, fontSize: getFontSize()),textAlign:TextAlign.center)
+                CommonAppButton(
+                  buttonText: 'Mark Visit',
+                  onPressed: () {},
+                ),
+              const SizedBox(height: 5),
+              Text(_locationMessage,
+                  style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
+                  textAlign: TextAlign.center),
+
+              // Text(widget.,
+              // style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
+              // textAlign: TextAlign.center)
             ],
-            
           ),
         ),
       ),

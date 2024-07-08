@@ -11,7 +11,7 @@ class MapWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200.0, // Adjust the height as needed
+      height: 180.0, // Adjust the height as needed
       child: FlutterMap(
         options: MapOptions(
           center: LatLng(latitude, longitude),

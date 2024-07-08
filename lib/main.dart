@@ -2,9 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/view/splash_view.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await secureApp();
   runApp(MyApp());
+}
+
+Future<void> secureApp() async {
+  await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
 }
 
 class MyApp extends StatelessWidget {

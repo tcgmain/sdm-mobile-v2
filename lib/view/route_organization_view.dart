@@ -88,6 +88,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                 final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
                                 final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
                                 final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
+                                final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
 
                                 return Padding(
                                     padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -108,6 +109,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                   organizationLongitude: organizationLongitude,
                                                   organizationLatitude: organizationLatitude,
                                                   organizationDistance: organizationDistance,
+                                                  organizationMail: organizationMail,
                                                 )));
                                       },
                                     ));
