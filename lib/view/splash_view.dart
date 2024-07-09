@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/login_view.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 

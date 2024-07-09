@@ -81,7 +81,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                     isRequired: true,
                     fillColor: CustomColors.textFieldFillColor,
                     filled: true,
-                    labelText: "Type to search organizations...",
+                    labelText: "Type to search sub organizations...",
                     onChangedFunction: () {}),
               ),
               Expanded(
@@ -100,7 +100,8 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                           if (_filteredSubOrganizations!.isEmpty) {
                             return Center(
                               child: Text(
-                                "No sub organizations have been assigned for " + widget.organizationName,
+                                "No sub organizations have been assigned for ${widget.organizationName}",
+                                textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
                             );
@@ -109,7 +110,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                               itemCount: _filteredSubOrganizations!.length,
                               itemBuilder: (context, index) {
                                 final subOrganizations = snapshot.data!.data![index];
-                                final subOrganizationNummer = subOrganizations.orgnummer.toString() ?? 'Unnamed Route';
+                                final subOrganizationNummer = subOrganizations.orgnummer.toString();
                                 final subOrganizationName = subOrganizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final subOrganizationPhone1 = subOrganizations.yphone1?.toString() ?? 'Unnamed Route';
                                 final subOrganizationPhone2 = subOrganizations.yphone2?.toString() ?? 'Unnamed Route';

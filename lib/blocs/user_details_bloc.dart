@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/repository/user_details_repository.dart';

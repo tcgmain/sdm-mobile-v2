@@ -10,7 +10,7 @@ class SalesOrderView extends StatefulWidget {
 class _SalesOrderViewState extends State<SalesOrderView> {
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+     return const Scaffold(
       body: Text("This is sales order page"),
     );
   }

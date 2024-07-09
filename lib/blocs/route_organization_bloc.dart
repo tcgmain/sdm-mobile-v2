@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/repository/route_organization_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteOrganizationBloc {
   late RouteOrganizationRepository _routeOrganizationRepository;

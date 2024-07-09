@@ -2,20 +2,11 @@
 
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:sdm/blocs/user_details_bloc.dart';
-import 'package:sdm/models/user_details.dart';
-import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/mark_visit_view.dart';
-import 'package:sdm/view/organization_view.dart';
-import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/sales_order_view.dart';
 import 'package:sdm/view/sub_organization_view.dart';
-import 'package:sdm/view/team_view.dart';
 import 'package:sdm/view/visit_history_view.dart';
-import 'package:sdm/widgets/error_alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeOrganizationView extends StatefulWidget {
   final String userNummer;
@@ -88,6 +79,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
     VisitHistoryView(
       userNummer: widget.userNummer,
       organizationNummer: widget.organizationNummer,
+      organizationName: widget.organizationName,
     ),
   ];
 

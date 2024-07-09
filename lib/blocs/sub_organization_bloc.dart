@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:sdm/models/organization.dart';
-import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/repository/sub_organization_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SubOrganizationBloc {
   late SubOrganizationRepository _subOrganizationRepository;

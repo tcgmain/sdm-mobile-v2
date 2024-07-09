@@ -18,7 +18,7 @@ class ApiProvider {
       String responseString = response.body.toString();
       print(responseString);
       print(inputBody);
-       print(baseUrl + url);
+      print(baseUrl + url);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
       throw FetchDataException("No Internet Connection");

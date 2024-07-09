@@ -4,13 +4,11 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_organization_view.dart';
-import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:sdm/widgets/search_field.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
 
 class OrganizationView extends StatefulWidget {
@@ -95,6 +93,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                             return Center(
                               child: Text(
                                 "No organizations have been assigned for you.",
+                                textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
                             );
@@ -103,7 +102,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                               itemCount: _filteredOrganizations!.length,
                               itemBuilder: (context, index) {
                                 final organizations = snapshot.data!.data![index];
-                                final organizationNummer = organizations.orgnummer.toString() ?? 'Unnamed Route';
+                                final organizationNummer = organizations.orgnummer.toString();
                                 final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
                                 final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';

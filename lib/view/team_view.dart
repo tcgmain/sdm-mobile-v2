@@ -10,7 +10,7 @@ class TeamView extends StatefulWidget {
 class _TeamViewState extends State<TeamView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Text("This is teams page"),
     );
   }

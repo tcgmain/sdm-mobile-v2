@@ -1,3 +1,5 @@
+// ignore_for_file: sized_box_for_whitespace
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,7 +8,7 @@ class MapWidget extends StatelessWidget {
   final double latitude;
   final double longitude;
 
-  MapWidget({required this.latitude, required this.longitude});
+  const MapWidget({required this.latitude, required this.longitude});
 
   @override
   Widget build(BuildContext context) {

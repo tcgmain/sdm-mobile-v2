@@ -1,16 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/route.dart';
 import 'package:intl/intl.dart';
 import 'package:sdm/blocs/route_bloc.dart';
-import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/view/route_organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -19,7 +14,6 @@ import 'package:sdm/widgets/date_picker_calender.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteView extends StatefulWidget {
 

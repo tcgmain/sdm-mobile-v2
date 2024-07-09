@@ -79,7 +79,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
       actions: [
         if (!widget.isHomePage)
          IconButton(
-            icon: Icon(Icons.home),
+            icon: const Icon(Icons.home),
             onPressed: () {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
@@ -106,7 +106,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
             PopupMenuItem<String>(
               value: 'userName',
               enabled: false,
-              child: Text(username ?? ''),
+              child: Text(username),
             ),
             const PopupMenuItem<String>(
               value: 'logout',

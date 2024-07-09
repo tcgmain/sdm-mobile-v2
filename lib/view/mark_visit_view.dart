@@ -1,7 +1,4 @@
-// ignore_for_file: deprecated_member_use
-
-import 'dart:convert';
-
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sdm/blocs/mark_visit_bloc.dart';

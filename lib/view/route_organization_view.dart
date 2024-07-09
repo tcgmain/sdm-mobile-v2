@@ -69,6 +69,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                             return Center(
                               child: Text(
                                 "No organizations have been assigned for this route.",
+                                textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
                             );
@@ -77,7 +78,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (context, index) {
                                 final organizations = snapshot.data!.data![index];
-                                final organizationNummer = organizations.orgnummer.toString() ?? 'Unnamed Route';
+                                final organizationNummer = organizations.orgnummer.toString();
                                 final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
                                 final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
