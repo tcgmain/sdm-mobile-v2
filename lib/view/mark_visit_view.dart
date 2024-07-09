@@ -1,17 +1,26 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:sdm/blocs/mark_visit_bloc.dart';
+import 'package:sdm/models/mark_visit.dart';
+import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:sdm/widgets/success_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MarkVisitView extends StatefulWidget {
+  final String routeNummer;
   final String organizationNummer;
   final String organizationName;
   final String organizationPhone1;
@@ -28,6 +37,7 @@ class MarkVisitView extends StatefulWidget {
 
   const MarkVisitView({
     Key? key,
+    required this.routeNummer,
     required this.organizationNummer,
     required this.organizationName,
     required this.organizationPhone1,
@@ -52,12 +62,28 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   late double organizationLatitude = double.parse(widget.organizationLatitude);
   late double organizationLongitude = double.parse(widget.organizationLongitude);
   late double organizationDistance = double.parse(widget.organizationDistance);
+
   bool _isWithinRadius = false;
+  late MarkVisitBloc _markVisitBloc;
+  late dynamic userNummer;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _getUserNummer();
+    _markVisitBloc = MarkVisitBloc();
+  }
+
+  @override
+  void dispose() {
+    _markVisitBloc.dispose();
+    super.dispose();
+  }
+
+  Future<void> _getUserNummer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userNummer = prefs.getString('userNummer') ?? '';
   }
 
   Future<void> _getCurrentLocation() async {
@@ -259,7 +285,6 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     )
                   : Container(),
               const SizedBox(height: 5),
-
               widget.organizationMail.isNotEmpty
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -288,7 +313,6 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                       ],
                     )
                   : Container(),
-
               const SizedBox(height: 15),
               MapWidget(
                 latitude: double.parse(widget.organizationLatitude),
@@ -298,16 +322,18 @@ class _MarkVisitViewState extends State<MarkVisitView> {
               if (_isWithinRadius)
                 CommonAppButton(
                   buttonText: 'Mark Visit',
-                  onPressed: () {},
+                  onPressed: () async {
+                    print("press");
+
+                    _markVisitBloc.markVisit(
+                        userNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
+                  },
                 ),
               const SizedBox(height: 5),
               Text(_locationMessage,
                   style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
                   textAlign: TextAlign.center),
-
-              // Text(widget.,
-              // style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
-              // textAlign: TextAlign.center)
+              markVisitResponse()
             ],
           ),
         ),
@@ -357,6 +383,41 @@ class _MarkVisitViewState extends State<MarkVisitView> {
             ],
           ),
         );
+      },
+    );
+  }
+
+  //Mark Visit response
+  Widget markVisitResponse() {
+    return StreamBuilder<Response<MarkVisit>>(
+      stream: _markVisitBloc.markVisitStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Loading(loadingMessage: snapshot.data!.message.toString()),
+                  ],
+                ),
+              );
+            case Status.COMPLETED:
+              print(snapshot.data!.data!.table.toString());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showSuccessAlertDialog(context, "Visit Successfully Marked");
+              });
+
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+              break;
+          }
+        }
+        return Container();
       },
     );
   }

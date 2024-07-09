@@ -2,9 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/route.dart';
 import 'package:intl/intl.dart';
 import 'package:sdm/blocs/route_bloc.dart';
+import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/organization_view.dart';
@@ -16,6 +19,7 @@ import 'package:sdm/widgets/date_picker_calender.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteView extends StatefulWidget {
   const RouteView({super.key});
@@ -27,6 +31,7 @@ class RouteView extends StatefulWidget {
 class _RouteViewState extends State<RouteView> {
   late RouteBloc _routeBloc;
   DateTime _selectedDate = DateTime.now();
+  late String username;
 
   @override
   void initState() {
@@ -40,6 +45,9 @@ class _RouteViewState extends State<RouteView> {
     _routeBloc.dispose();
     super.dispose();
   }
+
+
+
 
   void _getRoutesForSelectedDate() {
     String formattedDate = DateFormat('dd/MM/yyyy').format(_selectedDate);
@@ -140,11 +148,13 @@ class _RouteViewState extends State<RouteView> {
                                 final routeName = route.yplrouteNamebspr?.toString() ?? 'Unnamed Route';
                                 return Padding(
                                     padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                   
                                     child: ListButton(
                                       displayName: routeName,
                                       onPressed: () {
-                                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => RouteOrganizationView(routeNummer: routeNumb,)));
+                                        Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context) => RouteOrganizationView(
+                                                  routeNummer: routeNumb,
+                                                )));
                                       },
                                     ));
                               },

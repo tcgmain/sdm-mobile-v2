@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CustomColors {
-
   static const Color appNameTextColor = Color(0xFF707070);
   static const Color appBarColor1 = Color(0xFFec1c24);
   static const Color appBarColor2 = Color(0xFFff4b50);
@@ -25,6 +24,12 @@ class CustomColors {
   static const Color errorAlertTitleTextColor = Color(0xFFFF0000);
   static const Color errorAlertBorderColor = Color(0xFFFFFFFF);
   static const Color errorAlertBackgroundColor = Color(0xFF000000);
+
+   static const Color successAlertTextColor = Color(0xFFF2F2F2);
+  static const Color successAlertTitleTextColor = Color(0xFF00AB66);
+  static const Color successAlertBorderColor = Color(0xFFFFFFFF);
+  static const Color successAlertBackgroundColor = Color(0xFF000000);
+
   static const Color textFieldFillColor = Color(0xFFFFFFFF);
   static const Color textFieldBorderColor = Color(0xFFec1c24);
   static const Color textFieldTextColor = Color(0xFF666666);
@@ -47,7 +52,6 @@ class CustomColors {
   static const Color calenderTextColor = Color(0xFFD3D3D3);
   static const Color calenderTitleTextColor = Color(0xFFFFFFFF);
   static const Color loadingColor = Color(0xFFec1c24);
-  
 }
 
 getFontSize() {
@@ -76,8 +80,22 @@ getAppBarTextSize() {
 }
 
 getDateFormat(date) {
-  var formattedDate = DateFormat('yyyy/MM/dd').format(date);
+  var formattedDate = DateFormat('dd/MM/yyyy').format(date);
   return formattedDate;
+}
+
+getCurrentDate() {
+  var now = DateTime.now();
+  var formatter = DateFormat('dd/MM/yyyy');
+  String formattedDate = formatter.format(now);
+  return formattedDate;
+}
+
+getCurrentTime() {
+  var now = DateTime.now();
+  var formatterTime = DateFormat('kk:mm');
+  String time = formatterTime.format(now);
+  return time;
 }
 
 getHorizontalTitleGap() {

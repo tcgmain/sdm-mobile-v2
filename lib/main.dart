@@ -2,24 +2,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/view/splash_view.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+//import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await secureApp();
+void main() async {
+  //WidgetsFlutterBinding.ensureInitialized();
+  //await secureApp();
   runApp(MyApp());
 }
 
-Future<void> secureApp() async {
-  await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-}
+// Future<void> secureApp() async {
+//   await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+// }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'ApprovalHub',
+      title: 'SDM',
       theme: ThemeData(
           fontFamily: 'Roboto',
           primarySwatch: Colors.blue,

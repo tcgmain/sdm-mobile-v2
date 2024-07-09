@@ -3,6 +3,8 @@
 import 'dart:io';
 import 'package:clipboard/clipboard.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sdm/blocs/user_details_bloc.dart';
+import 'package:sdm/models/user_details.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -23,12 +25,14 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late LoginBloc _loginBloc;
+  late UserDetailsBloc _userDetailsBloc;
   bool _showPassword = true;
   var usernameController = TextEditingController(text: '');
   var passwordController = TextEditingController(text: '');
   String deviceId = "";
   bool _saveCredentials = false;
   bool _dialogShown = false;
+  late String username;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -40,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _loginBloc = LoginBloc();
+    _userDetailsBloc = UserDetailsBloc();
     _fetchDeviceId();
     _loadCredentials();
   }
@@ -47,7 +52,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _loginBloc.dispose();
+    _userDetailsBloc.dispose();
     super.dispose();
+  }
+
+  Future<void> initializeUserDetails() async {
+    username = await getUsername();
+    print(username);
+    _userDetailsBloc.getUserDetails('Ashen_IT');
+  }
+
+  Future<String> getUsername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username') ?? '';
   }
 
   Future<String?> _getId() async {
@@ -237,7 +254,8 @@ class _LoginPageState extends State<LoginPage> {
                         child: loginButton(context),
                       ),
                       const SizedBox(height: 20.0),
-                      loginResponse()
+                      loginResponse(),
+                      userDetailsResponse()
                     ]),
                   ),
                 ),
@@ -288,16 +306,9 @@ class _LoginPageState extends State<LoginPage> {
 
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
-                    (Route<dynamic> route) => false,
-                  );
-                });
+                print(snapshot.data!.data!.ylogopr.toString());
+                _userDetailsBloc.getUserDetails(snapshot.data!.data!.ylogopr.toString());
 
-                usernameController = TextEditingController(text: '');
-                passwordController = TextEditingController(text: '');
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
@@ -315,4 +326,48 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
+
+
+
+  Widget userDetailsResponse() {
+    return StreamBuilder<ResponseList<UserDetails>>(
+      stream: _userDetailsBloc.userDetailsStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              return Column(
+                children: [
+                  LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ],
+              );
+
+            case Status.COMPLETED:
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+
+                usernameController = TextEditingController(text: '');
+                passwordController = TextEditingController(text: '');
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+
 }

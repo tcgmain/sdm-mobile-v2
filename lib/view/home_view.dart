@@ -2,10 +2,16 @@
 
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sdm/blocs/user_details_bloc.dart';
+import 'package:sdm/models/user_details.dart';
+import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
+import 'package:sdm/widgets/error_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,7 +27,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
-    
   }
 
   final List<Widget> _pages = [
@@ -35,6 +40,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

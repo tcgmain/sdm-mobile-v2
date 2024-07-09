@@ -14,9 +14,10 @@ class ApiProvider {
   Future<dynamic> post(String url, inputBody, requestHeaders) async {
     var responseJson;
     try {
-      final response = await http.post(Uri.parse(baseUrl + url),
-          headers: requestHeaders, body: inputBody);
+      final response = await http.post(Uri.parse(baseUrl + url), headers: requestHeaders, body: inputBody);
       String responseString = response.body.toString();
+      print(baseUrl + url);
+      print(inputBody);
       print(responseString);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
@@ -32,7 +33,8 @@ class ApiProvider {
       case 200:
         if (response["success"] == true) {
           flag1 = true;
-          print(flag1);
+          // print("response[result_data]");
+          // print(response["result_data"]);
           return response["result_data"];
         } else {
           throw AbasException(response["message"]);
@@ -44,8 +46,7 @@ class ApiProvider {
         throw UnauthorisedException(response.body.toString());
       case 500:
       default:
-        throw FetchDataException(
-            'Error with StatusCode : ${response.statusCode}');
+        throw FetchDataException('Error with StatusCode : ${response.statusCode}');
     }
   }
 }

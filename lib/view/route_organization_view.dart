@@ -97,6 +97,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       onPressed: () {
                                         Navigator.of(context).push(MaterialPageRoute(
                                             builder: (context) => MarkVisitView(
+                                                  routeNummer: widget.routeNummer,
                                                   organizationNummer: organizationNummer,
                                                   organizationName: organizationName,
                                                   organizationPhone1: organizationPhone1,
