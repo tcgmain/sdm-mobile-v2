@@ -84,10 +84,13 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationMail: widget.organizationMail,
     ),
     const SalesOrderView(),
-    const SubOrganizationView(),
-    VisitHistoryView(userNummer: widget.userNummer, organizationNummer: widget.organizationNummer,),
+    SubOrganizationView(userNummer: widget.userNummer, organizationNummer: widget.organizationNummer, organizationName: widget.organizationName),
+    VisitHistoryView(
+      userNummer: widget.userNummer,
+      organizationNummer: widget.organizationNummer,
+    ),
   ];
- 
+
   @override
   void initState() {
     super.initState();
@@ -97,7 +100,6 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
   void dispose() {
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +122,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                 icon: Icons.flag,
                 text: 'Mark Visit',
               ),
-             GButton(
+              GButton(
                 icon: Icons.receipt,
                 text: 'Sales Order',
               ),
@@ -128,7 +130,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                 icon: Icons.corporate_fare,
                 text: 'Sub Region',
               ),
-               GButton(
+              GButton(
                 icon: Icons.history,
                 text: 'Visit History',
               ),

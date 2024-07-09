@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:sdm/models/sub_organization.dart';
+import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/api_provider.dart';
 
 class SubOrganizationRepository {
@@ -9,7 +9,7 @@ class SubOrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<List<SubOrganization>> getSubOrganization(organizationNummer) async {
+  Future<List<Organization>> getSubOrganization(organizationNummer) async {
     requestHeaders = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ class SubOrganizationRepository {
     }
 
     var list = itemArray;
-    List<SubOrganization> suborg = list.map((obj) => SubOrganization.fromJson(obj)).toList();
+    List<Organization> suborg = list.map((obj) => Organization.fromJson(obj)).toList();
     return suborg;
   }
 }

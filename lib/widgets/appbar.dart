@@ -37,16 +37,16 @@ class _CommonAppBarState extends State<CommonAppBar> {
   }
 
   Future<void> _getUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefsUserName = await SharedPreferences.getInstance();
     setState(() {
-      username = prefs.getString('username') ?? 'Guest';
+      username = prefsUserName.getString('username') ?? 'Guest';
     });
   }
 
   Future<void> _getUserNummer() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefsUserNummer = await SharedPreferences.getInstance();
     setState(() {
-      userNummer = prefs.getString('userNummer') ?? 'Guest';
+      userNummer = prefsUserNummer.getString('userNummer') ?? 'Guest';
     });
   }
 
@@ -84,7 +84,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage(userNummer: username,)),
+                  MaterialPageRoute(builder: (context) => HomePage(userNummer: userNummer,)),
                   (Route<dynamic> route) => false,
                 );
               });
