@@ -2,19 +2,15 @@
 
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:sdm/blocs/user_details_bloc.dart';
-import 'package:sdm/models/user_details.dart';
-import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
-import 'package:sdm/widgets/error_alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String userNummer;
+
+  const HomePage({super.key, required this.userNummer});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -22,6 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  late final List<Widget> _pages;
 
   void _navigateBottomBar(int index) {
     setState(() {
@@ -29,17 +26,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  final List<Widget> _pages = [
-    const RouteView(),
-    const OrganizationView(),
-    const TeamView(),
-  ];
-  //double buttonPadding = 10;
-  //double buttonHeight = 60.0;
-
   @override
   void initState() {
     super.initState();
+    _pages = [
+      RouteView(
+        userNummer: widget.userNummer,
+      ),
+      OrganizationView(userNummer: widget.userNummer),
+      const TeamView(),
+    ];
   }
 
   @override

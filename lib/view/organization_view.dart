@@ -3,6 +3,7 @@ import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/home_organization_view.dart';
 import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -13,7 +14,12 @@ import 'package:sdm/widgets/search_field.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
 
 class OrganizationView extends StatefulWidget {
-  const OrganizationView({super.key});
+  final String userNummer;
+
+  const OrganizationView({
+    Key? key,
+    required this.userNummer,
+  }) : super(key: key);
 
   @override
   State<OrganizationView> createState() => _OrganizationViewState();
@@ -30,7 +36,6 @@ class _OrganizationViewState extends State<OrganizationView> {
     super.initState();
     _organizationBloc = OrganizationBloc();
     _organizationBloc.getOrganization();
-
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -55,7 +60,6 @@ class _OrganizationViewState extends State<OrganizationView> {
       appBar: CommonAppBar(
         title: 'Organizations',
         onBackButtonPressed: () {},
-        userName: '',
         isHomePage: true,
       ),
       body: SafeArea(
@@ -119,7 +123,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                     displayName: organizationName,
                                     onPressed: () {
                                       Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => MarkVisitView(
+                                          builder: (context) => HomeOrganizationView(
+                                                userNummer: widget.userNummer,
                                                 routeNummer: "",
                                                 organizationNummer: organizationNummer,
                                                 organizationName: organizationName,

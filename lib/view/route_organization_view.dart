@@ -3,7 +3,7 @@ import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/mark_visit_view.dart';
+import 'package:sdm/view/home_organization_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -11,10 +11,12 @@ import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 
 class RouteOrganizationView extends StatefulWidget {
+  final String userNummer;
   final String routeNummer;
 
   const RouteOrganizationView({
     Key? key,
+    required this.userNummer,
     required this.routeNummer,
   }) : super(key: key);
 
@@ -46,7 +48,6 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
-        userName: '',
         isHomePage: false,
       ),
       body: SafeArea(
@@ -96,7 +97,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       displayName: organizationName,
                                       onPressed: () {
                                         Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => MarkVisitView(
+                                            builder: (context) => HomeOrganizationView(
+                                                  userNummer: widget.userNummer,
                                                   routeNummer: widget.routeNummer,
                                                   organizationNummer: organizationNummer,
                                                   organizationName: organizationName,

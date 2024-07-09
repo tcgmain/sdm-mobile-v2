@@ -16,9 +16,9 @@ class ApiProvider {
     try {
       final response = await http.post(Uri.parse(baseUrl + url), headers: requestHeaders, body: inputBody);
       String responseString = response.body.toString();
-      print(baseUrl + url);
-      print(inputBody);
-      print(responseString);
+      //print(responseString);
+      //print(inputBody);
+       //print(baseUrl + url);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
       throw FetchDataException("No Internet Connection");
@@ -27,14 +27,10 @@ class ApiProvider {
   }
 
   dynamic _response(response, statusCode) {
-    print(response);
-    print(statusCode);
     switch (statusCode) {
       case 200:
         if (response["success"] == true) {
           flag1 = true;
-          // print("response[result_data]");
-          // print(response["result_data"]);
           return response["result_data"];
         } else {
           throw AbasException(response["message"]);

@@ -37,7 +37,7 @@ class NoRecordsFound extends CustomException {
 }
 
 class AbasException extends CustomException {
-  AbasException([message]) : super(message, "Login Fail");
+  AbasException([message]) : super(message, "Fail to load");
 }
 
 class UndefinedError extends CustomException {

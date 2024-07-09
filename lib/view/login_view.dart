@@ -308,7 +308,6 @@ class _LoginPageState extends State<LoginPage> {
               if (snapshot.data!.data!.ylogver == true) {
                 print(snapshot.data!.data!.ylogopr.toString());
                 _userDetailsBloc.getUserDetails(snapshot.data!.data!.ylogopr.toString());
-
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
@@ -327,8 +326,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-
   Widget userDetailsResponse() {
     return StreamBuilder<ResponseList<UserDetails>>(
       stream: _userDetailsBloc.userDetailsStream,
@@ -346,17 +343,18 @@ class _LoginPageState extends State<LoginPage> {
               );
 
             case Status.COMPLETED:
+              print(snapshot.data?.data?[0].nummer.toString());
+              var userNummer = snapshot.data!.data![0].nummer.toString();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage(userNummer: userNummer)),
+                  (Route<dynamic> route) => false,
+                );
+              });
 
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
-                    (Route<dynamic> route) => false,
-                  );
-                });
-
-                usernameController = TextEditingController(text: '');
-                passwordController = TextEditingController(text: '');
+              usernameController = TextEditingController(text: '');
+              passwordController = TextEditingController(text: '');
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -368,6 +366,4 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
-
 }

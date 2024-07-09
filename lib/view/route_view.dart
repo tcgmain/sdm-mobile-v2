@@ -22,7 +22,14 @@ import 'package:sdm/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteView extends StatefulWidget {
-  const RouteView({super.key});
+
+
+  final String userNummer;
+
+  const RouteView({
+    Key? key,
+    required this.userNummer,
+  }) : super(key: key);
 
   @override
   State<RouteView> createState() => _RouteViewState();
@@ -88,7 +95,6 @@ class _RouteViewState extends State<RouteView> {
       appBar: CommonAppBar(
         title: 'Routes',
         onBackButtonPressed: () {},
-        userName: '',
         isHomePage: true,
       ),
       floatingActionButton: FloatingActionButton(
@@ -153,6 +159,7 @@ class _RouteViewState extends State<RouteView> {
                                       onPressed: () {
                                         Navigator.of(context).push(MaterialPageRoute(
                                             builder: (context) => RouteOrganizationView(
+                                              userNummer: widget.userNummer,
                                                   routeNummer: routeNumb,
                                                 )));
                                       },

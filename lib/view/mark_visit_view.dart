@@ -65,7 +65,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
-  late dynamic userNummer;
+  late String userNummer;
 
   @override
   void initState() {
@@ -169,7 +169,6 @@ class _MarkVisitViewState extends State<MarkVisitView> {
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
-        userName: '',
         isHomePage: false,
       ),
       body: SafeArea(
@@ -313,12 +312,12 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                       ],
                     )
                   : Container(),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               MapWidget(
                 latitude: double.parse(widget.organizationLatitude),
                 longitude: double.parse(widget.organizationLongitude),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               if (_isWithinRadius)
                 CommonAppButton(
                   buttonText: 'Mark Visit',

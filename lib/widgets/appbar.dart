@@ -15,7 +15,6 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
     Key? key,
     required this.title,
     required this.onBackButtonPressed,
-    required String userName,
     required this.isHomePage,
   }) : super(key: key);
 
@@ -27,19 +26,27 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CommonAppBarState extends State<CommonAppBar> {
-  String? username;
+  String username = '';
+  String userNummer = '';
 
   @override
   void initState() {
     super.initState();
     _getUsername();
-    print(_getUsername());
+    _getUserNummer();
   }
 
   Future<void> _getUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       username = prefs.getString('username') ?? 'Guest';
+    });
+  }
+
+  Future<void> _getUserNummer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userNummer = prefs.getString('userNummer') ?? 'Guest';
     });
   }
 
@@ -71,13 +78,13 @@ class _CommonAppBarState extends State<CommonAppBar> {
             ),
       actions: [
         if (!widget.isHomePage)
-          IconButton(
-            icon: const Icon(Icons.home),
+         IconButton(
+            icon: Icon(Icons.home),
             onPressed: () {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  MaterialPageRoute(builder: (context) => HomePage(userNummer: username,)),
                   (Route<dynamic> route) => false,
                 );
               });

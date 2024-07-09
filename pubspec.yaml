@@ -31,6 +31,7 @@ dependencies:
   url_launcher: ^6.3.0
   geolocator: ^12.0.0
   #flutter_windowmanager: ^0.2.0
+  provider: ^6.0.0
  
 dev_dependencies:
   flutter_test:
