@@ -1,27 +1,28 @@
 class RouteOrganization {
-  RouteOrganization({
-    this.nummer,
-    this.namebsprRoute,
-    this.namebspr,
-    this.ysdmorg,
-    this.orgnummer,
-    this.yphone1,
-    this.yphone2,
-    this.yaddressl1,
-    this.yaddressl2,
-    this.yaddressl3,
-    this.yaddressl4,
-    this.colour,
-    this.longitude,
-    this.latitude,
-    this.distance,
-    this.yemail
-  });
+  RouteOrganization(
+      {this.nummer,
+      this.namebsprRoute,
+      this.namebspr,
+      this.ysdmorg,
+      this.ysdmorgId,
+      this.orgnummer,
+      this.yphone1,
+      this.yphone2,
+      this.yaddressl1,
+      this.yaddressl2,
+      this.yaddressl3,
+      this.yaddressl4,
+      this.colour,
+      this.longitude,
+      this.latitude,
+      this.distance,
+      this.yemail});
 
   String? nummer;
   String? namebsprRoute;
   String? namebspr;
   String? ysdmorg;
+  String? ysdmorgId;
   String? orgnummer;
   String? yphone1;
   String? yphone2;
@@ -34,7 +35,7 @@ class RouteOrganization {
   String? latitude;
   int? distance;
   String? yemail;
-  
+
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
       return RouteOrganization();
@@ -43,6 +44,7 @@ class RouteOrganization {
       nummer: json["nummer"] ?? '',
       namebsprRoute: json["namebspr"] ?? '',
       ysdmorg: json["ysdmorg^such"] ?? '',
+      ysdmorgId: json["ysdmorg^id"] ?? '',
       orgnummer: json["ysdmorg^nummer"] ?? '',
       yphone1: json["ysdmorg^yphone1"] ?? '',
       yphone2: json["ysdmorg^yphone2"] ?? '',
@@ -56,7 +58,6 @@ class RouteOrganization {
       distance: json["ysdmorg^yvisdis"] ?? '',
       namebspr: json["ysdmorg^namebspr"] ?? '',
       yemail: json["ysdmorg^yemail"] ?? '',
-  
     );
   }
 
@@ -75,7 +76,7 @@ class RouteOrganization {
         "ysdmorg^ygpslon": longitude ?? '',
         "ysdmorg^ygpslat": latitude ?? '',
         "ysdmorg^yvisdis": distance ?? '',
-        "ysdmorg^namebspr":namebspr ?? '',
-        "ysdmorg^yemail":yemail ?? '',
+        "ysdmorg^namebspr": namebspr ?? '',
+        "ysdmorg^yemail": yemail ?? '',
       };
 }

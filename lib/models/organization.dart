@@ -1,6 +1,7 @@
 class Organization {
   Organization(
-      {this.yassigto,
+      {this.id,
+      this.yassigto,
       this.namebspr,
       this.orgnummer,
       this.yphone1,
@@ -15,6 +16,7 @@ class Organization {
       this.distance,
       this.yemail});
 
+  String? id;
   String? yassigto;
   String? namebspr;
   String? orgnummer;
@@ -31,6 +33,7 @@ class Organization {
   String? yemail;
 
   factory Organization.fromJson(Map<String, dynamic> json) => Organization(
+        id: json["id"],
         yassigto: json["yassigto^such"],
         namebspr: json["namebspr"],
         orgnummer: json["nummer"],
@@ -48,6 +51,7 @@ class Organization {
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "yassigto^such": yassigto,
         "such": namebspr,
         "nummer": orgnummer,

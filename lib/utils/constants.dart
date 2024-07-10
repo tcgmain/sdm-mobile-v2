@@ -52,6 +52,12 @@ class CustomColors {
   static const Color calenderTextColor = Color(0xFFD3D3D3);
   static const Color calenderTitleTextColor = Color(0xFFFFFFFF);
   static const Color loadingColor = Color(0xFFec1c24);
+
+  static const Color cardBoldTextColor = Color(0xff3b3b3b);
+  static const Color cardTextColor = Color(0xff141414);
+  static const Color cardBackgroundColor1 = Color(0xff3b3b3b);
+  static const Color cardBackgroundColor2 = Color(0xff3b3b3b);
+  static const Color cardTextUnderlined = Color(0xff3b3b3b);
 }
 
 getFontSize() {

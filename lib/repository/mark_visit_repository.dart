@@ -16,7 +16,7 @@ class MarkVisitRepository {
       "yorg": organiz, //SDM Organization
       "yvrout": route, //Route
       "yvdat": date, //Visit Date
-      "yvtim": time //Visit Time
+      "yvtim": "14:09" //Visit Time
     };
     print(inputBody);
     final response = await _provider.post("/updatevisit", jsonEncode(inputBody), requestHeaders);

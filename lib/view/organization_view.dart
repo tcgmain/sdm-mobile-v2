@@ -102,6 +102,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                               itemCount: _filteredOrganizations!.length,
                               itemBuilder: (context, index) {
                                 final organizations = snapshot.data!.data![index];
+                                final organizationId = organizations.id.toString();
                                 final organizationNummer = organizations.orgnummer.toString();
                                 final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
@@ -125,6 +126,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                           builder: (context) => HomeOrganizationView(
                                                 userNummer: widget.userNummer,
                                                 routeNummer: "",
+                                                organizationId: organizationId,
                                                 organizationNummer: organizationNummer,
                                                 organizationName: organizationName,
                                                 organizationPhone1: organizationPhone1,

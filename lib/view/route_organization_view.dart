@@ -78,6 +78,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                               itemCount: snapshot.data!.data!.length,
                               itemBuilder: (context, index) {
                                 final organizations = snapshot.data!.data![index];
+                                final organizationId = organizations.ysdmorgId.toString();
                                 final organizationNummer = organizations.orgnummer.toString();
                                 final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
@@ -101,6 +102,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                             builder: (context) => HomeOrganizationView(
                                                   userNummer: widget.userNummer,
                                                   routeNummer: widget.routeNummer,
+                                                  organizationId: organizationId,
                                                   organizationNummer: organizationNummer,
                                                   organizationName: organizationName,
                                                   organizationPhone1: organizationPhone1,

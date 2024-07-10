@@ -3,6 +3,7 @@
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/manage_stock_view.dart';
 import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/view/sales_order_view.dart';
 import 'package:sdm/view/sub_organization_view.dart';
@@ -11,6 +12,7 @@ import 'package:sdm/view/visit_history_view.dart';
 class HomeOrganizationView extends StatefulWidget {
   final String userNummer;
   final String routeNummer;
+  final String organizationId;
   final String organizationNummer;
   final String organizationName;
   final String organizationPhone1;
@@ -29,6 +31,7 @@ class HomeOrganizationView extends StatefulWidget {
     Key? key,
     required this.userNummer,
     required this.routeNummer,
+    required this.organizationId,
     required this.organizationNummer,
     required this.organizationName,
     required this.organizationPhone1,
@@ -60,6 +63,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
   late final List<Widget> _pages = [
     MarkVisitView(
       routeNummer: widget.routeNummer,
+      organizationId: widget.organizationId,
       organizationNummer: widget.organizationNummer,
       organizationName: widget.organizationName,
       organizationPhone1: widget.organizationPhone1,
@@ -74,8 +78,17 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationDistance: widget.organizationDistance,
       organizationMail: widget.organizationMail,
     ),
-    const SalesOrderView(),
-    SubOrganizationView(userNummer: widget.userNummer, organizationNummer: widget.organizationNummer, organizationName: widget.organizationName),
+    //const SalesOrderView(),
+    ManageStockView(
+      routeNummer: '',
+      userNummer: widget.userNummer,
+      organizationId: widget.organizationId,
+      organizationNummer: widget.organizationNummer
+    ),
+    SubOrganizationView(
+        userNummer: widget.userNummer,
+        organizationNummer: widget.organizationNummer,
+        organizationName: widget.organizationName),
     VisitHistoryView(
       userNummer: widget.userNummer,
       organizationNummer: widget.organizationNummer,
@@ -114,9 +127,13 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                 icon: Icons.flag,
                 text: 'Mark Visit',
               ),
+              // GButton(
+              //   icon: Icons.receipt,
+              //   text: 'Sales Order',
+              // ),
               GButton(
-                icon: Icons.receipt,
-                text: 'Sales Order',
+                icon: Icons.list_alt_rounded,
+                text: 'View Stock',
               ),
               GButton(
                 icon: Icons.corporate_fare,

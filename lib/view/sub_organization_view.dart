@@ -28,8 +28,7 @@ class SubOrganizationView extends StatefulWidget {
 }
 
 class _SubOrganizationViewState extends State<SubOrganizationView> {
-
-    late SubOrganizationBloc _subOrganizationBloc;
+  late SubOrganizationBloc _subOrganizationBloc;
   final TextEditingController _searchController = TextEditingController();
   List<Organization>? _filteredSubOrganizations;
   List<Organization>? _allSubOrganizations;
@@ -52,15 +51,15 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
   void _onSearchChanged() {
     setState(() {
       _filteredSubOrganizations = _allSubOrganizations
-          ?.where((subOrganization) => subOrganization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
+          ?.where((subOrganization) =>
+              subOrganization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
           .toList();
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-        return Scaffold(
+    return Scaffold(
       appBar: CommonAppBar(
         title: 'Sub Organizations',
         onBackButtonPressed: () {
@@ -110,18 +109,26 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                               itemCount: _filteredSubOrganizations!.length,
                               itemBuilder: (context, index) {
                                 final subOrganizations = snapshot.data!.data![index];
+                                final subOrganizationId = subOrganizations.id.toString();
                                 final subOrganizationNummer = subOrganizations.orgnummer.toString();
                                 final subOrganizationName = subOrganizations.namebspr?.toString() ?? 'Unnamed Route';
                                 final subOrganizationPhone1 = subOrganizations.yphone1?.toString() ?? 'Unnamed Route';
                                 final subOrganizationPhone2 = subOrganizations.yphone2?.toString() ?? 'Unnamed Route';
-                                final subOrganizationAddress1 = subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                final subOrganizationAddress2 = subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                final subOrganizationAddress3 = subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                final subOrganizationAddress4 = subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                final subOrganizationAddress1 =
+                                    subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                final subOrganizationAddress2 =
+                                    subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                final subOrganizationAddress3 =
+                                    subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                final subOrganizationAddress4 =
+                                    subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
                                 final subOrganizationColour = subOrganizations.colour?.toString() ?? 'Unnamed Route';
-                                final subOrganizationLongitude = subOrganizations.longitude?.toString() ?? 'Unnamed Route';
-                                final subOrganizationLatitude = subOrganizations.latitude?.toString() ?? 'Unnamed Route';
-                                final subOrganizationDistance = subOrganizations.distance?.toString() ?? 'Unnamed Route';
+                                final subOrganizationLongitude =
+                                    subOrganizations.longitude?.toString() ?? 'Unnamed Route';
+                                final subOrganizationLatitude =
+                                    subOrganizations.latitude?.toString() ?? 'Unnamed Route';
+                                final subOrganizationDistance =
+                                    subOrganizations.distance?.toString() ?? 'Unnamed Route';
                                 final subOrganizationMail = subOrganizations.yemail?.toString() ?? 'Unnamed Route';
 
                                 return Padding(
@@ -133,6 +140,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                           builder: (context) => HomeOrganizationView(
                                                 userNummer: widget.userNummer,
                                                 routeNummer: "",
+                                                organizationId: subOrganizationId,
                                                 organizationNummer: subOrganizationNummer,
                                                 organizationName: subOrganizationName,
                                                 organizationPhone1: subOrganizationPhone1,

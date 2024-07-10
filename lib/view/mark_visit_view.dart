@@ -5,6 +5,7 @@ import 'package:sdm/blocs/mark_visit_bloc.dart';
 import 'package:sdm/models/mark_visit.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/home_stock_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -18,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MarkVisitView extends StatefulWidget {
   final String routeNummer;
+  final String organizationId;
   final String organizationNummer;
   final String organizationName;
   final String organizationPhone1;
@@ -35,6 +37,7 @@ class MarkVisitView extends StatefulWidget {
   const MarkVisitView({
     Key? key,
     required this.routeNummer,
+    required this.organizationId,
     required this.organizationNummer,
     required this.organizationName,
     required this.organizationPhone1,
@@ -401,8 +404,19 @@ class _MarkVisitViewState extends State<MarkVisitView> {
               );
             case Status.COMPLETED:
               print(snapshot.data!.data!.table.toString());
+
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "Visit Successfully Marked");
+                showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => HomeStockView(
+                              userNummer: userNummer,
+                              organizationId: widget.organizationId,
+                              organizationNummer: widget.organizationNummer,
+                              routeNummer: widget.routeNummer,
+                            )),
+                  );
+                });
               });
 
               break;
