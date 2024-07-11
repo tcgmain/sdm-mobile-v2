@@ -11,6 +11,7 @@ import 'package:sdm/view/visit_history_view.dart';
 
 class HomeOrganizationView extends StatefulWidget {
   final String userNummer;
+  final String username;
   final String routeNummer;
   final String organizationId;
   final String organizationNummer;
@@ -30,6 +31,7 @@ class HomeOrganizationView extends StatefulWidget {
   const HomeOrganizationView({
     Key? key,
     required this.userNummer,
+    required this.username,
     required this.routeNummer,
     required this.organizationId,
     required this.organizationNummer,
@@ -62,6 +64,8 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
 
   late final List<Widget> _pages = [
     MarkVisitView(
+      username: widget.username,
+      userNummer: widget.userNummer,
       routeNummer: widget.routeNummer,
       organizationId: widget.organizationId,
       organizationNummer: widget.organizationNummer,
@@ -82,11 +86,14 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
     ManageStockView(
       routeNummer: '',
       userNummer: widget.userNummer,
+      username: widget.username,
       organizationId: widget.organizationId,
-      organizationNummer: widget.organizationNummer
+      organizationNummer: widget.organizationNummer,
+      visitNummer: "",
     ),
     SubOrganizationView(
         userNummer: widget.userNummer,
+        username: widget.username,
         organizationNummer: widget.organizationNummer,
         organizationName: widget.organizationName),
     VisitHistoryView(

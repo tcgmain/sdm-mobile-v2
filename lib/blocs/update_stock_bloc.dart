@@ -15,10 +15,10 @@ class UpdateStockBloc {
     _updateStockRepository = UpdateStockRepository();
   }
 
-  updateStock(String id, String date, String productnummer, String stock, String userName, String routeNummer) async {
+  updateStock(String id, String date, String productnummer, String stock, String username, String visitNummer) async {
     updateStockSink.add(Response.loading('Loading...'));
     try {
-      UpdateStock res = await _updateStockRepository.updateStock(id, date, productnummer, stock, userName, routeNummer);
+      UpdateStock res = await _updateStockRepository.updateStock(id, date, productnummer, stock, username, visitNummer);
       updateStockSink.add(Response.completed(res));
       print("STOCK UPDATE SUCCESS");
     } catch (e) {

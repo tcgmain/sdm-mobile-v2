@@ -23,8 +23,6 @@ class UserDetailsBloc {
     try {
       List<UserDetails> res = await _userDetailsRepository.getUserDetails(username);
       userDetailsSink.add(ResponseList.completed(res));
-      print("res[0].nummer.toString()");
-      print(res[0].nummer.toString());
       //Saving userDetails in local storage
       SharedPreferences prefsUserID = await SharedPreferences.getInstance();
       await prefsUserID.setString('userNummer', res[0].nummer.toString());

@@ -8,7 +8,7 @@ class UpdateStockRepository {
   final ApiProvider _provider = ApiProvider();
 
   Future<UpdateStock> updateStock(
-      String id, String date, String productnummer, String stock, String userName, String routeNummer) async {
+      String id, String date, String productnummer, String stock, String username, String visitNummer) async {
     Map<String, String> requestHeaders = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -23,8 +23,8 @@ class UpdateStockRepository {
           "ycurstoc": stock.toString(), //Current Stock
           "yrecqty": "", //Reciept Quantity
           "yissqty": "", //Issue Quantity
-          "yvis": routeNummer.toString(), //Visit
-          "yuser": userName //User
+          "yvis": visitNummer.toString(), //Visit
+          "yuser": username //User
         }
       ]
     };

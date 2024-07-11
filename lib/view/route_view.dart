@@ -16,13 +16,13 @@ import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 
 class RouteView extends StatefulWidget {
-
-
   final String userNummer;
+  final String username;
 
   const RouteView({
     Key? key,
     required this.userNummer,
+    required this.username
   }) : super(key: key);
 
   @override
@@ -47,12 +47,8 @@ class _RouteViewState extends State<RouteView> {
     super.dispose();
   }
 
-
-
-
   void _getRoutesForSelectedDate() {
     String formattedDate = DateFormat('dd/MM/yyyy').format(_selectedDate);
-    print(formattedDate);
     _routeBloc.getRoute(formattedDate);
   }
 
@@ -153,7 +149,8 @@ class _RouteViewState extends State<RouteView> {
                                       onPressed: () {
                                         Navigator.of(context).push(MaterialPageRoute(
                                             builder: (context) => RouteOrganizationView(
-                                              userNummer: widget.userNummer,
+                                                  userNummer: widget.userNummer,
+                                                  username: widget.username,
                                                   routeNummer: routeNumb,
                                                 )));
                                       },

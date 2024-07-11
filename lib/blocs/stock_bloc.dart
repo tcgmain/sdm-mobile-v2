@@ -16,18 +16,18 @@ class StockBloc {
   }
 
   //Getting stock response
-  getStockData(String userNummer, String organizationNummer) async {
+  getProductStock(String userNummer, String organizationNummer) async {
     stockSink.add(Response.loading(''));
     try {
-      Stock res = await _stockRepository.getStockData(userNummer, organizationNummer);
+      Stock res = await _stockRepository.getProductStock(userNummer, organizationNummer);
       stockSink.add(Response.completed(res));
 
-      print("MANAGE STOCK SUCCESS");
+      print("GET STOCK SUCCESS");
     } 
     
     catch (e) {
       stockSink.add(Response.error(e.toString()));
-      print("MANAGE STOCK ERROR");
+      print("GET STOCK ERROR");
       print(e);
     }
   }

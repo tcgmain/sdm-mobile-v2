@@ -26,7 +26,6 @@ class LoginRepository {
     };
 
     final response = await _provider.post("/login", jsonEncode(inputBody), requestHeaders);
-    print(jsonDecode(jsonEncode(response)));
     return Login.fromJson(response);
   }
 }

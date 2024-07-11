@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:sdm/blocs/goods_management_id_bloc.dart';
 import 'package:sdm/blocs/stock_bloc.dart';
 import 'package:sdm/blocs/update_stock_bloc.dart';
@@ -9,6 +12,7 @@ import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/custom_stock_card.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
@@ -16,16 +20,20 @@ import 'package:sdm/widgets/text_field.dart' as textField;
 
 class ManageStockView extends StatefulWidget {
   final String userNummer;
+  final String username;
   final String organizationId;
   final String organizationNummer;
   final String routeNummer;
+  final String visitNummer;
 
   const ManageStockView({
     Key? key,
     required this.userNummer,
+    required this.username,
     required this.organizationId,
     required this.organizationNummer,
     required this.routeNummer,
+    required this.visitNummer,
   }) : super(key: key);
 
   @override
@@ -40,12 +48,13 @@ class _ManageStockViewState extends State<ManageStockView> {
   List<Product>? _filteredProducts;
   List<Product>? _allProducts;
   late String goodsManagementId;
+  late double newStock;
 
   @override
   void initState() {
     super.initState();
     _stockBloc = StockBloc();
-    _stockBloc.getStockData(widget.userNummer, widget.organizationNummer);
+    _stockBloc.getProductStock(widget.userNummer, widget.organizationNummer);
     _searchController.addListener(_onSearchChanged);
     _updateStockBloc = UpdateStockBloc();
     _goodMangementIdBloc = GoodMangementIdBloc();
@@ -71,27 +80,10 @@ class _ManageStockViewState extends State<ManageStockView> {
     });
   }
 
-  void _updateStock(String productCode, dynamic newStock) async {
-    final response = await _updateStockBloc.updateStock(
-      goodsManagementId,
-      getCurrentDate(),
-      productCode,
-      newStock,
-      widget.userNummer,
-      widget.routeNummer,
-    );
-
-    if (response.status == Status.COMPLETED) {
-      setState(() {
-        final productIndex = _allProducts!.indexWhere((product) => product.yprodnummer == productCode);
-        if (productIndex != -1) {
-          _allProducts![productIndex].ycurstoc = newStock;
-          _filteredProducts![productIndex].ycurstoc = newStock;
-        }
-      });
-    } else {
-      showErrorAlertDialog(context, response.message.toString());
-    }
+   void _updateStockCallback(Product product, double newStock) {
+    setState(() {
+      product.ycurstoc = newStock; // Update the stock value in the list
+    });
   }
 
   @override
@@ -130,7 +122,6 @@ class _ManageStockViewState extends State<ManageStockView> {
                           return Loading(loadingMessage: snapshot.data!.message.toString());
 
                         case Status.COMPLETED:
-                          print(snapshot.data!.data!.table?[0].yproddesc.toString());
                           _allProducts = snapshot.data!.data!.table;
                           _filteredProducts ??= _allProducts;
 
@@ -154,72 +145,23 @@ class _ManageStockViewState extends State<ManageStockView> {
 
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.white),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.grey.shade400,
-                                          Colors.white,
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '$productCode - $productName',
-                                          style: TextStyle(
-                                              color: const Color(0xff3b3b3b),
-                                              fontSize: getFontSizeSmall(),
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        const Divider(),
-                                        ListTile(
-                                          title: Text(
-                                            'Stock: $availableStock',
-                                            style: TextStyle(fontSize: getFontSize()),
-                                          ),
-                                          trailing: Container(
-                                            alignment: Alignment.centerRight,
-                                            width: 150,
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: TextField(
-                                                    controller: newStockController,
-                                                    decoration: const InputDecoration(
-                                                      hintText: 'New Stock',
-                                                      enabledBorder: UnderlineInputBorder(
-                                                        borderSide: BorderSide(color: Colors.black38, width: 2),
-                                                      ),
-                                                      focusedBorder: UnderlineInputBorder(
-                                                        borderSide: BorderSide(color: Colors.red, width: 2),
-                                                      ),
-                                                    ),
-                                                    keyboardType: TextInputType.number,
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  color: CustomColors.buttonColor,
-                                                  icon: const Icon(Icons.update),
-                                                  onPressed: () {
-                                                    _updateStock(
-                                                        productCode, newStockController.text.toString());
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          contentPadding: const EdgeInsets.all(0),
-                                        ),
-                                      ],
-                                    ),
+                                  child: CustomStockCard(
+                                    productId: productCode,
+                                    productName: productName,
+                                    availableStock: availableStock,
+                                    newStockController: newStockController,
+                                    onPressedUpdate: () {
+                                      _updateStockBloc.updateStock(
+                                        goodsManagementId,
+                                        getCurrentDate(),
+                                        productCode,
+                                        newStockController.text.toString(),
+                                        widget.username,
+                                        widget.visitNummer,
+                                      ).then((_) {
+                                        _updateStockCallback(products, double.parse(newStockController.text));
+                                      });
+                                    },
                                   ),
                                 );
                               },
@@ -237,7 +179,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                 ),
               ),
               updateStockResponse(),
-              organizationID()
+              organizationIdResponse()
             ],
           ),
         ),
@@ -255,9 +197,9 @@ class _ManageStockViewState extends State<ManageStockView> {
               return Loading(loadingMessage: snapshot.data!.message.toString());
 
             case Status.COMPLETED:
-              String productId = snapshot.data!.data!.table![0].yprod.toString();
-              dynamic newStock111 = snapshot.data!.data!.table![0].ycurstoc.toString();    
-              _stockBloc.getStockData(widget.userNummer, widget.organizationNummer);
+              String productCode = snapshot.data!.data!.table![0].yprod.toString();
+              newStock = snapshot.data!.data!.table![0].ycurstoc!;
+
               break;
 
             case Status.ERROR:
@@ -271,15 +213,14 @@ class _ManageStockViewState extends State<ManageStockView> {
     );
   }
 
-  Widget organizationID() {
+  Widget organizationIdResponse() {
     return StreamBuilder<ResponseList<GoodManagementID>>(
       stream: _goodMangementIdBloc.goodManagementIdStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              print("loading");
-              break;
+              return Loading(loadingMessage: snapshot.data!.message.toString());
             case Status.COMPLETED:
               var dataList = snapshot.data!.data!;
               if (dataList.isNotEmpty) {

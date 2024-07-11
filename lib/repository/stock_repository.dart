@@ -8,7 +8,7 @@ class StockRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
  
-  Future<Stock> getStockData(String userNummer, String organizationNummer) async {
+  Future<Stock> getProductStock(String userNummer, String organizationNummer) async {
 
     requestHeaders = <String, String>{
       'Content-Type': 'application/json',
@@ -29,7 +29,6 @@ class StockRepository {
     };
 
     final response = await _provider.post("/getproduct", jsonEncode(inputBody), requestHeaders);
-    print(jsonDecode(jsonEncode(response)));
     return Stock.fromJson(response);
   }
 }

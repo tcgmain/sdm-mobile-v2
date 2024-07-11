@@ -56,17 +56,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> initializeUserDetails() async {
-    username = await getUsername();
-    print(username);
-    _userDetailsBloc.getUserDetails('Ashen_IT');
-  }
-
-  Future<String> getUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? '';
-  }
-
   Future<String?> _getId() async {
     var deviceInfo = DeviceInfoPlugin();
     if (Platform.isIOS) {
@@ -306,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
 
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
-                print(snapshot.data!.data!.ylogopr.toString());
+                username = snapshot.data!.data!.ylogopr.toString();
                 _userDetailsBloc.getUserDetails(snapshot.data!.data!.ylogopr.toString());
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -343,12 +332,12 @@ class _LoginPageState extends State<LoginPage> {
               );
 
             case Status.COMPLETED:
-              print(snapshot.data?.data?[0].nummer.toString());
               var userNummer = snapshot.data!.data![0].nummer.toString();
+              //username = snapshot.data!.data![0].ylogopr.toString();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage(userNummer: userNummer)),
+                  MaterialPageRoute(builder: (context) => HomePage(username: username, userNummer: userNummer)),
                   (Route<dynamic> route) => false,
                 );
               });

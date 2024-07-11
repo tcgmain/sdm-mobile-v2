@@ -84,7 +84,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage(userNummer: userNummer,)),
+                  MaterialPageRoute(builder: (context) => HomePage(username: username,userNummer: userNummer,)),
                   (Route<dynamic> route) => false,
                 );
               });

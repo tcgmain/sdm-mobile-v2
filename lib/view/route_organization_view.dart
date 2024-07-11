@@ -12,11 +12,13 @@ import 'package:sdm/widgets/loading.dart';
 
 class RouteOrganizationView extends StatefulWidget {
   final String userNummer;
+  final String username;
   final String routeNummer;
 
   const RouteOrganizationView({
     Key? key,
     required this.userNummer,
+    required this.username,
     required this.routeNummer,
   }) : super(key: key);
 
@@ -101,6 +103,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                         Navigator.of(context).push(MaterialPageRoute(
                                             builder: (context) => HomeOrganizationView(
                                                   userNummer: widget.userNummer,
+                                                  username: widget.username,
                                                   routeNummer: widget.routeNummer,
                                                   organizationId: organizationId,
                                                   organizationNummer: organizationNummer,

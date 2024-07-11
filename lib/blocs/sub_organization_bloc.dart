@@ -23,10 +23,10 @@ class SubOrganizationBloc {
       List<Organization> res = await _subOrganizationRepository.getSubOrganization(organizationNummer);
       subOrganizationSink.add(ResponseList.completed(res));
 
-      print("Visit SUCCESS");
+      print("VISIT SUCCESS");
     } catch (e) {
       subOrganizationSink.add(ResponseList.error(e.toString()));
-      print("Visit ERROR $e");
+      print("VISIT ERROR $e");
     }
   }
 

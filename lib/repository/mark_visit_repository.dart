@@ -11,21 +11,17 @@ class MarkVisitRepository {
   Future<MarkVisit> markVisit(String username, String organiz, String route, String date, String time) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
     inputBody = <String, String>{
+      "nummer": "",
       "such": "",
       "ysdmempv": username, //SDM Employee
       "yorg": organiz, //SDM Organization
       "yvrout": route, //Route
       "yvdat": date, //Visit Date
-      "yvtim": "14:09" //Visit Time
+      "yvtim": time //Visit Time
     };
-    print(inputBody);
+    //print(inputBody);
     final response = await _provider.post("/updatevisit", jsonEncode(inputBody), requestHeaders);
-    print(response);
-
-    // var list = [];
-    // for (var i = 0; i < response.length; i++) {
-    //   list.add(response[i]);
-    // }
+    //print(response);
 
     return MarkVisit.fromJson(response);
   }

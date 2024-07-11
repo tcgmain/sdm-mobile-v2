@@ -18,6 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MarkVisitView extends StatefulWidget {
+  final String username;
+  final String userNummer;
   final String routeNummer;
   final String organizationId;
   final String organizationNummer;
@@ -36,6 +38,8 @@ class MarkVisitView extends StatefulWidget {
 
   const MarkVisitView({
     Key? key,
+    required this.username,
+    required this.userNummer,
     required this.routeNummer,
     required this.organizationId,
     required this.organizationNummer,
@@ -65,13 +69,15 @@ class _MarkVisitViewState extends State<MarkVisitView> {
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
-  late String userNummer;
+  //late String userNummer;
+  //late String username;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
-    _getUserNummer();
+    //_getUsername();
+    //_getUserNummer();
     _markVisitBloc = MarkVisitBloc();
   }
 
@@ -81,10 +87,15 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     super.dispose();
   }
 
-  Future<void> _getUserNummer() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userNummer = prefs.getString('userNummer') ?? '';
-  }
+  // Future<void> _getUserNummer() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   userNummer = prefs.getString('userNummer') ?? '';
+  // }
+
+  // Future<void> _getUsername() async {
+  //   SharedPreferences prefs1 = await SharedPreferences.getInstance();
+  //   username = prefs1.getString('username') ?? '';
+  // }
 
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
@@ -304,7 +315,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                         ),
                         const Spacer(),
                         CommonAppButton(
-                          buttonText: '  Mail  ',
+                          buttonText: 'E-Mail',
                           onPressed: () {
                             _launchEmail(widget.organizationMail);
                           },
@@ -322,10 +333,8 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                 CommonAppButton(
                   buttonText: 'Mark Visit',
                   onPressed: () async {
-                    print("press");
-
                     _markVisitBloc.markVisit(
-                        userNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
+                        widget.userNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
                   },
                 ),
               const SizedBox(height: 5),
@@ -403,17 +412,19 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                 ),
               );
             case Status.COMPLETED:
-              print(snapshot.data!.data!.table.toString());
+              String visitNummer = snapshot.data!.data!.nummer.toString();
 
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) => HomeStockView(
-                              userNummer: userNummer,
+                              userNummer: widget.userNummer,
+                              username: widget.username,
                               organizationId: widget.organizationId,
                               organizationNummer: widget.organizationNummer,
                               routeNummer: widget.routeNummer,
+                              visitNummer: visitNummer
                             )),
                   );
                 });

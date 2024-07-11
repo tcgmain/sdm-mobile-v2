@@ -7,8 +7,10 @@ class GoodMangementIdBloc {
   late GoodManagementIdRepository _goodManagementIdRepository;
   StreamController? _goodManagementIdController;
 
-  StreamSink<ResponseList<GoodManagementID>> get goodManagementIdSink => _goodManagementIdController!.sink as StreamSink<ResponseList<GoodManagementID>>;
-  Stream<ResponseList<GoodManagementID>> get goodManagementIdStream => _goodManagementIdController!.stream as Stream<ResponseList<GoodManagementID>>;
+  StreamSink<ResponseList<GoodManagementID>> get goodManagementIdSink =>
+      _goodManagementIdController!.sink as StreamSink<ResponseList<GoodManagementID>>;
+  Stream<ResponseList<GoodManagementID>> get goodManagementIdStream =>
+      _goodManagementIdController!.stream as Stream<ResponseList<GoodManagementID>>;
 
   // ignore: non_constant_identifier_names
   GoodMangementIdBloc() {
@@ -16,7 +18,7 @@ class GoodMangementIdBloc {
     _goodManagementIdRepository = GoodManagementIdRepository();
   }
 
-  getGoodsManagementId(String organizationNummer) async {print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+  getGoodsManagementId(String organizationNummer) async {
     goodManagementIdSink.add(ResponseList.loading(''));
     try {
       List<GoodManagementID> res = await _goodManagementIdRepository.getGoodManagementID(organizationNummer);
@@ -25,13 +27,11 @@ class GoodMangementIdBloc {
       // SharedPreferences prefs = await SharedPreferences.getInstance();
       // String username = (prefs.getString('username')).toString();
       print("Get Good Management ID SUCCESSFULL");
-    } 
-    catch (e) {
+    } catch (e) {
       goodManagementIdSink.add(ResponseList.error(e.toString()));
       print("Get Good Management ID FAIL $e");
     }
   }
-
 
   dispose() {
     _goodManagementIdController?.close();

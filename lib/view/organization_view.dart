@@ -13,10 +13,12 @@ import 'package:sdm/widgets/text_field.dart' as textField;
 
 class OrganizationView extends StatefulWidget {
   final String userNummer;
+  final String username;
 
   const OrganizationView({
     Key? key,
     required this.userNummer,
+    required this.username,
   }) : super(key: key);
 
   @override
@@ -125,6 +127,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                       Navigator.of(context).push(MaterialPageRoute(
                                           builder: (context) => HomeOrganizationView(
                                                 userNummer: widget.userNummer,
+                                                username: widget.username,
                                                 routeNummer: "",
                                                 organizationId: organizationId,
                                                 organizationNummer: organizationNummer,

@@ -9,8 +9,14 @@ import 'package:sdm/view/team_view.dart';
 
 class HomePage extends StatefulWidget {
   final String userNummer;
+  final String username;
 
-  const HomePage({super.key, required this.userNummer});
+  const HomePage({
+    super.key, 
+    required this.userNummer,
+    required this.username
+
+  });
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -31,9 +37,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _pages = [
       RouteView(
+        username: widget.username,
         userNummer: widget.userNummer,
       ),
-      OrganizationView(userNummer: widget.userNummer),
+      OrganizationView(
+        username: widget.username,
+        userNummer: widget.userNummer
+      ),
       const TeamView(),
     ];
   }
