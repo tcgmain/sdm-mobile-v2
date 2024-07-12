@@ -61,12 +61,12 @@ class CustomColors {
 }
 
 getFontSize() {
-  var textSize = 16.0;
+  var textSize = 14.0;
   return textSize;
 }
 
 getFontSizeSmall() {
-  var textSize = 14.0;
+  var textSize = 12.0;
   return textSize;
 }
 

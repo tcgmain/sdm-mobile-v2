@@ -6,6 +6,7 @@ import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/manage_stock_view.dart';
 import 'package:sdm/view/mark_visit_view.dart';
 import 'package:sdm/view/sales_order_view.dart';
+import 'package:sdm/view/stock_view.dart';
 import 'package:sdm/view/sub_organization_view.dart';
 import 'package:sdm/view/visit_history_view.dart';
 
@@ -83,14 +84,15 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationMail: widget.organizationMail,
     ),
     //const SalesOrderView(),
-    ManageStockView(
-      routeNummer: '',
-      userNummer: widget.userNummer,
-      username: widget.username,
-      organizationId: widget.organizationId,
-      organizationNummer: widget.organizationNummer,
-      visitNummer: "",
-    ),
+    // ManageStockView(
+    //   routeNummer: '',
+    //   userNummer: widget.userNummer,
+    //   username: widget.username,
+    //   organizationId: widget.organizationId,
+    //   organizationNummer: widget.organizationNummer,
+    //   visitNummer: "",
+    // ),
+    StockView(userNummer: widget.userNummer, organizationNummer: widget.organizationNummer,),
     SubOrganizationView(
         userNummer: widget.userNummer,
         username: widget.username,

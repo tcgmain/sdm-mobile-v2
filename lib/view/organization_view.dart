@@ -3,6 +3,7 @@ import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/add_organization_view.dart';
 import 'package:sdm/view/home_organization_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -61,6 +62,16 @@ class _OrganizationViewState extends State<OrganizationView> {
         title: 'Organizations',
         onBackButtonPressed: () {},
         isHomePage: true,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddOrganizationView()));
+        },
+        backgroundColor: CustomColors.buttonColor,
+        child: const Icon(
+          Icons.refresh,
+          color: CustomColors.buttonTextColor,
+        ),
       ),
       body: SafeArea(
         child: BackgroundImage(

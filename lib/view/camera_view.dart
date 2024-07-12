@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sdm/widgets/appbar.dart';
+import 'package:sdm/widgets/background_decoration.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
@@ -10,8 +12,17 @@ class CameraView extends StatefulWidget {
 class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
-      return const Scaffold(
-      body: Text("This is camera page"),
+    return Scaffold(
+      appBar: CommonAppBar(
+        title: 'Camera',
+        onBackButtonPressed: () {},
+        isHomePage: true,
+      ),
+      body: SafeArea(
+        child: BackgroundImage(
+          child: Container(),
+        ),
+      ),
     );
   }
 }

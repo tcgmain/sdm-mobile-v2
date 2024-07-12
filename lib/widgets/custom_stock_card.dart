@@ -47,12 +47,12 @@ class CustomStockCard extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            minLeadingWidth : 0,
             title: Text(
               'Stock: $availableStock',
               style: TextStyle(fontSize: getFontSize()),
             ),
             trailing: Container(
+              padding: const EdgeInsets.all(0),
               alignment: Alignment.centerRight,
               width: 150,
               child: Row(

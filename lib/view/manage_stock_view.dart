@@ -138,44 +138,50 @@ class _ManageStockViewState extends State<ManageStockView> {
                               ),
                             );
                           } else {
-                            return ListView.builder(
-                              itemCount: _filteredProducts!.length,
-                              itemBuilder: (context, index) {
-                                final products = _filteredProducts![index];
-                                final productCode = products.yprodnummer.toString();
-                                final productName = products.yproddesc.toString();
-                                final availableStock = products.ycurstoc.toString();
-                                final lastUpdatedDate = products.ylastud.toString();
-                                final lastUpdatedUser = products.ylastub.toString();
-                                final TextEditingController newStockController = TextEditingController();
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                  child: CustomStockCard(
-                                    productId: productCode,
-                                    productName: productName,
-                                    availableStock: availableStock,
-                                    newStockController: newStockController,
-                                    lastUpdatedDate: lastUpdatedDate,
-                                    lastUpdatedUser: lastUpdatedUser,
-                                    onPressedUpdate: () {
-                                      _updateStockBloc
-                                          .updateStock(
-                                        goodsManagementId,
-                                        getCurrentDate(),
-                                        productCode,
-                                        newStockController.text.toString(),
-                                        widget.username,
-                                        widget.visitNummer,
-                                      )
-                                          .then((_) {
-                                        _updateStockCallback(products, double.parse(newStockController.text),
-                                            getCurrentDate(), widget.username);
-                                      });
-                                    },
-                                  ),
-                                );
-                              },
+                            return Scrollbar(
+                              thickness: 5,
+                              interactive: true,
+                              //thumbVisibility: true,
+                              trackVisibility: true,
+                              child: ListView.builder(
+                                itemCount: _filteredProducts!.length,
+                                itemBuilder: (context, index) {
+                                  final products = _filteredProducts![index];
+                                  final productCode = products.yprodnummer.toString();
+                                  final productName = products.yproddesc.toString();
+                                  final availableStock = products.ycurstoc.toString();
+                                  final lastUpdatedDate = products.ylastud.toString();
+                                  final lastUpdatedUser = products.ylastub.toString();
+                                  final TextEditingController newStockController = TextEditingController();
+                              
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                    child: CustomStockCard(
+                                      productId: productCode,
+                                      productName: productName,
+                                      availableStock: availableStock,
+                                      newStockController: newStockController,
+                                      lastUpdatedDate: lastUpdatedDate,
+                                      lastUpdatedUser: lastUpdatedUser,
+                                      onPressedUpdate: () {
+                                        _updateStockBloc
+                                            .updateStock(
+                                          goodsManagementId,
+                                          getCurrentDate(),
+                                          productCode,
+                                          newStockController.text.toString(),
+                                          widget.username,
+                                          widget.visitNummer,
+                                        )
+                                            .then((_) {
+                                          _updateStockCallback(products, double.parse(newStockController.text),
+                                              getCurrentDate(), widget.username);
+                                        });
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
                             );
                           }
 

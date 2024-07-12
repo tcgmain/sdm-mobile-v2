@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sdm/utils/constants.dart';
+import 'package:sdm/widgets/appbar.dart';
+import 'package:sdm/widgets/background_decoration.dart';
 
 class SalesOrderView extends StatefulWidget {
   const SalesOrderView({super.key});
@@ -10,8 +13,17 @@ class SalesOrderView extends StatefulWidget {
 class _SalesOrderViewState extends State<SalesOrderView> {
   @override
   Widget build(BuildContext context) {
-     return const Scaffold(
-      body: Text("This is sales order page"),
+    return Scaffold(
+      appBar: CommonAppBar(
+        title: 'Sales Orders',
+        onBackButtonPressed: () {},
+        isHomePage: true,
+      ),
+      body: SafeArea(
+        child: BackgroundImage(
+          child: Container(),
+        ),
+      ),
     );
   }
 }
