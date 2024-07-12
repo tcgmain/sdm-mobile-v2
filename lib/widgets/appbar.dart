@@ -78,13 +78,15 @@ class _CommonAppBarState extends State<CommonAppBar> {
             ),
       actions: [
         if (!widget.isHomePage)
-         IconButton(
+          IconButton(
             icon: const Icon(Icons.home),
             onPressed: () {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage(username: username,userNummer: userNummer,)),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage(username: username, userNummer: '')),
                   (Route<dynamic> route) => false,
                 );
               });
@@ -92,25 +94,54 @@ class _CommonAppBarState extends State<CommonAppBar> {
           ),
         PopupMenuButton<String>(
           onSelected: (String result) {
-            if (result == 'logout') {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                  (Route<dynamic> route) => false,
-                );
-              });
+            switch (result) {
+              case 'changePassword':
+                break;
+              case 'activityLog':
+                break;
+              case 'logout':
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
             PopupMenuItem<String>(
-              value: 'userName',
-              enabled: false,
-              child: Text(username),
+              value: 'username',
+              child: Row(
+                children: [
+                  const Icon(Icons.account_circle, color: CustomColors.appBarColor3),
+                  const SizedBox(width: 10),
+                  Text(username, style: const TextStyle(color: CustomColors.appBarColor3),),
+                ],
+              ),
+            ),
+            const PopupMenuDivider(),
+            const PopupMenuItem<String>(
+              value: 'changePassword',
+              child: ListTile(
+                leading: Icon(Icons.lock),
+                title: Text('Change Password'),
+              ),
+            ),
+            const PopupMenuItem<String>(
+              value: 'activityLog',
+              child: ListTile(
+                leading: Icon(Icons.history),
+                title: Text('Activity Log'),
+              ),
             ),
             const PopupMenuItem<String>(
               value: 'logout',
-              child: Text('Logout'),
+              child: ListTile(
+                leading: Icon(Icons.logout),
+                title: Text('Log Out'),
+              ),
             ),
           ],
         ),

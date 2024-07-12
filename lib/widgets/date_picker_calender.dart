@@ -7,15 +7,14 @@ class CustomDatePickerDialog extends StatelessWidget {
   final ValueChanged<DateTime> onDateSelected;
   final DateTime? firstDate;
   final DateTime? lastDate;
-  final List<Color> color1;
   final dp.DatePickerRangeStyles? datePickerStyles;
 
-  const CustomDatePickerDialog({super.key, 
+  const CustomDatePickerDialog({
+    super.key,
     required this.selectedDate,
     required this.onDateSelected,
     this.firstDate,
     this.lastDate,
-    required this.color1,
     this.datePickerStyles,
   });
 
@@ -30,7 +29,10 @@ class CustomDatePickerDialog extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: color1,
+            colors: [
+              CustomColors.calenderBackgroundColor1,
+              CustomColors.calenderBackgroundColor2.withOpacity(0.8),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: const [0.0, 1.0],
@@ -45,38 +47,39 @@ class CustomDatePickerDialog extends StatelessWidget {
           },
           firstDate: firstDate ?? DateTime(2000),
           lastDate: lastDate ?? DateTime(2100),
-          datePickerStyles: datePickerStyles ?? dp.DatePickerRangeStyles(
-            dayHeaderStyleBuilder: (int day) {
-              return const dp.DayHeaderStyle(
-                textStyle: TextStyle(
-                  color: CustomColors.calenderTitleTextColor, // Customize the day header text color
+          datePickerStyles: datePickerStyles ??
+              dp.DatePickerRangeStyles(
+                dayHeaderStyleBuilder: (int day) {
+                  return const dp.DayHeaderStyle(
+                    textStyle: TextStyle(
+                      color: CustomColors.calenderTitleTextColor, // Customize the day header text color
+                      fontWeight: FontWeight.bold,
+                    ),
+                    // decoration: BoxDecoration(
+                    //   color: CustomColors.calenderBackgroundColor1, // Customize the day header background color
+                    // ),
+                  );
+                },
+                selectedSingleDateDecoration: BoxDecoration(
+                  color: Color.fromARGB(255, 221, 29, 23).withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                defaultDateTextStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
+                  color: CustomColors.calenderTextColor,
                 ),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(120, 170, 97, 0), // Customize the day header background color
+                currentDateStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: CustomColors.buttonColor,
                 ),
-              );
-            },
-            selectedSingleDateDecoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            defaultDateTextStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: CustomColors.calenderTextColor,
-            ),
-            currentDateStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 255, 153, 0),
-            ),
-            disabledDateStyle: const TextStyle(
-              color: Colors.grey,
-            ),
-            displayedPeriodTitle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: CustomColors.calenderTitleTextColor,
-            ),
-          ),
+                disabledDateStyle: const TextStyle(
+                  color: CustomColors.textColorGrey,
+                ),
+                displayedPeriodTitle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: CustomColors.calenderTitleTextColor,
+                ),
+              ),
         ),
       ),
     );

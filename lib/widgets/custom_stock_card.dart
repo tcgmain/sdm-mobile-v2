@@ -7,6 +7,8 @@ class CustomStockCard extends StatelessWidget {
   final String availableStock;
   final TextEditingController newStockController;
   final VoidCallback onPressedUpdate;
+  final String lastUpdatedDate;
+  final String lastUpdatedUser;
 
   const CustomStockCard({
     super.key,
@@ -15,6 +17,8 @@ class CustomStockCard extends StatelessWidget {
     required this.availableStock,
     required this.newStockController,
     required this.onPressedUpdate,
+    required this.lastUpdatedDate,
+    required this.lastUpdatedUser,
   });
 
   @override
@@ -43,6 +47,7 @@ class CustomStockCard extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            minLeadingWidth : 0,
             title: Text(
               'Stock: $availableStock',
               style: TextStyle(fontSize: getFontSize()),
@@ -79,6 +84,7 @@ class CustomStockCard extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.all(0),
           ),
+          Text("Last Modified $lastUpdatedDate by $lastUpdatedUser", style: TextStyle(fontSize: getFontSizeExtraSmall()),)
         ],
       ),
     );

@@ -117,40 +117,42 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: Container(
-        color: CustomColors.navigationBackgroundColor,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
-          child: GNav(
-            backgroundColor: CustomColors.navigationBackgroundColor,
-            color: CustomColors.navigationTextColor,
-            activeColor: CustomColors.navigationActiveTextColor,
-            tabBackgroundColor: CustomColors.navigationActiveBackgroundColor,
-            gap: 20,
-            onTabChange: _navigateBottomBar,
-            padding: const EdgeInsets.all(16),
-            tabs: const [
-              GButton(
-                icon: Icons.flag,
-                text: 'Mark Visit',
-              ),
-              // GButton(
-              //   icon: Icons.receipt,
-              //   text: 'Sales Order',
-              // ),
-              GButton(
-                icon: Icons.list_alt_rounded,
-                text: 'View Stock',
-              ),
-              GButton(
-                icon: Icons.corporate_fare,
-                text: 'Sub Region',
-              ),
-              GButton(
-                icon: Icons.history,
-                text: 'Visit History',
-              ),
-            ],
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          color: CustomColors.navigationBackgroundColor,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: getBottomNavigationBarPadding()),
+            child: GNav(
+              backgroundColor: CustomColors.navigationBackgroundColor,
+              color: CustomColors.navigationTextColor,
+              activeColor: CustomColors.navigationActiveTextColor,
+              tabBackgroundColor: CustomColors.navigationActiveBackgroundColor,
+              gap: 20,
+              onTabChange: _navigateBottomBar,
+              padding: const EdgeInsets.all(16),
+              tabs: const [
+                GButton(
+                  icon: Icons.flag,
+                  text: 'Mark Visit',
+                ),
+                // GButton(
+                //   icon: Icons.receipt,
+                //   text: 'Sales Order',
+                // ),
+                GButton(
+                  icon: Icons.list_alt_rounded,
+                  text: 'View Stock',
+                ),
+                GButton(
+                  icon: Icons.corporate_fare,
+                  text: 'Sub Region',
+                ),
+                GButton(
+                  icon: Icons.history,
+                  text: 'Visit History',
+                ),
+              ],
+            ),
           ),
         ),
       ),

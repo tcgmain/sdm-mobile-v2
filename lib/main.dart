@@ -1,20 +1,24 @@
-// ignore_for_file: use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sdm/view/splash_view.dart';
-//import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
-void main() async {
-  //WidgetsFlutterBinding.ensureInitialized();
-  //await secureApp();
-  runApp(MyApp());
+void main() {
+
+WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+    .then((_) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: []);
+      runApp(const MyApp());
+    });
+
+
+
+  //runApp(MyApp());
 }
 
-// Future<void> secureApp() async {
-//   await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-// }
-
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

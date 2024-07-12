@@ -11,12 +11,7 @@ class HomePage extends StatefulWidget {
   final String userNummer;
   final String username;
 
-  const HomePage({
-    super.key, 
-    required this.userNummer,
-    required this.username
-
-  });
+  const HomePage({super.key, required this.userNummer, required this.username});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -40,10 +35,7 @@ class _HomePageState extends State<HomePage> {
         username: widget.username,
         userNummer: widget.userNummer,
       ),
-      OrganizationView(
-        username: widget.username,
-        userNummer: widget.userNummer
-      ),
+      OrganizationView(username: widget.username, userNummer: widget.userNummer),
       const TeamView(),
     ];
   }
@@ -57,32 +49,34 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_selectedIndex],
-      bottomNavigationBar: Container(
-        color: CustomColors.navigationBackgroundColor,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
-          child: GNav(
-            backgroundColor: CustomColors.navigationBackgroundColor,
-            color: CustomColors.navigationTextColor,
-            activeColor: CustomColors.navigationActiveTextColor,
-            tabBackgroundColor: CustomColors.navigationActiveBackgroundColor,
-            gap: 20,
-            onTabChange: _navigateBottomBar,
-            padding: const EdgeInsets.all(16),
-            tabs: const [
-              GButton(
-                icon: Icons.route,
-                text: 'Routes',
-              ),
-              GButton(
-                icon: Icons.location_on,
-                text: 'Region',
-              ),
-              GButton(
-                icon: Icons.people,
-                text: 'Team',
-              )
-            ],
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          color: CustomColors.navigationBackgroundColor,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: getBottomNavigationBarPadding()),
+            child: GNav(
+              backgroundColor: CustomColors.navigationBackgroundColor,
+              color: CustomColors.navigationTextColor,
+              activeColor: CustomColors.navigationActiveTextColor,
+              tabBackgroundColor: CustomColors.navigationActiveBackgroundColor,
+              gap: 20,
+              onTabChange: _navigateBottomBar,
+              padding: const EdgeInsets.all(16),
+              tabs: const [
+                GButton(
+                  icon: Icons.route,
+                  text: 'Routes',
+                ),
+                GButton(
+                  icon: Icons.location_on,
+                  text: 'Region',
+                ),
+                GButton(
+                  icon: Icons.people,
+                  text: 'Team',
+                )
+              ],
+            ),
           ),
         ),
       ),

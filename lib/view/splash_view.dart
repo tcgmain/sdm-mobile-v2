@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sdm/view/login_view.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -14,6 +15,12 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
+    // Disable screenshots
+    FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    
+    // Set system UI visibility flags
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: []);
+    
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));

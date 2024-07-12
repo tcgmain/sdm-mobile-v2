@@ -49,6 +49,8 @@ class _ManageStockViewState extends State<ManageStockView> {
   List<Product>? _allProducts;
   late String goodsManagementId;
   late double newStock;
+  late String newLastUpdatedDate;
+  late String newLastUpdatedUser;
 
   @override
   void initState() {
@@ -80,9 +82,11 @@ class _ManageStockViewState extends State<ManageStockView> {
     });
   }
 
-   void _updateStockCallback(Product product, double newStock) {
+  void _updateStockCallback(Product product, double newStock, String newLastUpdatedDate, String newLastUpdatedUser) {
     setState(() {
-      product.ycurstoc = newStock; // Update the stock value in the list
+      product.ycurstoc = newStock;
+      product.ylastud = newLastUpdatedDate;
+      product.ylastub = newLastUpdatedUser;
     });
   }
 
@@ -141,6 +145,8 @@ class _ManageStockViewState extends State<ManageStockView> {
                                 final productCode = products.yprodnummer.toString();
                                 final productName = products.yproddesc.toString();
                                 final availableStock = products.ycurstoc.toString();
+                                final lastUpdatedDate = products.ylastud.toString();
+                                final lastUpdatedUser = products.ylastub.toString();
                                 final TextEditingController newStockController = TextEditingController();
 
                                 return Padding(
@@ -150,16 +156,21 @@ class _ManageStockViewState extends State<ManageStockView> {
                                     productName: productName,
                                     availableStock: availableStock,
                                     newStockController: newStockController,
+                                    lastUpdatedDate: lastUpdatedDate,
+                                    lastUpdatedUser: lastUpdatedUser,
                                     onPressedUpdate: () {
-                                      _updateStockBloc.updateStock(
+                                      _updateStockBloc
+                                          .updateStock(
                                         goodsManagementId,
                                         getCurrentDate(),
                                         productCode,
                                         newStockController.text.toString(),
                                         widget.username,
                                         widget.visitNummer,
-                                      ).then((_) {
-                                        _updateStockCallback(products, double.parse(newStockController.text));
+                                      )
+                                          .then((_) {
+                                        _updateStockCallback(products, double.parse(newStockController.text),
+                                            getCurrentDate(), widget.username);
                                       });
                                     },
                                   ),
@@ -199,6 +210,8 @@ class _ManageStockViewState extends State<ManageStockView> {
             case Status.COMPLETED:
               String productCode = snapshot.data!.data!.table![0].yprod.toString();
               newStock = snapshot.data!.data!.table![0].ycurstoc!;
+              newLastUpdatedDate = snapshot.data!.data!.table![0].yentdat.toString();
+              newLastUpdatedUser = snapshot.data!.data!.table![0].yuser.toString();
 
               break;
 

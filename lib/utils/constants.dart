@@ -46,11 +46,11 @@ class CustomColors {
   static const Color navigationBackgroundColor = Color(0xFF000000);
   static const Color navigationActiveTextColor = Color(0xFFFFFFFF);
   static const Color navigationTextColor = Color(0xFFFFFFFF);
-  static const Color calenderBackgroundColor1 = Color(0xFF000000);
-  static const Color calenderBackgroundColor2 = Color(0xFF707070);
+  static const Color calenderBackgroundColor1 = Color(0xFFFFFFFF);
+  static const Color calenderBackgroundColor2 = Color(0xFFB2B0B0);
   static const Color calenderBackgroundColor3 = Color(0xFF000000);
-  static const Color calenderTextColor = Color(0xFFD3D3D3);
-  static const Color calenderTitleTextColor = Color(0xFFFFFFFF);
+  static const Color calenderTextColor = Color(0xff3b3b3b);
+  static const Color calenderTitleTextColor = Color(0xFFb0161b);
   static const Color loadingColor = Color(0xFFec1c24);
 
   static const Color cardBoldTextColor = Color(0xff3b3b3b);
@@ -67,6 +67,11 @@ getFontSize() {
 
 getFontSizeSmall() {
   var textSize = 14.0;
+  return textSize;
+}
+
+getFontSizeExtraSmall() {
+  var textSize = 10.0;
   return textSize;
 }
 
@@ -124,4 +129,14 @@ Color getColor(String colorText) {
     default:
       return Colors.grey; // Default color if the value is unknown
   }
+}
+
+getBottomNavigationBarMargin(){
+  double bottomNavigationBarMargin = 37.0;
+  return bottomNavigationBarMargin;
+}
+
+getBottomNavigationBarPadding(){
+  double bottomNavigationBarMargin = 20.0;
+  return bottomNavigationBarMargin;
 }

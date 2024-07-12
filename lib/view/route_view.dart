@@ -63,10 +63,6 @@ class _RouteViewState extends State<RouteView> {
           },
           firstDate: DateTime(2000),
           lastDate: DateTime(2100),
-          color1: [
-            const Color.fromARGB(131, 255, 255, 255).withOpacity(0.4),
-            const Color.fromARGB(90, 228, 168, 5).withOpacity(0.4),
-          ],
         );
       },
     );
