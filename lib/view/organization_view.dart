@@ -69,7 +69,7 @@ class _OrganizationViewState extends State<OrganizationView> {
         },
         backgroundColor: CustomColors.buttonColor,
         child: const Icon(
-          Icons.refresh,
+          Icons.add,
           color: CustomColors.buttonTextColor,
         ),
       ),

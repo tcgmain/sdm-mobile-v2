@@ -83,16 +83,11 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationDistance: widget.organizationDistance,
       organizationMail: widget.organizationMail,
     ),
-    //const SalesOrderView(),
-    // ManageStockView(
-    //   routeNummer: '',
-    //   userNummer: widget.userNummer,
-    //   username: widget.username,
-    //   organizationId: widget.organizationId,
-    //   organizationNummer: widget.organizationNummer,
-    //   visitNummer: "",
-    // ),
-    StockView(userNummer: widget.userNummer, organizationNummer: widget.organizationNummer,),
+   
+    StockView(userNummer: widget.userNummer, 
+    organizationNummer: widget.organizationNummer,
+    organizationName: widget.organizationName,
+    ),
     SubOrganizationView(
         userNummer: widget.userNummer,
         username: widget.username,

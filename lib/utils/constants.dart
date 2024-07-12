@@ -58,6 +58,10 @@ class CustomColors {
   static const Color cardBackgroundColor1 = Color(0xff3b3b3b);
   static const Color cardBackgroundColor2 = Color(0xff3b3b3b);
   static const Color cardTextUnderlined = Color(0xff3b3b3b);
+
+  static const Color tableBackgroundColor1 = Color(0xFFB2B0B0);
+  static const Color tableBackgroundColor2 = Color(0xFFFFFFFF);
+  static const Color tableTextColor = Color(0xff3b3b3b);
 }
 
 getFontSize() {

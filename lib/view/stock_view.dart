@@ -13,11 +13,13 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 class StockView extends StatefulWidget {
   final String userNummer;
   final String organizationNummer;
+  final String organizationName;
 
   const StockView({
     Key? key,
     required this.userNummer,
     required this.organizationNummer,
+    required this.organizationName,
   }) : super(key: key);
 
   @override
@@ -59,7 +61,7 @@ class _StockViewState extends State<StockView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Current Stock',
+        title: 'Stock Information',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
@@ -103,49 +105,63 @@ class _StockViewState extends State<StockView> {
                               ),
                             );
                           } else {
-                            return Container(
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFB2B0B0), Colors.white],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Total products of ${widget.organizationName}: ${_allProducts?.length}',
+                                  style:
+                                      TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                 ),
-                                //border: Border.all(color: Colors.white, width: 1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: SfDataGrid(
-                                gridLinesVisibility: GridLinesVisibility.both,
-                                headerGridLinesVisibility: GridLinesVisibility.both,
-                                columnWidthMode: ColumnWidthMode.fill,
-                                isScrollbarAlwaysShown: true,
-                                showSortNumbers: true,
-                                allowColumnsResizing: true,
-                                allowSorting: true,
-                                source: ProductDataSource(_filteredProducts!),
-                                columns: <GridColumn>[
-                                  GridColumn(
-                                      //width: 200,
-                                      columnName: 'productName',
-                                      label: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            'Product',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(fontSize: getFontSize()),
-                                          ))),
-                                  GridColumn(
-                                      width: 80,
-                                      columnName: 'availableStock',
-                                      label: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          alignment: Alignment.centerRight,
-                                          child: Text('Stock',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: getFontSize())))),
-                                ],
-                              ),
+                                SizedBox(height: 5,),
+                                Expanded(
+                                  child: Container(
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
+                                      //border: Border.all(color: Colors.white, width: 1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: SfDataGrid(
+                                      gridLinesVisibility: GridLinesVisibility.both,
+                                      headerGridLinesVisibility: GridLinesVisibility.both,
+                                      columnWidthMode: ColumnWidthMode.fill,
+                                      isScrollbarAlwaysShown: true,
+                                      showSortNumbers: true,
+                                      allowColumnsResizing: true,
+                                      allowSorting: true,
+                                      source: ProductDataSource(_filteredProducts!),
+                                      columns: <GridColumn>[
+                                        GridColumn(
+                                            //width: 200,
+                                            columnName: 'productName',
+                                            label: Container(
+                                                padding: const EdgeInsets.all(8.0),
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  'Product',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(fontSize: getFontSize()),
+                                                ))),
+                                        GridColumn(
+                                            width: 80,
+                                            columnName: 'availableStock',
+                                            label: Container(
+                                                padding: const EdgeInsets.all(8.0),
+                                                alignment: Alignment.centerRight,
+                                                child: Text('Stock',
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontSize: getFontSize())))),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             );
                           }
                         case Status.ERROR:
