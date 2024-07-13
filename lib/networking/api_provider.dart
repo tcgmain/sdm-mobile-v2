@@ -16,6 +16,21 @@ class ApiProvider {
     try {
       final response = await http.post(Uri.parse(baseUrl + url), headers: requestHeaders, body: inputBody);
       String responseString = response.body.toString();
+      print(responseString);
+      print(inputBody);
+      print(baseUrl + url);
+      responseJson = _response(jsonDecode(responseString), response.statusCode);
+    } on SocketException {
+      throw FetchDataException("No Internet Connection");
+    }
+    return responseJson;
+  }
+
+    Future<dynamic> get(String url, requestHeaders) async {
+    var responseJson;
+    try {
+      final response = await http.get(Uri.parse(baseUrl + url), headers: requestHeaders);
+      String responseString = response.body.toString();
       //print(responseString);
       //print(inputBody);
       //print(baseUrl + url);

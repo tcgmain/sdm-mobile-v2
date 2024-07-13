@@ -61,7 +61,7 @@ class CustomDatePickerDialog extends StatelessWidget {
                   );
                 },
                 selectedSingleDateDecoration: BoxDecoration(
-                  color: Color.fromARGB(255, 221, 29, 23).withOpacity(0.2),
+                  color: const Color.fromARGB(255, 221, 29, 23).withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 defaultDateTextStyle: const TextStyle(

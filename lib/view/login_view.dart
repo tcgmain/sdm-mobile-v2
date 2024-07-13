@@ -31,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
   var passwordController = TextEditingController(text: '');
   String deviceId = "";
   bool _saveCredentials = false;
-  bool _dialogShown = false;
   late String username;
 
   _togglePasswordVisibility() {
@@ -101,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
       buttonText: "Login",
       onPressed: () async {
         setState(() {
-          _dialogShown = false; // Reset _dialogShown state for each login attempt
+// Reset _dialogShown state for each login attempt
         });
 
         String? deviceId = await _getId();
@@ -337,7 +336,12 @@ class _LoginPageState extends State<LoginPage> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage(username: username, userNummer: userNummer)),
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(
+                            username: username,
+                            userNummer: userNummer,
+                            loggedUserNummer: userNummer,
+                          )),
                   (Route<dynamic> route) => false,
                 );
               });

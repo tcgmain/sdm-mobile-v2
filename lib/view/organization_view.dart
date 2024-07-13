@@ -15,11 +15,13 @@ import 'package:sdm/widgets/text_field.dart' as textField;
 class OrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String loggedUserNummer;
 
   const OrganizationView({
     Key? key,
     required this.userNummer,
     required this.username,
+    required this.loggedUserNummer,
   }) : super(key: key);
 
   @override
@@ -65,7 +67,7 @@ class _OrganizationViewState extends State<OrganizationView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddOrganizationView()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddOrganizationView(userNummer: widget.userNummer, loggedUserNummer: widget.loggedUserNummer, username: widget.username,)));
         },
         backgroundColor: CustomColors.buttonColor,
         child: const Icon(

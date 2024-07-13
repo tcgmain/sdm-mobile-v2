@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:sdm/models/update_stock.dart';
 import 'package:sdm/networking/api_provider.dart';
 import 'dart:async';

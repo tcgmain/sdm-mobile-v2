@@ -55,6 +55,7 @@ class CustomColors {
 
   static const Color cardBoldTextColor = Color(0xff3b3b3b);
   static const Color cardTextColor = Color(0xff141414);
+  static const Color cardTextColor1 = Color(0xff3b3b3b);
   static const Color cardBackgroundColor1 = Color(0xff3b3b3b);
   static const Color cardBackgroundColor2 = Color(0xff3b3b3b);
   static const Color cardTextUnderlined = Color(0xff3b3b3b);
@@ -65,7 +66,7 @@ class CustomColors {
 }
 
 getFontSize() {
-  var textSize = 14.0;
+  var textSize = 16.0;
   return textSize;
 }
 

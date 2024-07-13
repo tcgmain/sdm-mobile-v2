@@ -1,7 +1,5 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:sdm/blocs/goods_management_id_bloc.dart';
 import 'package:sdm/blocs/stock_bloc.dart';
 import 'package:sdm/blocs/update_stock_bloc.dart';
@@ -14,7 +12,6 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/custom_stock_card.dart';
 import 'package:sdm/widgets/error_alert.dart';
-import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
 
@@ -214,7 +211,7 @@ class _ManageStockViewState extends State<ManageStockView> {
               return Loading(loadingMessage: snapshot.data!.message.toString());
 
             case Status.COMPLETED:
-              String productCode = snapshot.data!.data!.table![0].yprod.toString();
+              snapshot.data!.data!.table![0].yprod.toString();
               newStock = snapshot.data!.data!.table![0].ycurstoc!;
               newLastUpdatedDate = snapshot.data!.data!.table![0].yentdat.toString();
               newLastUpdatedUser = snapshot.data!.data!.table![0].yuser.toString();

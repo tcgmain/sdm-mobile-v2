@@ -8,7 +8,7 @@ class MapWidget extends StatelessWidget {
   final double latitude;
   final double longitude;
 
-  const MapWidget({required this.latitude, required this.longitude});
+  const MapWidget({super.key, required this.latitude, required this.longitude});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class MapWidget extends StatelessWidget {
         children: [
           TileLayer(
             urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
+            subdomains: const ['a', 'b', 'c'],
           ),
           MarkerLayer(
             markers: [
@@ -30,12 +30,10 @@ class MapWidget extends StatelessWidget {
                 point: LatLng(latitude, longitude),
                 width: 80.0,
                 height: 80.0,
-                builder: (ctx) => Container(
-                  child: Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                    size: 40.0,
-                  ),
+                builder: (ctx) => const Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  size: 40.0,
                 ),
               ),
             ],

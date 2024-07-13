@@ -114,7 +114,7 @@ class _StockViewState extends State<StockView> {
                                   style:
                                       TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                 ),
-                                SizedBox(height: 5,),
+                                const SizedBox(height: 5,),
                                 Expanded(
                                   child: Container(
                                     clipBehavior: Clip.antiAlias,

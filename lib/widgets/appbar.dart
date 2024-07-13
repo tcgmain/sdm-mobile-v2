@@ -86,7 +86,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          HomePage(username: username, userNummer: '')),
+                          HomePage(username: username, userNummer: userNummer, loggedUserNummer: userNummer,)),
                   (Route<dynamic> route) => false,
                 );
               });

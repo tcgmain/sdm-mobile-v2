@@ -14,7 +14,6 @@ import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
 import 'package:sdm/widgets/success_alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MarkVisitView extends StatefulWidget {
@@ -69,15 +68,11 @@ class _MarkVisitViewState extends State<MarkVisitView> {
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
-  //late String userNummer;
-  //late String username;
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
-    //_getUsername();
-    //_getUserNummer();
     _markVisitBloc = MarkVisitBloc();
   }
 
@@ -86,16 +81,6 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     _markVisitBloc.dispose();
     super.dispose();
   }
-
-  // Future<void> _getUserNummer() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   userNummer = prefs.getString('userNummer') ?? '';
-  // }
-
-  // Future<void> _getUsername() async {
-  //   SharedPreferences prefs1 = await SharedPreferences.getInstance();
-  //   username = prefs1.getString('username') ?? '';
-  // }
 
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
