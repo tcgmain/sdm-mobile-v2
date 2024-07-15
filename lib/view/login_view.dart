@@ -100,7 +100,6 @@ class _LoginPageState extends State<LoginPage> {
       buttonText: "Login",
       onPressed: () async {
         setState(() {
-// Reset _dialogShown state for each login attempt
         });
 
         String? deviceId = await _getId();

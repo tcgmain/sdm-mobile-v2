@@ -26,6 +26,8 @@ class LoginBloc {
       //Saving username in local storage
       SharedPreferences prefsUserName = await SharedPreferences.getInstance();
       await prefsUserName.setString('username', res.ylogopr.toString());
+      SharedPreferences prefsUserId = await SharedPreferences.getInstance();
+      await prefsUserId.setString('userId', res.ypwdid.toString());
      
       print("LOGIN SUCCESS");
     } 

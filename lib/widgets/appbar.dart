@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/change_password_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';
 import 'package:sdm/view/profile_view.dart';
@@ -29,12 +30,14 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _CommonAppBarState extends State<CommonAppBar> {
   String username = '';
   String userNummer = '';
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
     _getUsername();
     _getUserNummer();
+    _getUserId();
   }
 
   Future<void> _getUsername() async {
@@ -48,6 +51,13 @@ class _CommonAppBarState extends State<CommonAppBar> {
     SharedPreferences prefsUserNummer = await SharedPreferences.getInstance();
     setState(() {
       userNummer = prefsUserNummer.getString('userNummer') ?? 'Guest';
+    });
+  }
+
+  Future<void> _getUserId() async {
+    SharedPreferences prefsUserNummer = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefsUserNummer.getString('userId') ?? 'Guest';
     });
   }
 
@@ -86,8 +96,11 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          HomePage(username: username, userNummer: userNummer, loggedUserNummer: userNummer,)),
+                      builder: (context) => HomePage(
+                            username: username,
+                            userNummer: userNummer,
+                            loggedUserNummer: userNummer,
+                          )),
                   (Route<dynamic> route) => false,
                 );
               });
@@ -100,12 +113,22 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileView(username: username,)),
+                    MaterialPageRoute(
+                        builder: (context) => ProfileView(
+                              username: username,
+                            )),
                     (Route<dynamic> route) => false,
                   );
                 });
                 break;
               case 'changePassword':
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId,)),
+                    (Route<dynamic> route) => false,
+                  );
+                });
                 break;
               case 'activityLog':
                 break;
@@ -127,7 +150,10 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 children: [
                   const Icon(Icons.account_circle, color: CustomColors.appBarColor3),
                   const SizedBox(width: 10),
-                  Text(username, style: const TextStyle(color: CustomColors.appBarColor3),),
+                  Text(
+                    username,
+                    style: const TextStyle(color: CustomColors.appBarColor3),
+                  ),
                 ],
               ),
             ),

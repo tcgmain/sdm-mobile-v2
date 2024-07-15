@@ -137,7 +137,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
     _validationStatus.updateAll((key, value) => null);
     _validationMessages.updateAll((key, value) => null);
-    print("cleared");
   }
 
   @override
