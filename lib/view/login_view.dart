@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   String deviceId = "";
   bool _saveCredentials = false;
   late String username;
+  bool _isErrorMessageShown = false;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -106,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
         print("THIS IS DEVICE ID:  $deviceId");
 
         _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
+        _isErrorMessageShown = false;
         if (_saveCredentials) {
           _saveCredentialsToPrefs();
         } else {
@@ -305,7 +307,11 @@ class _LoginPageState extends State<LoginPage> {
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isErrorMessageShown = true;
+                  });
               });
+              
           }
         }
         return Container();

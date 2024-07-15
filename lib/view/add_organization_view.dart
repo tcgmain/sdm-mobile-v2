@@ -7,7 +7,6 @@ import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
-import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';

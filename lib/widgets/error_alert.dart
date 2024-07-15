@@ -37,7 +37,7 @@ Future<void> showErrorAlertDialog(BuildContext context, String errorMessage) {
         ),
         SizedBox(width: 10.0),
         Text(
-          "Error!",
+          "Error",
           style: TextStyle(
             color: CustomColors.errorAlertTitleTextColor,
             fontWeight: FontWeight.bold,

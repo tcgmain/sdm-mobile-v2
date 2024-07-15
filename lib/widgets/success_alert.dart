@@ -37,7 +37,7 @@ Future<void> showSuccessAlertDialog(BuildContext context, String successMessage)
         ),
         SizedBox(width: 10.0),
         Text(
-          "Success!",
+          "Success",
           style: TextStyle(
             color: CustomColors.successAlertTitleTextColor,
             fontWeight: FontWeight.bold,

@@ -3,7 +3,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
-import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -75,14 +74,12 @@ class _ProfileViewState extends State<ProfileView> {
                     return SingleChildScrollView(
                       child: Column(
                         children: [
-                          // Profile Header
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[800],
                               borderRadius: BorderRadius.circular(8),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                            //color: Colors.grey[800],
                             child: Column(
                               children: [
                                 CircleAvatar(
