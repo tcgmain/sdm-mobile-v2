@@ -408,6 +408,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     customerTypeId,
                                     widget.loggedUserNummer);
                               });
+                              _isSuccessMessageShown = false;
                             }
                           },
                         ),

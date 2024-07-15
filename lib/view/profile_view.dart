@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sdm/blocs/user_details_bloc.dart';
+import 'package:sdm/models/user_details.dart';
+import 'package:sdm/networking/response.dart';
+import 'package:sdm/utils/constants.dart';
+import 'package:sdm/widgets/appbar.dart';
+import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/error_alert.dart';
+
+class ProfileView extends StatefulWidget {
+  final String username;
+
+  const ProfileView({
+    super.key,
+    required this.username,
+  });
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  late UserDetailsBloc _userDetailsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _userDetailsBloc = UserDetailsBloc();
+    _userDetailsBloc.getUserDetails(widget.username.toString());
+  }
+
+  @override
+  void dispose() {
+    _userDetailsBloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CommonAppBar(
+        title: 'Profile',
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
+        isHomePage: false,
+      ),
+      body: SafeArea(
+        child: BackgroundImage(
+          child: StreamBuilder<ResponseList<UserDetails>>(
+            stream: _userDetailsBloc.userDetailsStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                switch (snapshot.data!.status!) {
+                  case Status.LOADING:
+                    return Column(
+                      children: [
+                        LoadingAnimationWidget.staggeredDotsWave(
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                      ],
+                    );
+
+                  case Status.COMPLETED:
+                    var fullName = snapshot.data!.data![0].namebspr.toString();
+                    var designation = snapshot.data!.data![0].ydes.toString();
+                    var email = snapshot.data!.data![0].email.toString();
+                    var nic = snapshot.data!.data![0].ynic.toString();
+                    var address = snapshot.data!.data![0].str.toString();
+                    var location = snapshot.data!.data![0].yusrloc.toString();
+                    var hrisId = snapshot.data!.data![0].yhrisid.toString();
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Profile Header
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                            //color: Colors.grey[800],
+                            child: Column(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.red,
+                                  child: Text(
+                                    fullName.isNotEmpty ? fullName[0] : '?',
+                                    style: const TextStyle(color: Colors.white, fontSize: 40),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  fullName,
+                                  style:
+                                      const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  designation,
+                                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.grey.shade400,
+                                  Colors.white,
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                            //elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildInfoRow(Icons.email, 'Email', email),
+                                  _buildInfoRow(Icons.perm_identity, 'NIC', nic),
+                                  _buildInfoRow(Icons.home, 'Address', address),
+                                  _buildInfoRow(Icons.location_on, 'Location', location),
+                                  _buildInfoRow(Icons.card_membership, 'HRIS ID', hrisId),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  case Status.ERROR:
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      showErrorAlertDialog(context, snapshot.data!.message.toString());
+                    });
+                }
+              }
+              return Container();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String content) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.black38), // Customize icon color here
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  content,
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

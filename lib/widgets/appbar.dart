@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';
+import 'package:sdm/view/profile_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -95,6 +96,15 @@ class _CommonAppBarState extends State<CommonAppBar> {
         PopupMenuButton<String>(
           onSelected: (String result) {
             switch (result) {
+              case 'username':
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileView(username: username,)),
+                    (Route<dynamic> route) => false,
+                  );
+                });
+                break;
               case 'changePassword':
                 break;
               case 'activityLog':

@@ -146,7 +146,7 @@ class _StockViewState extends State<StockView> {
                                                 child: Text(
                                                   'Product',
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: getFontSize()),
+                                                  style: TextStyle(fontSize: getFontSizeSmall()),
                                                 ))),
                                         GridColumn(
                                             width: 80,
@@ -156,7 +156,7 @@ class _StockViewState extends State<StockView> {
                                                 alignment: Alignment.centerRight,
                                                 child: Text('Stock',
                                                     overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(fontSize: getFontSize())))),
+                                                    style: TextStyle(fontSize: getFontSizeSmall())))),
                                       ],
                                     ),
                                   ),

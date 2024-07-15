@@ -106,7 +106,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                           _allOrganizations = snapshot.data!.data!;
                           _filteredOrganizations ??= _allOrganizations;
                           final totalOrganizations = _filteredOrganizations!.length;
-                         
+
                           if (_filteredOrganizations!.isEmpty) {
                             return Center(
                               child: Text(
@@ -119,15 +119,15 @@ class _OrganizationViewState extends State<OrganizationView> {
                             return Column(
                               children: [
                                 Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Total Organizations: $totalOrganizations',
-                                    style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      'Total Organizations: $totalOrganizations',
+                                      style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                    ),
                                   ),
                                 ),
-                              ),
                                 Expanded(
                                   child: ListView.builder(
                                     itemCount: _filteredOrganizations!.length,
@@ -138,16 +138,23 @@ class _OrganizationViewState extends State<OrganizationView> {
                                       final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
                                       final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
                                       final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress1 =
+                                          organizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress2 =
+                                          organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress3 =
+                                          organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress4 =
+                                          organizations.yaddressl4?.toString() ?? 'Unnamed Route';
                                       final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
-                                      final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
-                                      final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
-                                      final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
+                                      final organizationLongitude =
+                                          organizations.longitude?.toString() ?? 'Unnamed Route';
+                                      final organizationLatitude =
+                                          organizations.latitude?.toString() ?? 'Unnamed Route';
+                                      final organizationDistance =
+                                          organizations.distance?.toString() ?? 'Unnamed Route';
                                       final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-                                  
+
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: ListButton(
