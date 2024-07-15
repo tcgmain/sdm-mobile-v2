@@ -23,13 +23,10 @@ class GoodMangementIdBloc {
     try {
       List<GoodManagementID> res = await _goodManagementIdRepository.getGoodManagementID(organizationNummer);
       goodManagementIdSink.add(ResponseList.completed(res));
-      //Saving username in local storage
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-      // String username = (prefs.getString('username')).toString();
-      print("Get Good Management ID SUCCESSFULL");
+      print("GET COODS MANAGEMENT ID SUCCESSFULL");
     } catch (e) {
       goodManagementIdSink.add(ResponseList.error(e.toString()));
-      print("Get Good Management ID FAIL $e");
+      print("GET COODS MANAGEMENT ID ID FAIL $e");
     }
   }
 

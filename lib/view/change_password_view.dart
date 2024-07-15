@@ -53,13 +53,14 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
       _showPassword = !_showPassword;
     });
   }
-    _toggleConfirmPasswordVisibility() {
+
+  _toggleConfirmPasswordVisibility() {
     setState(() {
       _showConfirmPassword = !_showConfirmPassword;
     });
   }
 
-    void clearFormFields() {
+  void clearFormFields() {
     _currentPasswordController.clear();
     _newPasswordController.clear();
     _confirmPasswordController.clear();
@@ -90,7 +91,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
             ),
             child: ListView(
               children: [
-                 const SizedBox(height: 40.0),
+                const SizedBox(height: 40.0),
                 const Center(
                   child: Icon(
                     Icons.lock_open,
@@ -145,20 +146,6 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
     );
   }
 
-  // Widget _buildPasswordField({
-  //   required TextEditingController controller,
-  //   required String label,
-  // }) {
-  //   return TextField(
-  //     controller: controller,
-  //     obscureText: true,
-  //     decoration: InputDecoration(
-  //       labelText: label,
-  //       border: const OutlineInputBorder(),
-  //     ),
-  //   );
-  // }
-
   Widget changePasswordResponse() {
     return StreamBuilder<Response<ChangePassword>>(
       stream: _changePasswordBloc.changePasswordStream,
@@ -174,8 +161,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
               );
 
             case Status.COMPLETED:
-if (!_isSuccessMessageShown) {
-              
+              if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showSuccessAlertDialog(context, "Password changed successfully");
                   setState(() {
@@ -188,10 +174,6 @@ if (!_isSuccessMessageShown) {
                   });
                 });
               }
-
-
-
-
 
               break;
 
@@ -213,8 +195,9 @@ if (!_isSuccessMessageShown) {
         final currentPassword = _currentPasswordController.text;
         final newPassword = _newPasswordController.text;
         final confirmPassword = _confirmPasswordController.text;
-
-        if (newPassword == confirmPassword) {
+        if (currentPassword == "" || newPassword == "" || confirmPassword == "") {
+          showErrorAlertDialog(context, 'Please enter password fields');
+        } else if (newPassword == confirmPassword) {
           _isSuccessMessageShown = false;
           _changePasswordBloc.changePassword(currentPassword, newPassword);
         } else {

@@ -32,7 +32,6 @@ class UpdateStockRepository {
       final response = await _provider.post("/updateStock", jsonEncode(inputBody), requestHeaders);
       return UpdateStock.fromJson(response);
     } catch (e) {
-      print("Error updating stock: $e");
       throw Exception('Stock Update FAIL: $e');
     }
   }
