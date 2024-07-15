@@ -7,8 +7,8 @@ Future<void> showSuccessAlertDialog(BuildContext context, successMessage) {
           style: TextStyle(color: CustomColors.successAlertTitleTextColor, fontWeight: FontWeight.bold)),
       onPressed: () {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).pop(false);
-        });
+        Navigator.of(context).pop(false);
+      });
       });
   AlertDialog alert = AlertDialog(
     shape: RoundedRectangleBorder(

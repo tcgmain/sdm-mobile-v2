@@ -15,8 +15,10 @@ class _SalesOrderViewState extends State<SalesOrderView> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Sales Orders',
-        onBackButtonPressed: () {},
-        isHomePage: true,
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
+        isHomePage: false,
       ),
       body: SafeArea(
         child: BackgroundImage(

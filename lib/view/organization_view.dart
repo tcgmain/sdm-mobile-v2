@@ -67,7 +67,12 @@ class _OrganizationViewState extends State<OrganizationView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddOrganizationView(userNummer: widget.userNummer, loggedUserNummer: widget.loggedUserNummer, username: widget.username,)));
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddOrganizationView(
+                    userNummer: widget.userNummer,
+                    loggedUserNummer: widget.loggedUserNummer,
+                    username: widget.username,
+                  )));
         },
         backgroundColor: CustomColors.buttonColor,
         child: const Icon(
@@ -79,18 +84,15 @@ class _OrganizationViewState extends State<OrganizationView> {
         child: BackgroundImage(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: textField.TextField(
-                    controller: _searchController,
-                    obscureText: false,
-                    inputType: 'none',
-                    isRequired: true,
-                    fillColor: CustomColors.textFieldFillColor,
-                    filled: true,
-                    labelText: "Type to search organizations...",
-                    onChangedFunction: () {}),
-              ),
+              textField.TextField(
+                  controller: _searchController,
+                  obscureText: false,
+                  inputType: 'none',
+                  isRequired: true,
+                  fillColor: CustomColors.textFieldFillColor,
+                  filled: true,
+                  labelText: "Type to search organizations...",
+                  onChangedFunction: () {}),
               Expanded(
                 child: StreamBuilder<ResponseList<Organization>>(
                   stream: _organizationBloc.organizationStream,
@@ -103,7 +105,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                         case Status.COMPLETED:
                           _allOrganizations = snapshot.data!.data!;
                           _filteredOrganizations ??= _allOrganizations;
-
+                          final totalOrganizations = _filteredOrganizations!.length;
+                         
                           if (_filteredOrganizations!.isEmpty) {
                             return Center(
                               child: Text(
@@ -113,54 +116,70 @@ class _OrganizationViewState extends State<OrganizationView> {
                               ),
                             );
                           } else {
-                            return ListView.builder(
-                              itemCount: _filteredOrganizations!.length,
-                              itemBuilder: (context, index) {
-                                final organizations = snapshot.data!.data![index];
-                                final organizationId = organizations.id.toString();
-                                final organizationNummer = organizations.orgnummer.toString();
-                                final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
-                                final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
-                                final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
-                                final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
-                                final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
-                                final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
-                                final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
-                                final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
-                                final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                  child: ListButton(
-                                    displayName: organizationName,
-                                    onPressed: () {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => HomeOrganizationView(
-                                                userNummer: widget.userNummer,
-                                                username: widget.username,
-                                                routeNummer: "",
-                                                organizationId: organizationId,
-                                                organizationNummer: organizationNummer,
-                                                organizationName: organizationName,
-                                                organizationPhone1: organizationPhone1,
-                                                organizationPhone2: organizationPhone2,
-                                                organizationAddress1: organizationAddress1,
-                                                organizationAddress2: organizationAddress2,
-                                                organizationAddress3: organizationAddress3,
-                                                organizationAddress4: organizationAddress4,
-                                                organizationColour: organizationColour,
-                                                organizationLongitude: organizationLongitude,
-                                                organizationLatitude: organizationLatitude,
-                                                organizationDistance: organizationDistance,
-                                                organizationMail: organizationMail,
-                                              )));
+                            return Column(
+                              children: [
+                                Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Total Organizations: $totalOrganizations',
+                                    style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                  ),
+                                ),
+                              ),
+                                Expanded(
+                                  child: ListView.builder(
+                                    itemCount: _filteredOrganizations!.length,
+                                    itemBuilder: (context, index) {
+                                      final organizations = snapshot.data!.data![index];
+                                      final organizationId = organizations.id.toString();
+                                      final organizationNummer = organizations.orgnummer.toString();
+                                      final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
+                                      final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
+                                      final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                      final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                      final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
+                                      final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
+                                      final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
+                                      final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
+                                      final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
+                                  
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                        child: ListButton(
+                                          displayName: organizationName,
+                                          onPressed: () {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => HomeOrganizationView(
+                                                      userNummer: widget.userNummer,
+                                                      username: widget.username,
+                                                      routeNummer: "",
+                                                      organizationId: organizationId,
+                                                      organizationNummer: organizationNummer,
+                                                      organizationName: organizationName,
+                                                      organizationPhone1: organizationPhone1,
+                                                      organizationPhone2: organizationPhone2,
+                                                      organizationAddress1: organizationAddress1,
+                                                      organizationAddress2: organizationAddress2,
+                                                      organizationAddress3: organizationAddress3,
+                                                      organizationAddress4: organizationAddress4,
+                                                      organizationColour: organizationColour,
+                                                      organizationLongitude: organizationLongitude,
+                                                      organizationLatitude: organizationLatitude,
+                                                      organizationDistance: organizationDistance,
+                                                      organizationMail: organizationMail,
+                                                    )));
+                                          },
+                                        ),
+                                      );
                                     },
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             );
                           }
 

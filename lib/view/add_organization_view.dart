@@ -37,6 +37,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   List<CustomerType>? _allCustomerTypes;
   late String latitude;
   late String longitude;
+  bool _isSuccessMessageShown = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -132,9 +133,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address4Controller.clear();
 
     _selectedCustomerType = null;
-    _selectedCustomerTypeIndex = null;
+    _selectedCustomerTypeIndex = null; // Reset the toggle buttons selection
+
     _validationStatus.updateAll((key, value) => null);
     _validationMessages.updateAll((key, value) => null);
+    print("cleared");
   }
 
   @override
@@ -404,10 +407,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     longitude,
                                     customerTypeId,
                                     widget.loggedUserNummer);
-
-                                print(_selectedCustomerType);
-
-                                print(name);
                               });
                             }
                           },
@@ -533,11 +532,20 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               );
 
             case Status.COMPLETED:
-              final name = _nameController.text.toString();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "${name}has been added successfully.");
-                clearFormFields(); // Ensure to call clearFormFields within setState
-              });
+              if (!_isSuccessMessageShown) {
+                final name = _nameController.text.toString();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showSuccessAlertDialog(context, "$name has been added successfully.");
+                  setState(() {
+                    _isSuccessMessageShown = true;
+                  });
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    setState(() {
+                      clearFormFields();
+                    });
+                  });
+                });
+              }
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
