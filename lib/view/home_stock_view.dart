@@ -8,19 +8,23 @@ import 'package:sdm/view/sales_order_view.dart';
 class HomeStockView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String loggedUserNummer;
   final String organizationId;
   final String organizationNummer;
   final String routeNummer;
   final String visitNummer;
+  final bool isTeamMemberUi;
 
   const HomeStockView({
     Key? key,
     required this.userNummer,
     required this.username,
+    required this.loggedUserNummer,
     required this.organizationId,
     required this.organizationNummer,
     required this.routeNummer,
     required this.visitNummer,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -44,9 +48,20 @@ class _HomeStockViewState extends State<HomeStockView> {
       organizationNummer: widget.organizationNummer,
       routeNummer: widget.routeNummer,
       visitNummer: widget.visitNummer,
+      isTeamMemberUi: widget.isTeamMemberUi,
     ),
-    const SalesOrderView(),
-    const CameraView(),
+    SalesOrderView(
+      userNummer: widget.userNummer,
+      username: widget.username,
+      loggedUserNummer: widget.loggedUserNummer,
+      isTeamMemberUi: widget.isTeamMemberUi,
+    ),
+    CameraView(
+      userNummer: widget.userNummer,
+      username: widget.username,
+      loggedUserNummer: widget.loggedUserNummer,
+      isTeamMemberUi: widget.isTeamMemberUi,
+    ),
   ];
 
   @override

@@ -9,14 +9,14 @@ class OrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<List<Organization>> getOrganization(username) async {
+  Future<List<Organization>> getOrganization(userNummer) async {
     requestHeaders = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
 
     inputBody = {
-      "yassigto": username,
+      "yassigto": userNummer,
     };
 
     final response = await _provider.post("/getorganization", jsonEncode(inputBody), requestHeaders);

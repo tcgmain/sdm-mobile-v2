@@ -68,6 +68,7 @@ class _TeamViewState extends State<TeamView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               textField.TextField(
@@ -119,11 +120,11 @@ class _TeamViewState extends State<TeamView> {
                                     itemCount: _filteredTeam!.length,
                                     itemBuilder: (context, index) {
                                       final team = snapshot.data!.data![index];
-                                      final memberId = team.id.toString();
-                                      final memberOrganizationNummer = team.yorgNummer.toString();
-                                      final memberOrganizationName = team.yorgNamebspr?.toString() ?? 'Unnamed Route';
+                                      // final memberId = team.id.toString();
+                                      // final memberOrganizationNummer = team.yorgNummer.toString();
+                                      // final memberOrganizationName = team.yorgNamebspr?.toString() ?? 'Unnamed Route';
                                       final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
-                                      final memberUserNummer = team.ypasdefNummer?.toString() ?? 'Unnamed Route';
+                                      //final memberUserNummer = team.ypasdefNummer?.toString() ?? 'Unnamed Route';
                                       final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
                                       final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
 

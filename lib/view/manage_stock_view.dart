@@ -22,6 +22,7 @@ class ManageStockView extends StatefulWidget {
   final String organizationNummer;
   final String routeNummer;
   final String visitNummer;
+  final bool isTeamMemberUi;
 
   const ManageStockView({
     Key? key,
@@ -31,6 +32,7 @@ class ManageStockView extends StatefulWidget {
     required this.organizationNummer,
     required this.routeNummer,
     required this.visitNummer,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -99,6 +101,7 @@ class _ManageStockViewState extends State<ManageStockView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Padding(

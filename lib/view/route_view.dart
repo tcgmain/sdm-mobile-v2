@@ -104,6 +104,7 @@ class _RouteViewState extends State<RouteView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Row(

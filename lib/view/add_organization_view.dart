@@ -21,11 +21,14 @@ class AddOrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
+  final bool isTeamMemberUi;
+
   const AddOrganizationView({
     Key? key,
     required this.userNummer,
     required this.username,
     required this.loggedUserNummer,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -271,6 +274,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(

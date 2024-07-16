@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/repository/organization_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OrganizationBloc {
   late OrganizationRepository _organizationRepository;
@@ -18,13 +17,11 @@ class OrganizationBloc {
     _organizationRepository = OrganizationRepository();
   }
 
-  getOrganization() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String username = (prefs.getString('username')).toString();
-
+  getOrganization(String userNummer) async {
+   
     organizationSink.add(ResponseList.loading(''));
     try {
-      List<Organization> res = await _organizationRepository.getOrganization(username);
+      List<Organization> res = await _organizationRepository.getOrganization(userNummer);
       organizationSink.add(ResponseList.completed(res));
 
       print("Visit SUCCESS");

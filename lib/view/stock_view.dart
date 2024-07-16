@@ -14,12 +14,14 @@ class StockView extends StatefulWidget {
   final String userNummer;
   final String organizationNummer;
   final String organizationName;
+  final bool isTeamMemberUi;
 
   const StockView({
     Key? key,
     required this.userNummer,
     required this.organizationNummer,
     required this.organizationName,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -69,6 +71,7 @@ class _StockViewState extends State<StockView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Padding(

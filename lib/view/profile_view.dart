@@ -47,6 +47,7 @@ class _ProfileViewState extends State<ProfileView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: false,
           child: StreamBuilder<ResponseList<UserDetails>>(
             stream: _userDetailsBloc.userDetailsStream,
             builder: (context, snapshot) {

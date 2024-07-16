@@ -40,7 +40,7 @@ class _OrganizationViewState extends State<OrganizationView> {
   void initState() {
     super.initState();
     _organizationBloc = OrganizationBloc();
-    _organizationBloc.getOrganization();
+    _organizationBloc.getOrganization(widget.userNummer);
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -69,13 +69,14 @@ class _OrganizationViewState extends State<OrganizationView> {
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: widget.isTeamMemberUi == false ? FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => AddOrganizationView(
                     userNummer: widget.userNummer,
                     loggedUserNummer: widget.loggedUserNummer,
                     username: widget.username,
+                    isTeamMemberUi: widget.isTeamMemberUi,
                   )));
         },
         backgroundColor: CustomColors.buttonColor,
@@ -83,9 +84,10 @@ class _OrganizationViewState extends State<OrganizationView> {
           Icons.add,
           color: CustomColors.buttonTextColor,
         ),
-      ),
+      ) : Container(),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               textField.TextField(

@@ -12,12 +12,14 @@ class VisitHistoryView extends StatefulWidget {
   final String userNummer;
   final String organizationNummer;
   final String organizationName;
+  final bool isTeamMemberUi;
 
   const VisitHistoryView({
     Key? key,
     required this.userNummer,
     required this.organizationNummer,
     required this.organizationName,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Expanded(

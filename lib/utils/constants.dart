@@ -11,6 +11,7 @@ class CustomColors {
   static const Color appBarTextColor = Color(0xFFFFFFFF);
   static const Color backgroundColor = Color(0xFFF2F2F2);
   static const Color borderColor = Color(0xFFf02024);
+  static const Color borderColor1 = Color(0xFFf0e020);
   static const Color formBackgroundColor = Color(0xFFFFFFFF);
   static const Color textColor = Color(0xFFEEEEEE);
   static const Color textHighlightColor = Color(0xFFFFCEC663);
@@ -25,7 +26,7 @@ class CustomColors {
   static const Color errorAlertBorderColor = Color(0xFFFFFFFF);
   static const Color errorAlertBackgroundColor = Color(0xFF000000);
 
-   static const Color successAlertTextColor = Color(0xFFF2F2F2);
+  static const Color successAlertTextColor = Color(0xFFF2F2F2);
   static const Color successAlertTitleTextColor = Color(0xFF00AB66);
   static const Color successAlertBorderColor = Color(0xFFFFFFFF);
   static const Color successAlertBackgroundColor = Color(0xFF000000);
@@ -136,12 +137,12 @@ Color getColor(String colorText) {
   }
 }
 
-getBottomNavigationBarMargin(){
+getBottomNavigationBarMargin() {
   double bottomNavigationBarMargin = 37.0;
   return bottomNavigationBarMargin;
 }
 
-getBottomNavigationBarPadding(){
+getBottomNavigationBarPadding() {
   double bottomNavigationBarMargin = 20.0;
   return bottomNavigationBarMargin;
 }

@@ -173,6 +173,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: ListView(
             children: [
               CircleAvatar(
@@ -413,7 +414,9 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                               organizationId: widget.organizationId,
                               organizationNummer: widget.organizationNummer,
                               routeNummer: widget.routeNummer,
-                              visitNummer: visitNummer
+                              visitNummer: visitNummer,
+                              loggedUserNummer: widget.loggedUserNummer, 
+                              isTeamMemberUi: widget.isTeamMemberUi,
                             )),
                   );
                 });

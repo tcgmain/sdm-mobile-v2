@@ -78,6 +78,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: false,
           child: Container(
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(8)),

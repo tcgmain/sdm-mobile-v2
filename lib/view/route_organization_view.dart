@@ -58,6 +58,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Expanded(

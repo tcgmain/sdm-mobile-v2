@@ -3,7 +3,12 @@ import 'package:sdm/utils/constants.dart';
 
 class BackgroundImage extends StatelessWidget {
   final Widget child;
-  const BackgroundImage({Key? key, required this.child}) : super(key: key);
+  final bool isTeamMemberUi;
+  const BackgroundImage({
+    Key? key, 
+    required this.child,
+    required this.isTeamMemberUi,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,7 @@ class BackgroundImage extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
               color: Colors.transparent,
-              border: Border.all(color: CustomColors.borderColor),
+              border: Border.all(color: isTeamMemberUi == false ? CustomColors.borderColor: CustomColors.borderColor1),
               borderRadius: const BorderRadius.all(Radius.circular(4))),
           child: child),
     );

@@ -75,6 +75,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: Column(
             children: [
               Padding(

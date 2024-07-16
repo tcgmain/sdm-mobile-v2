@@ -6,7 +6,18 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 
 class SalesOrderView extends StatefulWidget {
-  const SalesOrderView({super.key});
+  final String userNummer;
+  final String username;
+  final String loggedUserNummer;
+  final bool isTeamMemberUi;
+
+  const SalesOrderView({
+    Key? key,
+    required this.userNummer,
+    required this.username,
+    required this.loggedUserNummer,
+    required this.isTeamMemberUi,
+  }) : super(key: key);
 
   @override
   State<SalesOrderView> createState() => _SalesOrderViewState();
@@ -25,6 +36,7 @@ class _SalesOrderViewState extends State<SalesOrderView> {
       ),
       body: SafeArea(
         child: BackgroundImage(
+          isTeamMemberUi: widget.isTeamMemberUi,
           child: DefaultTabController(
             length: 2,
             child: Column(
@@ -66,5 +78,4 @@ class _SalesOrderViewState extends State<SalesOrderView> {
       ),
     );
   }
-
 }

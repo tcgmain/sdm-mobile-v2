@@ -87,23 +87,25 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       isTeamMemberUi: widget.isTeamMemberUi,
       loggedUserNummer: widget.loggedUserNummer,
     ),
-   
-    StockView(userNummer: widget.userNummer, 
-    organizationNummer: widget.organizationNummer,
-    organizationName: widget.organizationName,
-    ),
-    SubOrganizationView(
-        userNummer: widget.userNummer,
-        username: widget.username,
-        organizationNummer: widget.organizationNummer,
-        organizationName: widget.organizationName,
-        isTeamMemberUi: widget.isTeamMemberUi,
-        loggedUserNummer: widget.loggedUserNummer,
-        ),
-    VisitHistoryView(
+    StockView(
       userNummer: widget.userNummer,
       organizationNummer: widget.organizationNummer,
       organizationName: widget.organizationName,
+      isTeamMemberUi: widget.isTeamMemberUi,
+    ),
+    SubOrganizationView(
+      userNummer: widget.userNummer,
+      username: widget.username,
+      organizationNummer: widget.organizationNummer,
+      organizationName: widget.organizationName,
+      isTeamMemberUi: widget.isTeamMemberUi,
+      loggedUserNummer: widget.loggedUserNummer,
+    ),
+    VisitHistoryView(
+      userNummer: widget.userNummer,
+      organizationNummer: widget.organizationNummer,
+      organizationName: widget.organizationName, 
+      isTeamMemberUi: widget.isTeamMemberUi,
     ),
   ];
 

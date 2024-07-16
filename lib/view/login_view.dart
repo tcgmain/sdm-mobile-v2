@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _saveCredentials = false;
   late String username;
   bool _isErrorMessageShown = false;
+  bool _isUserDetailsErrorMessageShown = false;
 
   _togglePasswordVisibility() {
     setState(() {
@@ -107,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
 
         _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
         _isErrorMessageShown = false;
+        _isUserDetailsErrorMessageShown = false;
         if (_saveCredentials) {
           _saveCredentialsToPrefs();
         } else {
@@ -355,9 +357,14 @@ class _LoginPageState extends State<LoginPage> {
               passwordController = TextEditingController(text: '');
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              if (!_isUserDetailsErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isErrorMessageShown = true;
+                  });
+                });
+              }
           }
         }
         return Container();

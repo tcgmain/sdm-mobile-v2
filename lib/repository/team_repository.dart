@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:sdm/models/team.dart';
-import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/api_provider.dart';
 import 'dart:async';
 
