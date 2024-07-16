@@ -18,11 +18,15 @@ import 'package:sdm/widgets/loading.dart';
 class RouteView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final bool isTeamMemberUi;
+  final String loggedUserNummer;
 
   const RouteView({
     Key? key,
     required this.userNummer,
-    required this.username
+    required this.username,
+    required this.isTeamMemberUi,
+    required this.loggedUserNummer
   }) : super(key: key);
 
   @override
@@ -32,11 +36,14 @@ class RouteView extends StatefulWidget {
 class _RouteViewState extends State<RouteView> {
   late RouteBloc _routeBloc;
   DateTime _selectedDate = DateTime.now();
-  late String username;
+  //late String username;
 
   @override
   void initState() {
     super.initState();
+    print(widget.userNummer);
+    print("widget.userNummer");
+    print(widget.userNummer);
     _routeBloc = RouteBloc();
     _getRoutesForSelectedDate();
   }
@@ -49,7 +56,7 @@ class _RouteViewState extends State<RouteView> {
 
   void _getRoutesForSelectedDate() {
     String formattedDate = DateFormat('dd/MM/yyyy').format(_selectedDate);
-    _routeBloc.getRoute(formattedDate);
+    _routeBloc.getRoute(formattedDate, widget.userNummer);
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -79,9 +86,11 @@ class _RouteViewState extends State<RouteView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Routes',
-        onBackButtonPressed: () {},
-        isHomePage: true,
+        title: widget.isTeamMemberUi == true ? 'Routes - ${widget.username} ' : 'My Routes',
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
+        isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -148,6 +157,8 @@ class _RouteViewState extends State<RouteView> {
                                                   userNummer: widget.userNummer,
                                                   username: widget.username,
                                                   routeNummer: routeNumb,
+                                                  isTeamMemberUi: widget.isTeamMemberUi, 
+                                                  loggedUserNummer: widget.loggedUserNummer,
                                                 )));
                                       },
                                     ));

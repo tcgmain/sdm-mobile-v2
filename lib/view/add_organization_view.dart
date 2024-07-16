@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
+import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/networking/response.dart';
@@ -33,10 +35,14 @@ class AddOrganizationView extends StatefulWidget {
 class _AddOrganizationViewState extends State<AddOrganizationView> {
   late CustomerTypeBloc _customerTypeBloc;
   late AddOrganizationBloc _addOrganizationBloc;
+  late AddGoodsManagementBloc _addGoodsManagementBloc;
   List<CustomerType>? _allCustomerTypes;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
+  bool _isAddGoodsManagementAPICall = false;
+  late String organizationNummer;
+  late String organizationSearchWord;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -144,12 +150,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _customerTypeBloc = CustomerTypeBloc();
     _customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
+    _addGoodsManagementBloc = AddGoodsManagementBloc();
   }
 
   @override
   void dispose() {
     _customerTypeBloc.dispose();
     _addOrganizationBloc.dispose();
+    _addGoodsManagementBloc.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _phone1Controller.dispose();
@@ -285,6 +293,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   child: Column(
                     children: [
                       addOrganizationResponse(),
+                      addGoodsManagementResponse(),
                       customerTypeToggleButtons(),
                       if (_validateCustomerType() != null)
                         Padding(
@@ -407,6 +416,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     widget.loggedUserNummer);
                               });
                               _isSuccessMessageShown = false;
+                              _isAddGoodsManagementAPICall = false;
                             }
                           },
                         ),
@@ -517,6 +527,43 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   Widget addOrganizationResponse() {
     return StreamBuilder<Response<AddOrganization>>(
       stream: _addOrganizationBloc.addOrganizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              return Column(
+                children: [
+                  LoadingAnimationWidget.staggeredDotsWave(
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ],
+              );
+
+            case Status.COMPLETED:
+              organizationNummer = snapshot.data!.data!.nummer.toString();
+              organizationSearchWord = snapshot.data!.data!.such.toString();
+
+              if (!_isAddGoodsManagementAPICall) {
+                _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
+                _isAddGoodsManagementAPICall = true;
+              }
+
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget addGoodsManagementResponse() {
+    return StreamBuilder<Response<AddGoodsManagement>>(
+      stream: _addGoodsManagementBloc.addGoodsManagementStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {

@@ -16,14 +16,10 @@ class RouteBloc {
     _routeRepository = RouteRepository();
   }
 
-  getRoute(String selectedDate) async {
+  getRoute(String selectedDate, String userNummer) async {
     routeSink.add(ResponseList.loading(''));
     try {
-      //Getting username from local storage
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userName = (prefs.getString('username')).toString();
-
-      List<Routes> res = await _routeRepository.getRoute(userName.toUpperCase(), selectedDate);
+      List<Routes> res = await _routeRepository.getRoute(userNummer, selectedDate);
       routeSink.add(ResponseList.completed(res));
       print("ROUTE SUCCESS");
     } catch (e) {

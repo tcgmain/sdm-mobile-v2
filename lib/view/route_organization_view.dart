@@ -14,12 +14,16 @@ class RouteOrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String routeNummer;
+  final bool isTeamMemberUi;
+  final String loggedUserNummer;
 
   const RouteOrganizationView({
     Key? key,
     required this.userNummer,
     required this.username,
     required this.routeNummer,
+    required this.isTeamMemberUi,
+    required this.loggedUserNummer,
   }) : super(key: key);
 
   @override
@@ -46,7 +50,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Organizations',
+        title: widget.isTeamMemberUi == true ? 'Organizations - ${widget.username} ' : 'Organizations',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
@@ -119,6 +123,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                   organizationLatitude: organizationLatitude,
                                                   organizationDistance: organizationDistance,
                                                   organizationMail: organizationMail,
+                                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                                  loggedUserNummer: widget.loggedUserNummer,
                                                 )));
                                       },
                                     ));

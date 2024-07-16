@@ -12,8 +12,11 @@ class RouteRepository {
 
   Future<List<Routes>> getRoute(String username, String date) async {
     requestHeaders = <String, String>{'Accept': 'application/json', 'Content-Type': 'application/json'};
-    inputBody = {"ysdmem^such": username, "ypldate": date};
-
+    inputBody = {
+      "ysdmem^nummer": username, 
+      "ypldate": date};
+print(inputBody);
+print(username);
     final response = await _provider.post("/getrouteassignment", jsonEncode(inputBody), requestHeaders);
 
     var itemArray = [];

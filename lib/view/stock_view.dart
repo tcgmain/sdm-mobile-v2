@@ -128,6 +128,7 @@ class _StockViewState extends State<StockView> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: SfDataGrid(
+                                      rowHeight: 60,
                                       gridLinesVisibility: GridLinesVisibility.both,
                                       headerGridLinesVisibility: GridLinesVisibility.both,
                                       columnWidthMode: ColumnWidthMode.fill,
@@ -146,17 +147,17 @@ class _StockViewState extends State<StockView> {
                                                 child: Text(
                                                   'Product',
                                                   overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: getFontSizeSmall()),
+                                                  style: TextStyle(fontSize: getFontSize()),
                                                 ))),
                                         GridColumn(
-                                            width: 80,
+                                            width: 90,
                                             columnName: 'availableStock',
                                             label: Container(
                                                 padding: const EdgeInsets.all(8.0),
                                                 alignment: Alignment.centerRight,
                                                 child: Text('Stock',
                                                     overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(fontSize: getFontSizeSmall())))),
+                                                    style: TextStyle(fontSize: getFontSize())))),
                                       ],
                                     ),
                                   ),
@@ -208,12 +209,12 @@ class ProductDataSource extends DataGridSource {
       Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.all(8.0),
-        child: Text(row.getCells()[0].value.toString(), style: TextStyle(fontSize: getFontSizeSmall())),
+        child: Text(row.getCells()[0].value.toString(), style: TextStyle(fontSize: getFontSize())),
       ),
       Container(
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8.0),
-        child: Text(row.getCells()[1].value.toString(), style: TextStyle(fontSize: getFontSizeSmall())),
+        child: Text(row.getCells()[1].value.toString(), style: TextStyle(fontSize: getFontSize())),
       ),
     ]);
   }

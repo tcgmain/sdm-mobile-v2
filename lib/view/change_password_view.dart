@@ -123,7 +123,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                 const SizedBox(height: 20),
                 textField.TextField(
                     controller: _confirmPasswordController,
-                    obscureText: _showPassword,
+                    obscureText: _showConfirmPassword,
                     inputType: 'none',
                     isRequired: true,
                     fillColor: CustomColors.textFieldFillColor,
@@ -199,7 +199,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
           showErrorAlertDialog(context, 'Please enter password fields');
         } else if (newPassword == confirmPassword) {
           _isSuccessMessageShown = false;
-          _changePasswordBloc.changePassword(currentPassword, newPassword);
+          _changePasswordBloc.changePassword(newPassword, widget.userId);
         } else {
           showErrorAlertDialog(context, 'Passwords do not match');
         }

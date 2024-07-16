@@ -15,7 +15,9 @@ class _CameraViewState extends State<CameraView> {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Camera',
-        onBackButtonPressed: () {},
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
         isHomePage: true,
       ),
       body: SafeArea(

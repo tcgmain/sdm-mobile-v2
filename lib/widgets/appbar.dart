@@ -79,7 +79,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
       ),
       title: Text(
         widget.title,
-        style: const TextStyle(color: CustomColors.appBarTextColor),
+        style: TextStyle(color: CustomColors.appBarTextColor, fontSize: getFontSizeLarge()),
       ),
       leading: widget.isHomePage
           ? null
@@ -100,6 +100,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                             username: username,
                             userNummer: userNummer,
                             loggedUserNummer: userNummer,
+                            isTeamMemberUi: false,
                           )),
                   (Route<dynamic> route) => false,
                 );
@@ -110,25 +111,10 @@ class _CommonAppBarState extends State<CommonAppBar> {
           onSelected: (String result) {
             switch (result) {
               case 'username':
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProfileView(
-                              username: username,
-                            )),
-                    (Route<dynamic> route) => false,
-                  );
-                });
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileView(username: username)));
                 break;
               case 'changePassword':
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId,)),
-                    (Route<dynamic> route) => false,
-                  );
-                });
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
                 break;
               case 'activityLog':
                 break;

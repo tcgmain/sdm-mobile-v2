@@ -34,6 +34,8 @@ class MarkVisitView extends StatefulWidget {
   final String organizationLatitude;
   final String organizationDistance;
   final String organizationMail;
+  final bool isTeamMemberUi;
+  final String loggedUserNummer;
 
   const MarkVisitView({
     Key? key,
@@ -54,6 +56,8 @@ class MarkVisitView extends StatefulWidget {
     required this.organizationLatitude,
     required this.organizationDistance,
     required this.organizationMail,
+    required this.isTeamMemberUi,
+    required this.loggedUserNummer,
   }) : super(key: key);
 
   @override
@@ -161,7 +165,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Mark Visit',
+        title: widget.isTeamMemberUi == true ? 'Mark Visit - ${widget.username} ' : 'Mark Visit',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
@@ -319,7 +323,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                   buttonText: 'Mark Visit',
                   onPressed: () async {
                     _markVisitBloc.markVisit(
-                        widget.userNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
+                        widget.loggedUserNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
                   },
                 ),
               const SizedBox(height: 5),

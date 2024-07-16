@@ -26,6 +26,8 @@ class HomeOrganizationView extends StatefulWidget {
   final String organizationLatitude;
   final String organizationDistance;
   final String organizationMail;
+  final bool isTeamMemberUi;
+  final String loggedUserNummer;
 
   const HomeOrganizationView({
     Key? key,
@@ -46,6 +48,8 @@ class HomeOrganizationView extends StatefulWidget {
     required this.organizationLatitude,
     required this.organizationDistance,
     required this.organizationMail,
+    required this.isTeamMemberUi,
+    required this.loggedUserNummer,
   }) : super(key: key);
 
   @override
@@ -80,6 +84,8 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationLatitude: widget.organizationLatitude,
       organizationDistance: widget.organizationDistance,
       organizationMail: widget.organizationMail,
+      isTeamMemberUi: widget.isTeamMemberUi,
+      loggedUserNummer: widget.loggedUserNummer,
     ),
    
     StockView(userNummer: widget.userNummer, 
@@ -90,7 +96,10 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
         userNummer: widget.userNummer,
         username: widget.username,
         organizationNummer: widget.organizationNummer,
-        organizationName: widget.organizationName),
+        organizationName: widget.organizationName,
+        isTeamMemberUi: widget.isTeamMemberUi,
+        loggedUserNummer: widget.loggedUserNummer,
+        ),
     VisitHistoryView(
       userNummer: widget.userNummer,
       organizationNummer: widget.organizationNummer,

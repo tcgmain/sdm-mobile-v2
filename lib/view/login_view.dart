@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _fetchDeviceId() async {
     deviceId = (await _getId())!;
-    setState(() {}); // Trigger a rebuild to show the device ID
+    setState(() {});
   }
 
   Future<void> _loadCredentials() async {
@@ -100,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     return CommonAppButton(
       buttonText: "Login",
       onPressed: () async {
-        setState(() {
-        });
+        setState(() {});
 
         String? deviceId = await _getId();
         print("THIS IS DEVICE ID:  $deviceId");
@@ -296,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
                 username = snapshot.data!.data!.ylogopr.toString();
-                _userDetailsBloc.getUserDetails(snapshot.data!.data!.ylogopr.toString());
+                _userDetailsBloc.getUserDetails(username);
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
@@ -305,13 +304,14 @@ class _LoginPageState extends State<LoginPage> {
 
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              if (!_isErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {
                     _isErrorMessageShown = true;
                   });
-              });
-              
+                });
+              }
           }
         }
         return Container();
@@ -337,7 +337,6 @@ class _LoginPageState extends State<LoginPage> {
 
             case Status.COMPLETED:
               var userNummer = snapshot.data!.data![0].nummer.toString();
-              //username = snapshot.data!.data![0].ylogopr.toString();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -346,6 +345,7 @@ class _LoginPageState extends State<LoginPage> {
                             username: username,
                             userNummer: userNummer,
                             loggedUserNummer: userNummer,
+                            isTeamMemberUi: false,
                           )),
                   (Route<dynamic> route) => false,
                 );

@@ -11,8 +11,15 @@ class HomePage extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
+  final bool isTeamMemberUi;
 
-  const HomePage({super.key, required this.userNummer, required this.username, required this.loggedUserNummer});
+  const HomePage({
+    super.key,
+    required this.userNummer,
+    required this.username,
+    required this.loggedUserNummer,
+    required this.isTeamMemberUi,
+  });
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -31,17 +38,26 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    print(widget.username);
+    print(widget.loggedUserNummer);
     _pages = [
       RouteView(
         username: widget.username,
         userNummer: widget.userNummer,
+        isTeamMemberUi: widget.isTeamMemberUi,
+        loggedUserNummer: widget.loggedUserNummer,
       ),
       OrganizationView(
         username: widget.username,
         userNummer: widget.userNummer,
         loggedUserNummer: widget.loggedUserNummer,
+        isTeamMemberUi: widget.isTeamMemberUi,
       ),
-      const TeamView(),
+      TeamView(
+        userNummer: widget.userNummer,
+        username: widget.username,
+        isTeamMemberUi: widget.isTeamMemberUi,
+      ),
     ];
   }
 

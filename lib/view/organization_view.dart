@@ -16,12 +16,14 @@ class OrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
+  final bool isTeamMemberUi;
 
   const OrganizationView({
     Key? key,
     required this.userNummer,
     required this.username,
     required this.loggedUserNummer,
+    required this.isTeamMemberUi,
   }) : super(key: key);
 
   @override
@@ -61,9 +63,11 @@ class _OrganizationViewState extends State<OrganizationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Organizations',
-        onBackButtonPressed: () {},
-        isHomePage: true,
+        title: widget.isTeamMemberUi == true ? 'Organizations - ${widget.username} ' : 'My Organizations',
+        onBackButtonPressed: () {
+          Navigator.pop(context);
+        },
+        isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -179,6 +183,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                       organizationLatitude: organizationLatitude,
                                                       organizationDistance: organizationDistance,
                                                       organizationMail: organizationMail,
+                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                      loggedUserNummer: widget.loggedUserNummer,
                                                     )));
                                           },
                                         ),
