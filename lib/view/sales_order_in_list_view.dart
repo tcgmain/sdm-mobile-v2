@@ -87,7 +87,8 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   bool _isWithinDateRange(String date) {
     try {
       final parsedDate = _dateFormat.parse(date);
-      return parsedDate.isAfter(_selectedDateRange!.start) && parsedDate.isBefore(_selectedDateRange!.end);
+      return (parsedDate.isAfter(_selectedDateRange!.start) || parsedDate.isAtSameMomentAs(_selectedDateRange!.start)) &&
+           (parsedDate.isBefore(_selectedDateRange!.end) || parsedDate.isAtSameMomentAs(_selectedDateRange!.end));
     } catch (e) {
       print("Error parsing date: $e");
       return false;
@@ -100,6 +101,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDateRange: _selectedDateRange,
+      confirmText: 'OK', 
     );
     if (picked != null && picked != _selectedDateRange) {
       setState(() {
