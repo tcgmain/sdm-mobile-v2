@@ -69,22 +69,24 @@ class _OrganizationViewState extends State<OrganizationView> {
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
-      floatingActionButton: widget.isTeamMemberUi == false ? FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddOrganizationView(
-                    userNummer: widget.userNummer,
-                    loggedUserNummer: widget.loggedUserNummer,
-                    username: widget.username,
-                    isTeamMemberUi: widget.isTeamMemberUi,
-                  )));
-        },
-        backgroundColor: CustomColors.buttonColor,
-        child: const Icon(
-          Icons.add,
-          color: CustomColors.buttonTextColor,
-        ),
-      ) : Container(),
+      floatingActionButton: widget.isTeamMemberUi == false
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AddOrganizationView(
+                          userNummer: widget.userNummer,
+                          loggedUserNummer: widget.loggedUserNummer,
+                          username: widget.username,
+                          isTeamMemberUi: widget.isTeamMemberUi,
+                        )));
+              },
+              backgroundColor: CustomColors.buttonColor,
+              child: const Icon(
+                Icons.add,
+                color: CustomColors.buttonTextColor,
+              ),
+            )
+          : Container(),
       body: SafeArea(
         child: BackgroundImage(
           isTeamMemberUi: widget.isTeamMemberUi,
@@ -116,7 +118,9 @@ class _OrganizationViewState extends State<OrganizationView> {
                           if (_filteredOrganizations!.isEmpty) {
                             return Center(
                               child: Text(
-                                "No organizations have been assigned for you.",
+                                widget.isTeamMemberUi == false
+                                    ? "No organizations have been assigned for you."
+                                    : "No organizations have been assigned for ${widget.username}.",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
@@ -138,7 +142,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                   child: ListView.builder(
                                     itemCount: _filteredOrganizations!.length,
                                     itemBuilder: (context, index) {
-                                      final organizations = snapshot.data!.data![index];
+                                      final organizations = _filteredOrganizations![index];
                                       final organizationId = organizations.id.toString();
                                       final organizationNummer = organizations.orgnummer.toString();
                                       final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';

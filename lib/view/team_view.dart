@@ -97,7 +97,9 @@ class _TeamViewState extends State<TeamView> {
                           if (_filteredTeam!.isEmpty) {
                             return Center(
                               child: Text(
-                                "No team members have been assigned for you.",
+                                widget.isTeamMemberUi == false
+                                    ? "No team members have been assigned for you."
+                                    : "No team members have been assigned for ${widget.username}.",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                               ),
@@ -119,12 +121,8 @@ class _TeamViewState extends State<TeamView> {
                                   child: ListView.builder(
                                     itemCount: _filteredTeam!.length,
                                     itemBuilder: (context, index) {
-                                      final team = snapshot.data!.data![index];
-                                      // final memberId = team.id.toString();
-                                      // final memberOrganizationNummer = team.yorgNummer.toString();
-                                      // final memberOrganizationName = team.yorgNamebspr?.toString() ?? 'Unnamed Route';
+                                      final team = _filteredTeam![index];
                                       final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
-                                      //final memberUserNummer = team.ypasdefNummer?.toString() ?? 'Unnamed Route';
                                       final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
                                       final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
 
@@ -133,19 +131,13 @@ class _TeamViewState extends State<TeamView> {
                                         child: ListButton(
                                           displayName: memberName,
                                           onPressed: () {
-                                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => HomePage(
-                                                          username: memberOperatorId,
-                                                          userNummer: memberNummer,
-                                                          loggedUserNummer: widget.userNummer, 
-                                                          isTeamMemberUi: true,
-                                                        )),
-                                                (Route<dynamic> route) => false,
-                                              );
-                                            });
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => HomePage(
+                                                      username: memberOperatorId,
+                                                      userNummer: memberNummer,
+                                                      loggedUserNummer: widget.userNummer,
+                                                      isTeamMemberUi: true,
+                                                    )));
                                           },
                                         ),
                                       );
@@ -155,7 +147,6 @@ class _TeamViewState extends State<TeamView> {
                               ],
                             );
                           }
-
                         case Status.ERROR:
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             showErrorAlertDialog(context, snapshot.data!.message.toString());

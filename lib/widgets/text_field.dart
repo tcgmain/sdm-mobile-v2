@@ -43,7 +43,7 @@ class TextField extends StatelessWidget {
       focusNode: myFocusNode,
       autofocus: autoFocus == true ? true : false,
       decoration: InputDecoration(
-        floatingLabelBehavior: FloatingLabelBehavior.never,
+          floatingLabelBehavior: FloatingLabelBehavior.never,
           contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 10.0, 15.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50.0),
@@ -57,7 +57,8 @@ class TextField extends StatelessWidget {
             borderSide: const BorderSide(color: CustomColors.textFieldBorderColor, width: 2.0),
             borderRadius: BorderRadius.circular(50.0),
           ),
-          labelStyle: TextStyle(color: myFocusNode.hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
+          labelStyle: TextStyle(
+              color: myFocusNode.hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
 
       // ignore: missing_return
       validator: (v) {

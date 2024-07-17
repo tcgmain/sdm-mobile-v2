@@ -92,6 +92,7 @@ class _RouteViewState extends State<RouteView> {
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
+      //drawer: CommonSidebar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _getRoutesForSelectedDate();

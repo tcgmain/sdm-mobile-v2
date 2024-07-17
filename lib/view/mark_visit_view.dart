@@ -6,6 +6,7 @@ import 'package:sdm/models/mark_visit.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_stock_view.dart';
+import 'package:sdm/view/visit_history_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -176,6 +177,25 @@ class _MarkVisitViewState extends State<MarkVisitView> {
           isTeamMemberUi: widget.isTeamMemberUi,
           child: ListView(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CommonAppButton(
+                    buttonText: 'Visit History',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => VisitHistoryView(
+                                  userNummer: widget.userNummer,
+                                  organizationNummer: widget.organizationNummer,
+                                  organizationName: widget.organizationName,
+                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                )),
+                      );
+                    },
+                  ),
+                ],
+              ),
               CircleAvatar(
                 backgroundColor: getColor(widget.organizationColour),
                 radius: 40,
@@ -323,8 +343,8 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                 CommonAppButton(
                   buttonText: 'Mark Visit',
                   onPressed: () async {
-                    _markVisitBloc.markVisit(
-                        widget.loggedUserNummer, widget.organizationNummer, widget.routeNummer, getCurrentDate(), getCurrentTime());
+                    _markVisitBloc.markVisit(widget.loggedUserNummer, widget.organizationNummer, widget.routeNummer,
+                        getCurrentDate(), getCurrentTime());
                   },
                 ),
               const SizedBox(height: 5),
@@ -415,7 +435,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                               organizationNummer: widget.organizationNummer,
                               routeNummer: widget.routeNummer,
                               visitNummer: visitNummer,
-                              loggedUserNummer: widget.loggedUserNummer, 
+                              loggedUserNummer: widget.loggedUserNummer,
                               isTeamMemberUi: widget.isTeamMemberUi,
                             )),
                   );

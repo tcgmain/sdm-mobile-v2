@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/camera_view.dart';
 import 'package:sdm/view/manage_stock_view.dart';
-import 'package:sdm/view/sales_order_view.dart';
+import 'package:sdm/view/sales_order_list_view.dart';
 
 class HomeStockView extends StatefulWidget {
   final String userNummer;
@@ -54,7 +54,8 @@ class _HomeStockViewState extends State<HomeStockView> {
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,
-      isTeamMemberUi: widget.isTeamMemberUi,
+      isTeamMemberUi: widget.isTeamMemberUi, 
+      organizationNummer: widget.organizationNummer,
     ),
     CameraView(
       userNummer: widget.userNummer,

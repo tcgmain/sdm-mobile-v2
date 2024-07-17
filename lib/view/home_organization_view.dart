@@ -4,9 +4,9 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/mark_visit_view.dart';
+import 'package:sdm/view/sales_order_list_view.dart';
 import 'package:sdm/view/stock_view.dart';
 import 'package:sdm/view/sub_organization_view.dart';
-import 'package:sdm/view/visit_history_view.dart';
 
 class HomeOrganizationView extends StatefulWidget {
   final String userNummer;
@@ -101,11 +101,12 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       isTeamMemberUi: widget.isTeamMemberUi,
       loggedUserNummer: widget.loggedUserNummer,
     ),
-    VisitHistoryView(
+    SalesOrderView(
       userNummer: widget.userNummer,
-      organizationNummer: widget.organizationNummer,
-      organizationName: widget.organizationName, 
+      username: widget.username,
+      loggedUserNummer: widget.loggedUserNummer,
       isTeamMemberUi: widget.isTeamMemberUi,
+      organizationNummer: widget.organizationNummer,
     ),
   ];
 
@@ -141,10 +142,6 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                   icon: Icons.flag,
                   text: 'Mark Visit',
                 ),
-                // GButton(
-                //   icon: Icons.receipt,
-                //   text: 'Sales Order',
-                // ),
                 GButton(
                   icon: Icons.list_alt_rounded,
                   text: 'View Stock',
@@ -154,8 +151,8 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                   text: 'Sub Region',
                 ),
                 GButton(
-                  icon: Icons.history,
-                  text: 'Visit History',
+                  icon: Icons.receipt,
+                  text: 'Sales Order',
                 ),
               ],
             ),

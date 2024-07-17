@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/sales_order_in_view.dart';
-import 'package:sdm/view/sales_order_out_view.dart';
+import 'package:sdm/view/sales_order_in_list_view.dart';
+import 'package:sdm/view/sales_order_out_list_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 
@@ -9,6 +9,7 @@ class SalesOrderView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
+  final String organizationNummer;
   final bool isTeamMemberUi;
 
   const SalesOrderView({
@@ -16,6 +17,7 @@ class SalesOrderView extends StatefulWidget {
     required this.userNummer,
     required this.username,
     required this.loggedUserNummer,
+    required this.organizationNummer,
     required this.isTeamMemberUi,
   }) : super(key: key);
 
@@ -63,11 +65,23 @@ class _SalesOrderViewState extends State<SalesOrderView> {
                     ),
                   ],
                 ),
-                const Expanded(
+                Expanded(
                   child: TabBarView(
                     children: [
-                      SalesOrderInView(),
-                      SalesOrderOutView(),
+                      SalesOrderInListView(
+                        userNummer: widget.userNummer,
+                        username: widget.username,
+                        loggedUserNummer: widget.loggedUserNummer,
+                        organizationNummer: widget.organizationNummer,
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                      ),
+                      SalesOrderOutListView(
+                        userNummer: widget.userNummer,
+                        username: widget.username,
+                        loggedUserNummer: widget.loggedUserNummer,
+                        organizationNummer: widget.organizationNummer,
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                      ),
                     ],
                   ),
                 ),

@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
   _togglePasswordVisibility() {
     setState(() {
       _showPassword = !_showPassword;
+      _isErrorMessageShown = true;
     });
   }
 
@@ -101,13 +102,15 @@ class _LoginPageState extends State<LoginPage> {
     return CommonAppButton(
       buttonText: "Login",
       onPressed: () async {
-        setState(() {});
+        setState(() {
+          _isErrorMessageShown = false;
+          _isUserDetailsErrorMessageShown = false;
+        });
 
         String? deviceId = await _getId();
         print("THIS IS DEVICE ID:  $deviceId");
 
         _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
-        _isErrorMessageShown = false;
         _isUserDetailsErrorMessageShown = false;
         if (_saveCredentials) {
           _saveCredentialsToPrefs();
@@ -203,7 +206,11 @@ class _LoginPageState extends State<LoginPage> {
                           filled: true,
                           labelText: "Password",
                           suffixIcon: getPasswordSuffixIcon(_togglePasswordVisibility, _showPassword),
-                          onChangedFunction: () {}),
+                          onChangedFunction: () {
+                            setState(() {
+                              _isErrorMessageShown = true; 
+                            });
+                          }),
                       const SizedBox(height: 10.0),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -219,18 +226,18 @@ class _LoginPageState extends State<LoginPage> {
                             side: WidgetStateBorderSide.resolveWith(
                               (states) => const BorderSide(
                                 color: CustomColors.checkBoxColor, // Border color
-                                width: 1.0, // Border width
+                                width: 1.0,
                               ),
                             ),
                             fillColor: WidgetStateProperty.resolveWith<Color?>(
                               (Set<WidgetState> states) {
                                 if (states.contains(WidgetState.selected)) {
-                                  return Colors.transparent; // Transparent fill color when selected
+                                  return Colors.transparent;
                                 }
-                                return Colors.transparent; // Transparent fill color when not selected
+                                return Colors.transparent;
                               },
                             ),
-                            checkColor: CustomColors.checkBoxColor, // Color of the check mark
+                            checkColor: CustomColors.checkBoxColor,
                           ),
                           const Text(
                             "Save Credentials",
@@ -300,20 +307,25 @@ class _LoginPageState extends State<LoginPage> {
                 _userDetailsBloc.getUserDetails(username);
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
+                  if (!_isErrorMessageShown) {
+                    showErrorAlertDialog(context, snapshot.data!.data!.yerrmsg ?? 'Unknown error');
+                    setState(() {
+                      _isErrorMessageShown = true;
+                    });
+                  }
                 });
               }
-
               break;
             case Status.ERROR:
-              if (!_isErrorMessageShown) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isErrorMessageShown) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {
                     _isErrorMessageShown = true;
                   });
-                });
-              }
+                }
+              });
+              break;
           }
         }
         return Container();
