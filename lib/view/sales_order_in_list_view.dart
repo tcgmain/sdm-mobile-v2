@@ -3,8 +3,7 @@ import 'package:sdm/blocs/sales_order_list_bloc.dart';
 import 'package:sdm/models/sales_order.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/widgets/appbar.dart';
-import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/view/sales_order_view.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
@@ -38,7 +37,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   List<SalesOrder>? _filteredSalesOrderList;
   List<SalesOrder>? _allSalesOrderList;
   DateTimeRange? _selectedDateRange;
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy'); // Update according to your date format
+  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
 
   @override
   void initState() {
@@ -76,9 +75,8 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
       final matchesSearch = salesOrder.nummer!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           salesOrder.such!.toLowerCase().contains(_searchController.text.toLowerCase());
 
-      final matchesDateRange = _selectedDateRange == null ||
-          (salesOrder.ydat != null &&
-              _isWithinDateRange(salesOrder.ydat!));
+      final matchesDateRange =
+          _selectedDateRange == null || (salesOrder.ydat != null && _isWithinDateRange(salesOrder.ydat!));
 
       return matchesSearch && matchesDateRange;
     }).toList();
@@ -87,8 +85,9 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   bool _isWithinDateRange(String date) {
     try {
       final parsedDate = _dateFormat.parse(date);
-      return (parsedDate.isAfter(_selectedDateRange!.start) || parsedDate.isAtSameMomentAs(_selectedDateRange!.start)) &&
-           (parsedDate.isBefore(_selectedDateRange!.end) || parsedDate.isAtSameMomentAs(_selectedDateRange!.end));
+      return (parsedDate.isAfter(_selectedDateRange!.start) ||
+              parsedDate.isAtSameMomentAs(_selectedDateRange!.start)) &&
+          (parsedDate.isBefore(_selectedDateRange!.end) || parsedDate.isAtSameMomentAs(_selectedDateRange!.end));
     } catch (e) {
       print("Error parsing date: $e");
       return false;
@@ -97,11 +96,28 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
 
   Future<void> _selectDateRange(BuildContext context) async {
     final DateTimeRange? picked = await showDateRangePicker(
+      switchToCalendarEntryModeIcon: const Icon(Icons.calendar_month),
+      switchToInputEntryModeIcon: const Icon(Icons.calendar_month),
+      initialEntryMode: DatePickerEntryMode.calendar,
+      saveText: "OK",
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDateRange: _selectedDateRange,
-      confirmText: 'OK', 
+      confirmText: 'OK',
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.red,
+                accentColor: Colors.grey,
+                backgroundColor: Colors.grey.shade200,
+                cardColor: Colors.grey.shade300,
+                brightness: Brightness.light),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDateRange) {
       setState(() {
@@ -125,7 +141,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
           isRequired: true,
           fillColor: CustomColors.textFieldFillColor,
           filled: true,
-          labelText: "Type to search sales order (In)...",
+          labelText: "Type to search purchase order...",
           onChangedFunction: () {},
         ),
         const SizedBox(height: 10),
@@ -194,7 +210,18 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                                     displayName: "$salesOrderNummer - $salesOrderSearchWord",
                                     rightPosition: salesOrderDate,
                                     onPressed: () {
-                                      print("press");
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => SalesOrderView(
+                                                  title: "Purchase Order",
+                                                  userNummer: widget.userNummer,
+                                                  organizationNummer: widget.organizationNummer,
+                                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                                  username: widget.username,
+                                                  loggedUserNummer: widget.loggedUserNummer,
+                                                  salesOrderNummer: salesOrderNummer,
+                                                )),
+                                      );
                                     },
                                   ),
                                 );

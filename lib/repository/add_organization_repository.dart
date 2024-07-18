@@ -41,6 +41,7 @@ class AddOrganizationRepository {
       "ygpslon": longitude,
       "ycustyp": customerTypeId,
       "yassigto": assignToNummer,
+      "yvisdis": "300"
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);

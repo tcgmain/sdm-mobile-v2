@@ -5,14 +5,14 @@ import 'package:sdm/view/sales_order_out_list_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 
-class SalesOrderView extends StatefulWidget {
+class SalesOrderListView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
   final String organizationNummer;
   final bool isTeamMemberUi;
 
-  const SalesOrderView({
+  const SalesOrderListView({
     Key? key,
     required this.userNummer,
     required this.username,
@@ -22,10 +22,10 @@ class SalesOrderView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SalesOrderView> createState() => _SalesOrderViewState();
+  State<SalesOrderListView> createState() => _SalesOrderListViewState();
 }
 
-class _SalesOrderViewState extends State<SalesOrderView> {
+class _SalesOrderListViewState extends State<SalesOrderListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,11 +56,11 @@ class _SalesOrderViewState extends State<SalesOrderView> {
                   indicatorPadding: const EdgeInsets.symmetric(horizontal: 16),
                   tabs: const [
                     Tab(
-                      text: 'Sales In',
+                      text: 'Purchase Orders',
                       icon: Icon(Icons.arrow_downward, size: 22),
                     ),
                     Tab(
-                      text: 'Sales Out',
+                      text: 'Sales Orders',
                       icon: Icon(Icons.arrow_upward, size: 22),
                     ),
                   ],

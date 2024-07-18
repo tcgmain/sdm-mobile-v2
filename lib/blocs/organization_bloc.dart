@@ -24,10 +24,10 @@ class OrganizationBloc {
       List<Organization> res = await _organizationRepository.getOrganization(userNummer);
       organizationSink.add(ResponseList.completed(res));
 
-      print("Visit SUCCESS");
+      print("VISIT SUCCESS");
     } catch (e) {
       organizationSink.add(ResponseList.error(e.toString()));
-      print("Visit ERROR $e");
+      print("VISIT ERROR $e");
     }
   }
 

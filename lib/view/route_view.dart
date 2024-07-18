@@ -41,9 +41,6 @@ class _RouteViewState extends State<RouteView> {
   @override
   void initState() {
     super.initState();
-    print(widget.userNummer);
-    print("widget.userNummer");
-    print(widget.userNummer);
     _routeBloc = RouteBloc();
     _getRoutesForSelectedDate();
   }

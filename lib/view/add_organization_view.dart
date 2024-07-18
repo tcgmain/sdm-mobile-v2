@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
@@ -44,6 +46,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String longitude;
   bool _isSuccessMessageShown = false;
   bool _isAddGoodsManagementAPICall = false;
+  bool _isErrorMessageShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
 
@@ -182,6 +185,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   void _validateField(String fieldName) {
     setState(() {
+      _isSuccessMessageShown = true;
+      _isErrorMessageShown = true;
       switch (fieldName) {
         case 'name':
           _validationMessages['name'] = _validateName(_nameController.text);
@@ -391,9 +396,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             _address4Controller.text = capitalizeWords(_address4Controller.text);
 
                             final customerTypeValidation = _validateCustomerType();
-                            print(customerTypeValidation);
                             if (_formKey.currentState!.validate() && customerTypeValidation == null) {
                               _getCurrentLocation().then((_) {
+                                setState(() {
+                                  _isSuccessMessageShown = false;
+                                  _isAddGoodsManagementAPICall = false;
+                                  _isErrorMessageShown = false;
+                                });
+
                                 final customerTypeId = _selectedCustomerType.toString();
                                 final name = _nameController.text.toString();
                                 final email = _emailController.text.toString();
@@ -419,8 +429,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     customerTypeId,
                                     widget.loggedUserNummer);
                               });
-                              _isSuccessMessageShown = false;
-                              _isAddGoodsManagementAPICall = false;
                             }
                           },
                         ),
@@ -555,9 +563,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              if (!_isErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isErrorMessageShown = true;
+                  });
+                });
+              }
           }
         }
         return Container();
@@ -598,9 +611,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               }
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              if (!_isErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isErrorMessageShown = true;
+                  });
+                });
+              }
           }
         }
         return Container();

@@ -21,7 +21,7 @@ class SalesOrder {
   String? yunit;
   String? ysdorgorfrNummer;
   String? ysdorgorfrNamebspr;
-  String? yqty;
+  double? yqty;
   String? ydat;
   String? ysdorgNummer;
   String? nummer;

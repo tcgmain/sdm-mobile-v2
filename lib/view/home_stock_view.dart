@@ -50,7 +50,7 @@ class _HomeStockViewState extends State<HomeStockView> {
       visitNummer: widget.visitNummer,
       isTeamMemberUi: widget.isTeamMemberUi,
     ),
-    SalesOrderView(
+    SalesOrderListView(
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,

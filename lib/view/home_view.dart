@@ -38,8 +38,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    print(widget.username);
-    print(widget.loggedUserNummer);
+   
     _pages = [
       RouteView(
         username: widget.username,

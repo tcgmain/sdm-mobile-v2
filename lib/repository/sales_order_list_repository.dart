@@ -16,7 +16,6 @@ class SalesOrderListRepository {
     };
 
     inputBody = {"ysdorg^nummer": organizationNummer};
-    print("INNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
     final response = await _provider.post("/getsalesorderinlist", jsonEncode(inputBody), requestHeaders);
 
     var itemArray = [];
@@ -37,7 +36,6 @@ class SalesOrderListRepository {
     };
 
     inputBody = {"ysdorgorfr^nummer": organizationNummer};
-    print("OUTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
     final response = await _provider.post("/getsalesorderoutlist", jsonEncode(inputBody), requestHeaders);
 
     var itemArray = [];

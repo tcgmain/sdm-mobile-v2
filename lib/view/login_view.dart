@@ -300,7 +300,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               );
-
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
                 username = snapshot.data!.data!.ylogopr.toString();

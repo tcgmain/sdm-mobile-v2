@@ -17,21 +17,14 @@ class SalesOrderBloc {
     _salesOrderRepository = SalesOrderRepository();
   }
 
-  getSalesOrder(String salesOrderType, String salesOrderNummer, String organizationNummer) async {
+  getSalesOrder(String salesOrderNummer) async {
     //Sales Order Types = IN / OUT
     salesOrderSink.add(ResponseList.loading(''));
     try {
-      if (salesOrderType == "IN") {
-        List<SalesOrder> res = await _salesOrderRepository.getSalesOrderIn(organizationNummer, salesOrderNummer);
+        List<SalesOrder> res = await _salesOrderRepository.getSalesOrder(salesOrderNummer);
         salesOrderSink.add(ResponseList.completed(res));
 
         print("SALES ORDER IN SUCCESS");
-      } else {
-        List<SalesOrder> res = await _salesOrderRepository.getSalesOrderOut(organizationNummer, salesOrderNummer);
-        salesOrderSink.add(ResponseList.completed(res));
-
-        print("SALES ORDER OUT SUCCESS");
-      }
     } catch (e) {
       salesOrderSink.add(ResponseList.error(e.toString()));
       print("SALES ORDER In / OUT ERROR $e");

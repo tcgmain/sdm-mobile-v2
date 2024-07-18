@@ -101,7 +101,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       isTeamMemberUi: widget.isTeamMemberUi,
       loggedUserNummer: widget.loggedUserNummer,
     ),
-    SalesOrderView(
+    SalesOrderListView(
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,
