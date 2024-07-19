@@ -11,6 +11,7 @@ import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
+import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -49,6 +50,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isErrorMessageShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
+  bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -153,6 +155,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _isLoading = true;
+    });
     _customerTypeBloc = CustomerTypeBloc();
     _customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
@@ -273,172 +278,185 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       appBar: CommonAppBar(
         title: 'Add Organizations',
         onBackButtonPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
+          // Navigator.of(context).pushReplacement(MaterialPageRoute(
+          //     builder: (context) => OrganizationView(
+          //           userNummer: widget.userNummer,
+          //           loggedUserNummer: widget.loggedUserNummer,
+          //           username: widget.username,
+          //           isTeamMemberUi: widget.isTeamMemberUi,
+          //         )));
         },
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1),
-              gradient: LinearGradient(
-                colors: [
-                  Colors.grey.shade400,
-                  Colors.white,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      addOrganizationResponse(),
-                      addGoodsManagementResponse(),
-                      customerTypeToggleButtons(),
-                      if (_validateCustomerType() != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              _validateCustomerType()!,
-                              style: const TextStyle(color: Colors.red),
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 1),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.grey.shade400,
+                      Colors.white,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          addOrganizationResponse(),
+                          addGoodsManagementResponse(),
+                          customerTypeToggleButtons(),
+                          if (_validateCustomerType() != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _validateCustomerType()!,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _nameController,
+                            label: 'Name',
+                            fieldName: 'name',
+                            focusNode: _nameFocusNode,
+                            validator: _validateName,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _emailController,
+                            label: 'E-mail',
+                            fieldName: 'email',
+                            keyboardType: TextInputType.emailAddress,
+                            focusNode: _emailFocusNode,
+                            validator: _validateEmail,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _phone1Controller,
+                            label: 'Phone 1',
+                            fieldName: 'phone1',
+                            keyboardType: TextInputType.phone,
+                            focusNode: _phone1FocusNode,
+                            validator: _validatePhone,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _phone2Controller,
+                            label: 'Phone 2',
+                            fieldName: 'phone2',
+                            keyboardType: TextInputType.phone,
+                            focusNode: _phone2FocusNode,
+                            validator: (value) => null,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _address1Controller,
+                            label: 'Address Line 1',
+                            fieldName: 'address1',
+                            focusNode: _address1FocusNode,
+                            validator: _validateAddress,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _address2Controller,
+                            label: 'Address Line 2',
+                            fieldName: 'address2',
+                            focusNode: _address2FocusNode,
+                            validator: (value) => null,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _address3Controller,
+                            label: 'Address Line 3',
+                            fieldName: 'address3',
+                            focusNode: _address3FocusNode,
+                            validator: (value) => null,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _address4Controller,
+                            label: 'Address Line 4',
+                            fieldName: 'address4',
+                            focusNode: _address4FocusNode,
+                            validator: (value) => null,
+                          ),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: CommonAppButton(
+                              buttonText: 'Submit',
+                              onPressed: () {
+                                _nameController.text = capitalizeWords(_nameController.text);
+                                _phone1Controller.text = capitalizeWords(_phone1Controller.text);
+                                _phone2Controller.text = capitalizeWords(_phone2Controller.text);
+                                _address1Controller.text = capitalizeWords(_address1Controller.text);
+                                _address2Controller.text = capitalizeWords(_address2Controller.text);
+                                _address3Controller.text = capitalizeWords(_address3Controller.text);
+                                _address4Controller.text = capitalizeWords(_address4Controller.text);
+
+                                final customerTypeValidation = _validateCustomerType();
+                                if (_formKey.currentState!.validate() && customerTypeValidation == null) {
+                                  _getCurrentLocation().then((_) {
+                                    setState(() {
+                                      _isSuccessMessageShown = false;
+                                      _isAddGoodsManagementAPICall = false;
+                                      _isErrorMessageShown = false;
+                                      _isLoading = true;
+                                    });
+
+                                    final customerTypeId = _selectedCustomerType.toString();
+                                    final name = _nameController.text.toString();
+                                    final email = _emailController.text.toString();
+                                    final phone1 = _phone1Controller.text.toString();
+                                    final phone2 = _phone2Controller.text.toString();
+                                    final address1 = _address1Controller.text.toString();
+                                    final address2 = _address2Controller.text.toString();
+                                    final address3 = _address3Controller.text.toString();
+                                    final address4 = _address4Controller.text.toString();
+
+                                    _addOrganizationBloc.addOrganization(
+                                        getSearchWord(name),
+                                        name,
+                                        email,
+                                        phone1,
+                                        phone2,
+                                        address1,
+                                        address2,
+                                        address3,
+                                        address4,
+                                        latitude,
+                                        longitude,
+                                        customerTypeId,
+                                        widget.loggedUserNummer);
+                                  });
+                                }
+                              },
                             ),
                           ),
-                        ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _nameController,
-                        label: 'Name',
-                        fieldName: 'name',
-                        focusNode: _nameFocusNode,
-                        validator: _validateName,
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _emailController,
-                        label: 'E-mail',
-                        fieldName: 'email',
-                        keyboardType: TextInputType.emailAddress,
-                        focusNode: _emailFocusNode,
-                        validator: _validateEmail,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _phone1Controller,
-                        label: 'Phone 1',
-                        fieldName: 'phone1',
-                        keyboardType: TextInputType.phone,
-                        focusNode: _phone1FocusNode,
-                        validator: _validatePhone,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _phone2Controller,
-                        label: 'Phone 2',
-                        fieldName: 'phone2',
-                        keyboardType: TextInputType.phone,
-                        focusNode: _phone2FocusNode,
-                        validator: (value) => null,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _address1Controller,
-                        label: 'Address Line 1',
-                        fieldName: 'address1',
-                        focusNode: _address1FocusNode,
-                        validator: _validateAddress,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _address2Controller,
-                        label: 'Address Line 2',
-                        fieldName: 'address2',
-                        focusNode: _address2FocusNode,
-                        validator: (value) => null,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _address3Controller,
-                        label: 'Address Line 3',
-                        fieldName: 'address3',
-                        focusNode: _address3FocusNode,
-                        validator: (value) => null,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildValidatedTextFormField(
-                        controller: _address4Controller,
-                        label: 'Address Line 4',
-                        fieldName: 'address4',
-                        focusNode: _address4FocusNode,
-                        validator: (value) => null,
-                      ),
-                      const SizedBox(height: 16),
-                      Center(
-                        child: CommonAppButton(
-                          buttonText: 'Submit',
-                          onPressed: () {
-                            _nameController.text = capitalizeWords(_nameController.text);
-                            _phone1Controller.text = capitalizeWords(_phone1Controller.text);
-                            _phone2Controller.text = capitalizeWords(_phone2Controller.text);
-                            _address1Controller.text = capitalizeWords(_address1Controller.text);
-                            _address2Controller.text = capitalizeWords(_address2Controller.text);
-                            _address3Controller.text = capitalizeWords(_address3Controller.text);
-                            _address4Controller.text = capitalizeWords(_address4Controller.text);
-
-                            final customerTypeValidation = _validateCustomerType();
-                            if (_formKey.currentState!.validate() && customerTypeValidation == null) {
-                              _getCurrentLocation().then((_) {
-                                setState(() {
-                                  _isSuccessMessageShown = false;
-                                  _isAddGoodsManagementAPICall = false;
-                                  _isErrorMessageShown = false;
-                                });
-
-                                final customerTypeId = _selectedCustomerType.toString();
-                                final name = _nameController.text.toString();
-                                final email = _emailController.text.toString();
-                                final phone1 = _phone1Controller.text.toString();
-                                final phone2 = _phone2Controller.text.toString();
-                                final address1 = _address1Controller.text.toString();
-                                final address2 = _address2Controller.text.toString();
-                                final address3 = _address3Controller.text.toString();
-                                final address4 = _address4Controller.text.toString();
-
-                                _addOrganizationBloc.addOrganization(
-                                    getSearchWord(name),
-                                    name,
-                                    email,
-                                    phone1,
-                                    phone2,
-                                    address1,
-                                    address2,
-                                    address3,
-                                    address4,
-                                    latitude,
-                                    longitude,
-                                    customerTypeId,
-                                    widget.loggedUserNummer);
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );
@@ -451,8 +469,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Loading(loadingMessage: snapshot.data!.message.toString());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               _allCustomerTypes = snapshot.data!.data!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,6 +512,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               );
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
                 showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
               return Container();
@@ -543,26 +573,38 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Column(
-                children: [
-                  LoadingAnimationWidget.staggeredDotsWave(
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ],
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
 
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               organizationNummer = snapshot.data!.data!.nummer.toString();
               organizationSearchWord = snapshot.data!.data!.such.toString();
 
               if (!_isAddGoodsManagementAPICall) {
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
                 _isAddGoodsManagementAPICall = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                });
               }
 
               break;
             case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               if (!_isErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
@@ -585,16 +627,18 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Column(
-                children: [
-                  LoadingAnimationWidget.staggeredDotsWave(
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ],
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
 
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               if (!_isSuccessMessageShown) {
                 final name = _nameController.text.toString();
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -611,6 +655,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               }
               break;
             case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               if (!_isErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());

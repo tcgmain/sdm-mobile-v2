@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/loading.dart';
 
 class CameraView extends StatefulWidget {
   final String userNummer;
@@ -21,6 +23,8 @@ class CameraView extends StatefulWidget {
 }
 
 class _CameraViewState extends State<CameraView> {
+  bool _isLoading = true; // Change this based on your logic
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,9 +36,29 @@ class _CameraViewState extends State<CameraView> {
         isHomePage: true,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Container(),
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: ListView(
+                children: [
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  Text('6787878', style: TextStyle(fontSize: 20),),
+                ],
+              ),
+            ),
+            if (_isLoading)
+              Loading(), // Display loading indicator if _isLoading is true
+          ],
         ),
       ),
     );

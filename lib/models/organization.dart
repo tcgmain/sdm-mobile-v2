@@ -1,7 +1,10 @@
 class Organization {
   Organization(
       {this.id,
+      this.such,
       this.yassigto,
+      this.yassigtoNummer,
+      this.yassigtoNamebspr,
       this.namebspr,
       this.orgnummer,
       this.yphone1,
@@ -14,10 +17,19 @@ class Organization {
       this.longitude,
       this.latitude,
       this.distance,
-      this.yemail});
+      this.yemail,
+      this.yactiv,
+      this.ylev,
+      this.ysuporgNummer,
+      this.ysuporgNamebspr,
+      this.ycustypSuch
+      });
 
   String? id;
+  String? such;
   String? yassigto;
+  String? yassigtoNummer;
+  String? yassigtoNamebspr;
   String? namebspr;
   String? orgnummer;
   String? yphone1;
@@ -31,12 +43,21 @@ class Organization {
   String? latitude;
   int? distance;
   String? yemail;
+  bool? yactiv;
+  int? ylev;
+  String? ysuporgNummer;
+  String? ysuporgNamebspr;
+  String? ycustypSuch;
 
-  factory Organization.fromJson(Map<String, dynamic> json) => Organization(
+  factory Organization.fromJson(Map<String, dynamic> json) {
+    return Organization(
         id: json["id"],
+        such: json["such"],
         yassigto: json["yassigto^such"],
+        yassigtoNummer: json["yassigto^nummer"],
+        yassigtoNamebspr: json["yassigto^namebspr"],
         namebspr: json["namebspr"],
-        orgnummer: json["nummer"],
+        orgnummer: json["nummer"], 
         yphone1: json["yphone1"],
         yphone2: json["yphone2"],
         yaddressl1: json["yaddressl1"],
@@ -48,12 +69,21 @@ class Organization {
         latitude: json["ygpslat"],
         distance: json["yvisdis"],
         yemail: json["yemail"],
-      );
+        yactiv: json["yactiv"],
+        ylev: json["ylev"],
+        ysuporgNummer: json["ysuporg^nummer"],
+        ysuporgNamebspr: json["ysuporg^namebspr"],
+        ycustypSuch: json["ycustyp^such"],
+        );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "such": such,
         "yassigto^such": yassigto,
-        "such": namebspr,
+        "yassigto^nummer": yassigtoNummer,
+        "yassigto^namebspr": yassigtoNamebspr,
+        "namebspr": namebspr,
         "nummer": orgnummer,
         "yphone1": yphone1,
         "yphone2": yphone2,
@@ -66,5 +96,10 @@ class Organization {
         "ygpslat": latitude,
         "yvisdis": distance,
         "yemail": yemail,
+        "yactiv": yactiv,
+        "ylev": ylev,
+        "ysuporg^nummer": ysuporgNummer,
+        "ysuporg^namebspr": ysuporgNamebspr,
+        "ycustyp^such": ycustypSuch,
       };
 }

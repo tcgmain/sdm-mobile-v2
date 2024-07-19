@@ -11,9 +11,21 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LoadingAnimationWidget.staggeredDotsWave(
-        color: Colors.white,
-        size: 40,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.white,
+            size: 80,
+          ),
+          // if (loadingMessage != null) ...[
+          //   SizedBox(height: 20),
+          //   Text(
+          //     loadingMessage!,
+          //     style: TextStyle(color: Colors.white, fontSize: 16),
+          //   ),
+          // ],
+        ],
       ),
     );
   }

@@ -18,9 +18,11 @@ class LoginBloc {
 
   //Getting login response
   login(String username, String password, String deviceId) async {
+    if (_loginController?.isClosed ?? true) return;
     loginSink.add(Response.loading(''));
     try {
       Login res = await _loginRepository.getLoginData(username, password, deviceId);
+      if (_loginController?.isClosed ?? true) return;
       loginSink.add(Response.completed(res));
 
       //Saving username in local storage
@@ -33,6 +35,7 @@ class LoginBloc {
     } 
     
     catch (e) {
+      if (_loginController?.isClosed ?? true) return;
       loginSink.add(Response.error(e.toString()));
       print("LOGIN ERROR");
       print(e);

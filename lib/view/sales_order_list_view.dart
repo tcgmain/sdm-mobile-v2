@@ -30,11 +30,20 @@ class _SalesOrderListViewState extends State<SalesOrderListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Sales Orders',
+        title: 'Order Management',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
         isHomePage: false,
+      ),
+        floatingActionButton: FloatingActionButton(
+        onPressed: () {
+        },
+        backgroundColor: CustomColors.buttonColor,
+        child: const Icon(
+          Icons.add,
+          color: CustomColors.buttonTextColor,
+        ),
       ),
       body: SafeArea(
         child: BackgroundImage(

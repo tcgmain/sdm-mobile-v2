@@ -33,6 +33,7 @@ class _StockViewState extends State<StockView> {
   final TextEditingController _searchController = TextEditingController();
   List<Product>? _filteredProducts;
   List<Product>? _allProducts;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -40,6 +41,9 @@ class _StockViewState extends State<StockView> {
     _stockBloc = StockBloc();
     _stockBloc.getProductStock(widget.userNummer, widget.organizationNummer);
     _searchController.addListener(_onSearchChanged);
+    setState(() {
+      _isLoading = true;
+    });
   }
 
   @override
@@ -70,116 +74,137 @@ class _StockViewState extends State<StockView> {
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: textField.TextField(
-                    controller: _searchController,
-                    obscureText: false,
-                    inputType: 'none',
-                    isRequired: true,
-                    fillColor: CustomColors.textFieldFillColor,
-                    filled: true,
-                    labelText: "Type to search product...",
-                    onChangedFunction: () {}),
-              ),
-              Expanded(
-                child: StreamBuilder<Response<Stock>>(
-                  stream: _stockBloc.stockStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      switch (snapshot.data!.status!) {
-                        case Status.LOADING:
-                          return Loading(loadingMessage: snapshot.data!.message.toString());
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: textField.TextField(
+                        controller: _searchController,
+                        obscureText: false,
+                        inputType: 'none',
+                        isRequired: true,
+                        fillColor: CustomColors.textFieldFillColor,
+                        filled: true,
+                        labelText: "Type to search product...",
+                        onChangedFunction: () {}),
+                  ),
+                  Expanded(
+                    child: StreamBuilder<Response<Stock>>(
+                      stream: _stockBloc.stockStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data!.status!) {
+                            case Status.LOADING:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                              });
 
-                        case Status.COMPLETED:
-                          _allProducts = snapshot.data!.data!.table;
-                          _filteredProducts ??= _allProducts;
+                            case Status.COMPLETED:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              _allProducts = snapshot.data!.data!.table;
+                              _filteredProducts ??= _allProducts;
 
-                          if (_filteredProducts!.isEmpty) {
-                            return Center(
-                              child: Text(
-                                "No products found",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                              ),
-                            );
-                          } else {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Total products of ${widget.organizationName}: ${_allProducts?.length}',
-                                  style:
-                                      TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
-                                ),
-                                const SizedBox(height: 5,),
-                                Expanded(
-                                  child: Container(
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                      //border: Border.all(color: Colors.white, width: 1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: SfDataGrid(
-                                      rowHeight: 60,
-                                      gridLinesVisibility: GridLinesVisibility.both,
-                                      headerGridLinesVisibility: GridLinesVisibility.both,
-                                      columnWidthMode: ColumnWidthMode.fill,
-                                      isScrollbarAlwaysShown: true,
-                                      showSortNumbers: true,
-                                      allowColumnsResizing: true,
-                                      allowSorting: true,
-                                      source: ProductDataSource(_filteredProducts!),
-                                      columns: <GridColumn>[
-                                        GridColumn(
-                                            //width: 200,
-                                            columnName: 'productName',
-                                            label: Container(
-                                                padding: const EdgeInsets.all(8.0),
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  'Product',
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: TextStyle(fontSize: getFontSize()),
-                                                ))),
-                                        GridColumn(
-                                            width: 90,
-                                            columnName: 'availableStock',
-                                            label: Container(
-                                                padding: const EdgeInsets.all(8.0),
-                                                alignment: Alignment.centerRight,
-                                                child: Text('Stock',
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(fontSize: getFontSize())))),
-                                      ],
-                                    ),
+                              if (_filteredProducts!.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    "No products found",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                   ),
-                                ),
-                              ],
-                            );
+                                );
+                              } else {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Total products of ${widget.organizationName}: ${_allProducts?.length}',
+                                      style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              CustomColors.tableBackgroundColor1,
+                                              CustomColors.tableBackgroundColor2
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
+                                          //border: Border.all(color: Colors.white, width: 1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: SfDataGrid(
+                                          rowHeight: 60,
+                                          gridLinesVisibility: GridLinesVisibility.both,
+                                          headerGridLinesVisibility: GridLinesVisibility.both,
+                                          columnWidthMode: ColumnWidthMode.fill,
+                                          isScrollbarAlwaysShown: true,
+                                          showSortNumbers: true,
+                                          allowColumnsResizing: true,
+                                          allowSorting: true,
+                                          source: ProductDataSource(_filteredProducts!),
+                                          columns: <GridColumn>[
+                                            GridColumn(
+                                                //width: 200,
+                                                columnName: 'productName',
+                                                label: Container(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text(
+                                                      'Product',
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: TextStyle(fontSize: getFontSize()),
+                                                    ))),
+                                            GridColumn(
+                                                width: 90,
+                                                columnName: 'availableStock',
+                                                label: Container(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text('Stock',
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: TextStyle(fontSize: getFontSize())))),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            case Status.ERROR:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                              });
                           }
-                        case Status.ERROR:
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            showErrorAlertDialog(context, snapshot.data!.message.toString());
-                          });
-                      }
-                    }
-                    return Container();
-                  },
-                ),
+                        }
+                        return Container();
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );

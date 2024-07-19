@@ -99,7 +99,7 @@ class _HomeStockViewState extends State<HomeStockView> {
                 ),
                 GButton(
                   icon: Icons.receipt,
-                  text: 'Sales Order',
+                  text: 'Orders',
                 ),
                 GButton(
                   icon: Icons.camera_alt,

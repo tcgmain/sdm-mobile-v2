@@ -23,13 +23,16 @@ class AddGoodsManagementBloc {
     String goodsManagementSearchWord,
     String organizationNummer,
   ) async {
+    if (_addGoodsManagementController?.isClosed ?? true) return;
     addGoodsManagementSink.add(Response.loading(''));
     try {
       AddGoodsManagement res =
           await _addGoodsManagementRepository.addGoodsManagement(goodsManagementSearchWord, organizationNummer);
+      if (_addGoodsManagementController?.isClosed ?? true) return;
       addGoodsManagementSink.add(Response.completed(res));
       print("ADD GOODS MANAGEMENT SUCCESS");
     } catch (e) {
+      if (_addGoodsManagementController?.isClosed ?? true) return;
       addGoodsManagementSink.add(Response.error(e.toString()));
       print("ADD GOODS MANAGEMENT ERROR");
     }

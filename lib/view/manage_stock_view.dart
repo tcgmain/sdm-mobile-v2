@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/goods_management_id_bloc.dart';
 import 'package:sdm/blocs/stock_bloc.dart';
@@ -50,10 +49,15 @@ class _ManageStockViewState extends State<ManageStockView> {
   late double newStock;
   late String newLastUpdatedDate;
   late String newLastUpdatedUser;
+  bool _isLoading = false;
+  final Map<String, TextEditingController> _stockControllers = {};
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _isLoading = true;
+    });
     _stockBloc = StockBloc();
     _stockBloc.getProductStock(widget.userNummer, widget.organizationNummer);
     _searchController.addListener(_onSearchChanged);
@@ -68,6 +72,7 @@ class _ManageStockViewState extends State<ManageStockView> {
     _searchController.dispose();
     _updateStockBloc.dispose();
     _goodMangementIdBloc.dispose();
+    _stockControllers.values.forEach((controller) => controller.dispose());
     super.dispose();
   }
 
@@ -100,105 +105,126 @@ class _ManageStockViewState extends State<ManageStockView> {
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: textField.TextField(
-                    controller: _searchController,
-                    obscureText: false,
-                    inputType: 'none',
-                    isRequired: true,
-                    fillColor: CustomColors.textFieldFillColor,
-                    filled: true,
-                    labelText: "Type to search product...",
-                    onChangedFunction: () {}),
-              ),
-              Expanded(
-                child: StreamBuilder<Response<Stock>>(
-                  stream: _stockBloc.stockStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      switch (snapshot.data!.status!) {
-                        case Status.LOADING:
-                          return Loading(loadingMessage: snapshot.data!.message.toString());
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: textField.TextField(
+                        controller: _searchController,
+                        obscureText: false,
+                        inputType: 'none',
+                        isRequired: true,
+                        fillColor: CustomColors.textFieldFillColor,
+                        filled: true,
+                        labelText: "Type to search product...",
+                        onChangedFunction: () {}),
+                  ),
+                  Expanded(
+                    child: StreamBuilder<Response<Stock>>(
+                      stream: _stockBloc.stockStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data!.status!) {
+                            case Status.LOADING:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                              });
 
-                        case Status.COMPLETED:
-                          _allProducts = snapshot.data!.data!.table;
-                          _filteredProducts ??= _allProducts;
+                            case Status.COMPLETED:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              _allProducts = snapshot.data!.data!.table;
+                              _filteredProducts ??= _allProducts;
 
-                          if (_filteredProducts!.isEmpty) {
-                            return Center(
-                              child: Text(
-                                "No products found",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                              ),
-                            );
-                          } else {
-                            return Scrollbar(
-                              thickness: 5,
-                              interactive: true,
-                              //thumbVisibility: true,
-                              trackVisibility: true,
-                              child: ListView.builder(
-                                itemCount: _filteredProducts!.length,
-                                itemBuilder: (context, index) {
-                                  final products = _filteredProducts![index];
-                                  final productCode = products.yprodnummer.toString();
-                                  final productName = products.yproddesc.toString();
-                                  final availableStock = products.ycurstoc.toString();
-                                  final lastUpdatedDate = products.ylastud.toString();
-                                  final lastUpdatedUser = products.ylastub.toString();
-                                  final TextEditingController newStockController = TextEditingController();
-                              
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                    child: CustomStockCard(
-                                      productId: productCode,
-                                      productName: productName,
-                                      availableStock: availableStock,
-                                      newStockController: newStockController,
-                                      lastUpdatedDate: lastUpdatedDate,
-                                      lastUpdatedUser: lastUpdatedUser,
-                                      onPressedUpdate: () {
-                                        _updateStockBloc
-                                            .updateStock(
-                                          goodsManagementId,
-                                          getCurrentDate(),
-                                          productCode,
-                                          newStockController.text.toString(),
-                                          widget.username,
-                                          widget.visitNummer,
-                                        )
-                                            .then((_) {
-                                          _updateStockCallback(products, double.parse(newStockController.text),
-                                              getCurrentDate(), widget.username);
-                                        });
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
+                              if (_filteredProducts!.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    "No products found",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                  ),
+                                );
+                              } else {
+                                return Scrollbar(
+                                  thickness: 5,
+                                  interactive: true,
+                                  //thumbVisibility: true,
+                                  trackVisibility: true,
+                                  child: ListView.builder(
+                                    itemCount: _filteredProducts!.length,
+                                    itemBuilder: (context, index) {
+                                      final products = _filteredProducts![index];
+                                      final productCode = products.yprodnummer.toString();
+                                      final productName = products.yproddesc.toString();
+                                      final availableStock = products.ycurstoc.toString();
+                                      final lastUpdatedDate = products.ylastud.toString();
+                                      final lastUpdatedUser = products.ylastub.toString();
+                                      //final TextEditingController newStockController = TextEditingController();
+                                      if (!_stockControllers.containsKey(productCode)) {
+                                        _stockControllers[productCode] = TextEditingController();
+                                      }
+                                      final TextEditingController newStockController = _stockControllers[productCode]!;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                        child: CustomStockCard(
+                                          productId: productCode,
+                                          productName: productName,
+                                          availableStock: availableStock,
+                                          newStockController: newStockController,
+                                          lastUpdatedDate: lastUpdatedDate,
+                                          lastUpdatedUser: lastUpdatedUser,
+                                          onPressedUpdate: () {
+                                            _updateStockBloc
+                                                .updateStock(
+                                              goodsManagementId,
+                                              getCurrentDate(),
+                                              productCode,
+                                              newStockController.text.toString(),
+                                              widget.username,
+                                              widget.visitNummer,
+                                            )
+                                                .then((_) {
+                                              _updateStockCallback(products, double.parse(newStockController.text),
+                                                  getCurrentDate(), widget.username);
+                                              newStockController.clear();
+                                            });
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+
+                            case Status.ERROR:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                              });
                           }
-
-                        case Status.ERROR:
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            showErrorAlertDialog(context, snapshot.data!.message.toString());
-                          });
-                      }
-                    }
-                    return Container();
-                  },
-                ),
+                        }
+                        return Container();
+                      },
+                    ),
+                  ),
+                  updateStockResponse(),
+                  organizationIdResponse()
+                ],
               ),
-              updateStockResponse(),
-              organizationIdResponse()
-            ],
-          ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );
@@ -211,9 +237,18 @@ class _ManageStockViewState extends State<ManageStockView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Loading(loadingMessage: snapshot.data!.message.toString());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
 
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               snapshot.data!.data!.table![0].yprod.toString();
               newStock = snapshot.data!.data!.table![0].ycurstoc!;
               newLastUpdatedDate = snapshot.data!.data!.table![0].yentdat.toString();
@@ -223,6 +258,9 @@ class _ManageStockViewState extends State<ManageStockView> {
 
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
                 showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
           }
@@ -239,8 +277,17 @@ class _ManageStockViewState extends State<ManageStockView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Loading(loadingMessage: snapshot.data!.message.toString());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
               var dataList = snapshot.data!.data!;
               if (dataList.isNotEmpty) {
                 var items = dataList[0];
@@ -253,6 +300,9 @@ class _ManageStockViewState extends State<ManageStockView> {
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
                 showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
               break;

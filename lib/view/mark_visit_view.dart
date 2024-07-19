@@ -67,9 +67,12 @@ class MarkVisitView extends StatefulWidget {
 
 class _MarkVisitViewState extends State<MarkVisitView> {
   String _locationMessage = "";
+  bool _isSuccessMessageShown = false;
+  bool _isErrorMessageShown = false;
   late double organizationLatitude = double.parse(widget.organizationLatitude);
   late double organizationLongitude = double.parse(widget.organizationLongitude);
   late double organizationDistance = double.parse(widget.organizationDistance);
+  bool _isLoading = false;
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
@@ -173,187 +176,197 @@ class _MarkVisitViewState extends State<MarkVisitView> {
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: ListView(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: ListView(
                 children: [
-                  CommonAppButton(
-                    buttonText: 'Visit History',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => VisitHistoryView(
-                                  userNummer: widget.userNummer,
-                                  organizationNummer: widget.organizationNummer,
-                                  organizationName: widget.organizationName,
-                                  isTeamMemberUi: widget.isTeamMemberUi,
-                                )),
-                      );
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CommonAppButton(
+                        buttonText: 'Visit History',
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => VisitHistoryView(
+                                      userNummer: widget.userNummer,
+                                      organizationNummer: widget.organizationNummer,
+                                      organizationName: widget.organizationName,
+                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                    )),
+                          );
+                        },
+                      ),
+                    ],
                   ),
+                  CircleAvatar(
+                    backgroundColor: getColor(widget.organizationColour),
+                    radius: 40,
+                    child: const Icon(
+                      Icons.business,
+                      size: 40,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.organizationName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
+                  ),
+                  const SizedBox(height: 15),
+                  widget.organizationAddress1.isNotEmpty
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.location_on,
+                              color: CustomColors.textColor,
+                              size: 25,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    widget.organizationAddress1,
+                                    style: TextStyle(
+                                      color: CustomColors.textColor,
+                                      fontSize: getFontSize(),
+                                    ),
+                                  ),
+                                  widget.organizationAddress2.isNotEmpty
+                                      ? Text(
+                                          widget.organizationAddress2,
+                                          style: TextStyle(
+                                            color: CustomColors.textColor,
+                                            fontSize: getFontSize(),
+                                          ),
+                                        )
+                                      : Container(),
+                                  widget.organizationAddress3.isNotEmpty
+                                      ? Text(
+                                          widget.organizationAddress3,
+                                          style: TextStyle(
+                                            color: CustomColors.textColor,
+                                            fontSize: getFontSize(),
+                                          ),
+                                        )
+                                      : Container(),
+                                  widget.organizationAddress4.isNotEmpty
+                                      ? Text(
+                                          widget.organizationAddress4,
+                                          style: TextStyle(
+                                            color: CustomColors.textColor,
+                                            fontSize: getFontSize(),
+                                          ),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  const SizedBox(height: 10),
+                  widget.organizationPhone1.isNotEmpty
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.phone,
+                              color: CustomColors.textColor,
+                              size: 25,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.organizationPhone1,
+                              style: TextStyle(
+                                color: CustomColors.textColor,
+                                fontSize: getFontSize(),
+                              ),
+                            ),
+                            widget.organizationPhone2.isNotEmpty
+                                ? Text(
+                                    " / ${widget.organizationPhone2}",
+                                    style: TextStyle(
+                                      color: CustomColors.textColor,
+                                      fontSize: getFontSize(),
+                                    ),
+                                  )
+                                : Container(),
+                            const Spacer(),
+                            CommonAppButton(
+                              buttonText: '  Call   ',
+                              onPressed: () {
+                                _showCallOptions(context);
+                              },
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  const SizedBox(height: 5),
+                  widget.organizationMail.isNotEmpty
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.mail,
+                              color: CustomColors.textColor,
+                              size: 25,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.organizationMail,
+                              style: TextStyle(
+                                color: CustomColors.textColor,
+                                fontSize: getFontSize(),
+                              ),
+                            ),
+                            const Spacer(),
+                            CommonAppButton(
+                              buttonText: 'E-Mail',
+                              onPressed: () {
+                                _launchEmail(widget.organizationMail);
+                              },
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  const SizedBox(height: 10),
+                  MapWidget(
+                    latitude: double.parse(widget.organizationLatitude),
+                    longitude: double.parse(widget.organizationLongitude),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_isWithinRadius)
+                    CommonAppButton(
+                      buttonText: 'Mark Visit',
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                          _isSuccessMessageShown = false;
+                          _isErrorMessageShown = false;
+                        });
+                        _markVisitBloc.markVisit(widget.loggedUserNummer, widget.organizationNummer, widget.routeNummer,
+                            getCurrentDate(), getCurrentTime());
+                      },
+                    ),
+                  const SizedBox(height: 5),
+                  Text(_locationMessage,
+                      style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
+                      textAlign: TextAlign.center),
+                  markVisitResponse()
                 ],
               ),
-              CircleAvatar(
-                backgroundColor: getColor(widget.organizationColour),
-                radius: 40,
-                child: const Icon(
-                  Icons.business,
-                  size: 40,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                widget.organizationName,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
-              ),
-              const SizedBox(height: 15),
-              widget.organizationAddress1.isNotEmpty
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Icon(
-                          Icons.location_on,
-                          color: CustomColors.textColor,
-                          size: 25,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                widget.organizationAddress1,
-                                style: TextStyle(
-                                  color: CustomColors.textColor,
-                                  fontSize: getFontSize(),
-                                ),
-                              ),
-                              widget.organizationAddress2.isNotEmpty
-                                  ? Text(
-                                      widget.organizationAddress2,
-                                      style: TextStyle(
-                                        color: CustomColors.textColor,
-                                        fontSize: getFontSize(),
-                                      ),
-                                    )
-                                  : Container(),
-                              widget.organizationAddress3.isNotEmpty
-                                  ? Text(
-                                      widget.organizationAddress3,
-                                      style: TextStyle(
-                                        color: CustomColors.textColor,
-                                        fontSize: getFontSize(),
-                                      ),
-                                    )
-                                  : Container(),
-                              widget.organizationAddress4.isNotEmpty
-                                  ? Text(
-                                      widget.organizationAddress4,
-                                      style: TextStyle(
-                                        color: CustomColors.textColor,
-                                        fontSize: getFontSize(),
-                                      ),
-                                    )
-                                  : Container(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  : Container(),
-              const SizedBox(height: 10),
-              widget.organizationPhone1.isNotEmpty
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        const Icon(
-                          Icons.phone,
-                          color: CustomColors.textColor,
-                          size: 25,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.organizationPhone1,
-                          style: TextStyle(
-                            color: CustomColors.textColor,
-                            fontSize: getFontSize(),
-                          ),
-                        ),
-                        widget.organizationPhone2.isNotEmpty
-                            ? Text(
-                                " / ${widget.organizationPhone2}",
-                                style: TextStyle(
-                                  color: CustomColors.textColor,
-                                  fontSize: getFontSize(),
-                                ),
-                              )
-                            : Container(),
-                        const Spacer(),
-                        CommonAppButton(
-                          buttonText: '  Call   ',
-                          onPressed: () {
-                            _showCallOptions(context);
-                          },
-                        ),
-                      ],
-                    )
-                  : Container(),
-              const SizedBox(height: 5),
-              widget.organizationMail.isNotEmpty
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        const Icon(
-                          Icons.mail,
-                          color: CustomColors.textColor,
-                          size: 25,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.organizationMail,
-                          style: TextStyle(
-                            color: CustomColors.textColor,
-                            fontSize: getFontSize(),
-                          ),
-                        ),
-                        const Spacer(),
-                        CommonAppButton(
-                          buttonText: 'E-Mail',
-                          onPressed: () {
-                            _launchEmail(widget.organizationMail);
-                          },
-                        ),
-                      ],
-                    )
-                  : Container(),
-              const SizedBox(height: 10),
-              MapWidget(
-                latitude: double.parse(widget.organizationLatitude),
-                longitude: double.parse(widget.organizationLongitude),
-              ),
-              const SizedBox(height: 10),
-              if (_isWithinRadius)
-                CommonAppButton(
-                  buttonText: 'Mark Visit',
-                  onPressed: () async {
-                    _markVisitBloc.markVisit(widget.loggedUserNummer, widget.organizationNummer, widget.routeNummer,
-                        getCurrentDate(), getCurrentTime());
-                  },
-                ),
-              const SizedBox(height: 5),
-              Text(_locationMessage,
-                  style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
-                  textAlign: TextAlign.center),
-              markVisitResponse()
-            ],
-          ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );
@@ -413,40 +426,57 @@ class _MarkVisitViewState extends State<MarkVisitView> {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
             case Status.LOADING:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Loading(loadingMessage: snapshot.data!.message.toString()),
-                  ],
-                ),
-              );
-            case Status.COMPLETED:
-              String visitNummer = snapshot.data!.data!.nummer.toString();
-
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => HomeStockView(
-                              userNummer: widget.userNummer,
-                              username: widget.username,
-                              organizationId: widget.organizationId,
-                              organizationNummer: widget.organizationNummer,
-                              routeNummer: widget.routeNummer,
-                              visitNummer: visitNummer,
-                              loggedUserNummer: widget.loggedUserNummer,
-                              isTeamMemberUi: widget.isTeamMemberUi,
-                            )),
-                  );
+                setState(() {
+                  _isLoading = true;
                 });
               });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+              if (!_isSuccessMessageShown) {
+                String visitNummer = snapshot.data!.data!.nummer.toString();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => HomeStockView(
+                                userNummer: widget.userNummer,
+                                username: widget.username,
+                                organizationId: widget.organizationId,
+                                organizationNummer: widget.organizationNummer,
+                                routeNummer: widget.routeNummer,
+                                visitNummer: visitNummer,
+                                loggedUserNummer: widget.loggedUserNummer,
+                                isTeamMemberUi: widget.isTeamMemberUi,
+                              )),
+                    );
+                  });
+                });
+                setState(() {
+                  _isSuccessMessageShown = true;
+                });
+              }
 
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                setState(() {
+                  _isLoading = false;
+                });
               });
+              if (!_isErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+                setState(() {
+                  _isErrorMessageShown = true;
+                });
+              }
+
               break;
           }
         }

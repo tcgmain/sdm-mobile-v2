@@ -21,13 +21,16 @@ class AddOrganizationBloc {
 
   addOrganization(searchWord, name, email, phone1, phone2, address1, address2, address3, address4, latitude, longitude,
       customerTypeId, assignToNummer) async {
+    if (_addOrganizationController?.isClosed ?? true) return;
     addOrganizationSink.add(Response.loading(''));
     try {
       AddOrganization res = await _addOrganizationRepository.addOrganization(searchWord, name, email, phone1, phone2,
           address1, address2, address3, address4, latitude, longitude, customerTypeId, assignToNummer);
+      if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.completed(res));
       print("ADD ORGANIZATION SUCCESS");
     } catch (e) {
+      if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.error(e.toString()));
       print("ADD ORGANIZATION ERROR");
     }

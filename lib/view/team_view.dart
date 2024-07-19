@@ -32,6 +32,7 @@ class _TeamViewState extends State<TeamView> {
   final TextEditingController _searchController = TextEditingController();
   List<Team>? _filteredTeam;
   List<Team>? _allTeam;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -39,6 +40,9 @@ class _TeamViewState extends State<TeamView> {
     _teamBloc = TeamBloc();
     _teamBloc.getTeamDetails(widget.userNummer);
     _searchController.addListener(_onSearchChanged);
+     setState(() {
+      _isLoading = true;
+    });
   }
 
   @override
@@ -67,98 +71,115 @@ class _TeamViewState extends State<TeamView> {
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Column(
-            children: [
-              textField.TextField(
-                  controller: _searchController,
-                  obscureText: false,
-                  inputType: 'none',
-                  isRequired: true,
-                  fillColor: CustomColors.textFieldFillColor,
-                  filled: true,
-                  labelText: "Type to search team member...",
-                  onChangedFunction: () {}),
-              Expanded(
-                child: StreamBuilder<ResponseList<Team>>(
-                  stream: _teamBloc.teamStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      switch (snapshot.data!.status!) {
-                        case Status.LOADING:
-                          return Loading(loadingMessage: snapshot.data!.message.toString());
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Column(
+                children: [
+                  textField.TextField(
+                      controller: _searchController,
+                      obscureText: false,
+                      inputType: 'none',
+                      isRequired: true,
+                      fillColor: CustomColors.textFieldFillColor,
+                      filled: true,
+                      labelText: "Type to search team member...",
+                      onChangedFunction: () {}),
+                  Expanded(
+                    child: StreamBuilder<ResponseList<Team>>(
+                      stream: _teamBloc.teamStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data!.status!) {
+                            case Status.LOADING:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                              });
 
-                        case Status.COMPLETED:
-                          _allTeam = snapshot.data!.data!;
-                          _filteredTeam ??= _allTeam;
-                          final totalTeam = _filteredTeam!.length;
+                            case Status.COMPLETED:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              _allTeam = snapshot.data!.data!;
+                              _filteredTeam ??= _allTeam;
+                              final totalTeam = _filteredTeam!.length;
 
-                          if (_filteredTeam!.isEmpty) {
-                            return Center(
-                              child: Text(
-                                widget.isTeamMemberUi == false
-                                    ? "No team members have been assigned for you."
-                                    : "No team members have been assigned for ${widget.username}.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                              ),
-                            );
-                          } else {
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Total Team Members: $totalTeam',
-                                      style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
-                                    ),
+                              if (_filteredTeam!.isEmpty) {
+                                return Center(
+                                  child: Text(
+                                    widget.isTeamMemberUi == false
+                                        ? "No team members have been assigned for you."
+                                        : "No team members have been assigned for ${widget.username}.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                   ),
-                                ),
-                                Expanded(
-                                  child: ListView.builder(
-                                    itemCount: _filteredTeam!.length,
-                                    itemBuilder: (context, index) {
-                                      final team = _filteredTeam![index];
-                                      final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
-                                      final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
-                                      final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
-
-                                      return Padding(
-                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                        child: ListButton(
-                                          displayName: memberName,
-                                          onPressed: () {
-                                            Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) => HomePage(
-                                                      username: memberOperatorId,
-                                                      userNummer: memberNummer,
-                                                      loggedUserNummer: widget.userNummer,
-                                                      isTeamMemberUi: true,
-                                                    )));
-                                          },
+                                );
+                              } else {
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'Total Team Members: $totalTeam',
+                                          style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount: _filteredTeam!.length,
+                                        itemBuilder: (context, index) {
+                                          final team = _filteredTeam![index];
+                                          final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
+                                          final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
+                                          final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
+
+                                          return Padding(
+                                            padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                            child: ListButton(
+                                              displayName: memberName,
+                                              onPressed: () {
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (context) => HomePage(
+                                                          username: memberOperatorId,
+                                                          userNummer: memberNummer,
+                                                          loggedUserNummer: widget.userNummer,
+                                                          isTeamMemberUi: true,
+                                                        )));
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            case Status.ERROR:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                              });
                           }
-                        case Status.ERROR:
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            showErrorAlertDialog(context, snapshot.data!.message.toString());
-                          });
-                      }
-                    }
-                    return Container();
-                  },
-                ),
-              )
-            ],
-          ),
+                        }
+                        return Container();
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );

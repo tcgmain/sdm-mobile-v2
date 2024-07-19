@@ -16,12 +16,15 @@ class RouteBloc {
   }
 
   getRoute(String selectedDate, String userNummer) async {
+    if (_routeController?.isClosed ?? true) return;
     routeSink.add(ResponseList.loading(''));
     try {
       List<Routes> res = await _routeRepository.getRoute(userNummer, selectedDate);
+      if (_routeController?.isClosed ?? true) return;
       routeSink.add(ResponseList.completed(res));
       print("ROUTE SUCCESS");
     } catch (e) {
+      if (_routeController?.isClosed ?? true) return;
       routeSink.add(ResponseList.error(e.toString()));
       print("ROUTE ERROR");
       print(e);

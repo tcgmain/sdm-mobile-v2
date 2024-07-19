@@ -6,6 +6,7 @@ import 'package:sdm/networking/response.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/loading.dart';
 
 class ProfileView extends StatefulWidget {
   final String username;
@@ -21,12 +22,16 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   late UserDetailsBloc _userDetailsBloc;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _userDetailsBloc = UserDetailsBloc();
     _userDetailsBloc.getUserDetails(widget.username.toString());
+    setState(() {
+      _isLoading = true;
+    });
   }
 
   @override
@@ -46,108 +51,117 @@ class _ProfileViewState extends State<ProfileView> {
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: false,
-          child: StreamBuilder<ResponseList<UserDetails>>(
-            stream: _userDetailsBloc.userDetailsStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                switch (snapshot.data!.status!) {
-                  case Status.LOADING:
-                    return Column(
-                      children: [
-                        LoadingAnimationWidget.staggeredDotsWave(
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ],
-                    );
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: false,
+              child: StreamBuilder<ResponseList<UserDetails>>(
+                stream: _userDetailsBloc.userDetailsStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data!.status!) {
+                      case Status.LOADING:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                        });
 
-                  case Status.COMPLETED:
-                    var fullName = snapshot.data!.data![0].namebspr.toString();
-                    var designation = snapshot.data!.data![0].ydes.toString();
-                    var email = snapshot.data!.data![0].email.toString();
-                    var nic = snapshot.data!.data![0].ynic.toString();
-                    var address = snapshot.data!.data![0].str.toString();
-                    var location = snapshot.data!.data![0].yusrloc.toString();
-                    var hrisId = snapshot.data!.data![0].yhrisid.toString();
+                      case Status.COMPLETED:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        });
+                        var fullName = snapshot.data!.data![0].namebspr.toString();
+                        var designation = snapshot.data!.data![0].ydes.toString();
+                        var email = snapshot.data!.data![0].email.toString();
+                        var nic = snapshot.data!.data![0].ynic.toString();
+                        var address = snapshot.data!.data![0].str.toString();
+                        var location = snapshot.data!.data![0].yusrloc.toString();
+                        var hrisId = snapshot.data!.data![0].yhrisid.toString();
 
-                    return SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor: Colors.red,
-                                  child: Text(
-                                    fullName.isNotEmpty ? fullName[0] : '?',
-                                    style: const TextStyle(color: Colors.white, fontSize: 40),
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[800],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.red,
+                                      child: Text(
+                                        fullName.isNotEmpty ? fullName[0] : '?',
+                                        style: const TextStyle(color: Colors.white, fontSize: 40),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      fullName,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      designation,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.grey.shade400,
+                                      Colors.white,
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                                //elevation: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      _buildInfoRow(Icons.email, 'Email', email),
+                                      _buildInfoRow(Icons.perm_identity, 'NIC', nic),
+                                      _buildInfoRow(Icons.home, 'Address', address),
+                                      _buildInfoRow(Icons.location_on, 'Location', location),
+                                      _buildInfoRow(Icons.card_membership, 'HRIS ID', hrisId),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  fullName,
-                                  style:
-                                      const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  designation,
-                                  style: const TextStyle(color: Colors.white70, fontSize: 16),
-                                ),
-                              ],
-                            ),
+                              )
+                            ],
                           ),
-                          const SizedBox(height: 20),
-
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.grey.shade400,
-                                  Colors.white,
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                            //elevation: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildInfoRow(Icons.email, 'Email', email),
-                                  _buildInfoRow(Icons.perm_identity, 'NIC', nic),
-                                  _buildInfoRow(Icons.home, 'Address', address),
-                                  _buildInfoRow(Icons.location_on, 'Location', location),
-                                  _buildInfoRow(Icons.card_membership, 'HRIS ID', hrisId),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  case Status.ERROR:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      showErrorAlertDialog(context, snapshot.data!.message.toString());
-                    });
-                }
-              }
-              return Container();
-            },
-          ),
+                        );
+                      case Status.ERROR:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          showErrorAlertDialog(context, snapshot.data!.message.toString());
+                        });
+                    }
+                  }
+                  return Container();
+                },
+              ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );

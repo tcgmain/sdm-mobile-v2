@@ -59,6 +59,7 @@ class CustomColors {
   static const Color cardTextColor1 = Color(0xff3b3b3b);
   static const Color cardBackgroundColor1 = Color(0xff3b3b3b);
   static const Color cardBackgroundColor2 = Color(0xff3b3b3b);
+  static const Color cardBackgroundColor3 = Color(0xff141414);
   static const Color cardTextUnderlined = Color(0xff3b3b3b);
 
   static const Color tableBackgroundColor1 = Color(0xFFB2B0B0);

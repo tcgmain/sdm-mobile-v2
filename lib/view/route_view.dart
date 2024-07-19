@@ -21,13 +21,13 @@ class RouteView extends StatefulWidget {
   final bool isTeamMemberUi;
   final String loggedUserNummer;
 
-  const RouteView({
-    Key? key,
-    required this.userNummer,
-    required this.username,
-    required this.isTeamMemberUi,
-    required this.loggedUserNummer
-  }) : super(key: key);
+  const RouteView(
+      {Key? key,
+      required this.userNummer,
+      required this.username,
+      required this.isTeamMemberUi,
+      required this.loggedUserNummer})
+      : super(key: key);
 
   @override
   State<RouteView> createState() => _RouteViewState();
@@ -36,7 +36,7 @@ class RouteView extends StatefulWidget {
 class _RouteViewState extends State<RouteView> {
   late RouteBloc _routeBloc;
   DateTime _selectedDate = DateTime.now();
-  //late String username;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -52,6 +52,9 @@ class _RouteViewState extends State<RouteView> {
   }
 
   void _getRoutesForSelectedDate() {
+    setState(() {
+      _isLoading = true;
+    });
     String formattedDate = DateFormat('dd/MM/yyyy').format(_selectedDate);
     _routeBloc.getRoute(formattedDate, widget.userNummer);
   }
@@ -89,7 +92,6 @@ class _RouteViewState extends State<RouteView> {
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
-      //drawer: CommonSidebar(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _getRoutesForSelectedDate();
@@ -101,88 +103,107 @@ class _RouteViewState extends State<RouteView> {
         ),
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Column(
                 children: [
-                  Text(
-                    'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}',
-                    style: TextStyle(fontSize: getFontSize(), color: Colors.white),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}',
+                        style: TextStyle(fontSize: getFontSize(), color: Colors.white),
+                      ),
+                      CommonAppButton(
+                        buttonText: 'Select Date',
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ],
                   ),
-                  CommonAppButton(
-                    buttonText: 'Select Date',
-                    onPressed: () => _selectDate(context),
+                  const SizedBox(
+                    height: 10,
                   ),
+                  Expanded(
+                    child: StreamBuilder<ResponseList<Routes>>(
+                      stream: _routeBloc.routeStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data!.status!) {
+                            case Status.LOADING:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                              });
+
+                            case Status.COMPLETED:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              int noOfRoutes = snapshot.data!.data!.length;
+                              if (noOfRoutes == 0) {
+                                return Center(
+                                  child: Text(
+                                    "No routes have been assigned for this date.",
+                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                  ),
+                                );
+                              } else {
+                                return ListView.builder(
+                                  itemCount: snapshot.data!.data!.length,
+                                  itemBuilder: (context, index) {
+                                    final route = snapshot.data!.data![index];
+                                    final routeNumb = route.yplrouteNummer?.toString() ?? 'Unnamed Route';
+                                    final routeName = route.yplrouteNamebspr?.toString() ?? 'Unnamed Route';
+                                    return Padding(
+                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                        child: ListButton(
+                                          displayName: routeName,
+                                          onPressed: () {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => RouteOrganizationView(
+                                                      userNummer: widget.userNummer,
+                                                      username: widget.username,
+                                                      routeNummer: routeNumb,
+                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                      loggedUserNummer: widget.loggedUserNummer,
+                                                    )));
+                                          },
+                                        ));
+                                  },
+                                );
+                              }
+
+                            case Status.ERROR:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              if (snapshot.data!.message.toString() == "404") {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  showErrorAlertDialog(context, "No routes haven't been assigned yet.");
+                                });
+                              } else {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                                });
+                              }
+                          }
+                        }
+                        return Container();
+                      },
+                    ),
+                  )
                 ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: StreamBuilder<ResponseList<Routes>>(
-                  stream: _routeBloc.routeStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      switch (snapshot.data!.status!) {
-                        case Status.LOADING:
-                          return Loading(loadingMessage: snapshot.data!.message.toString());
-
-                        case Status.COMPLETED:
-                          int noOfRoutes = snapshot.data!.data!.length;
-                          if (noOfRoutes == 0) {
-                            return Center(
-                              child: Text(
-                                "No routes have been assigned for this date.",
-                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                              ),
-                            );
-                          } else {
-                            return ListView.builder(
-                              itemCount: snapshot.data!.data!.length,
-                              itemBuilder: (context, index) {
-                                final route = snapshot.data!.data![index];
-                                final routeNumb = route.yplrouteNummer?.toString() ?? 'Unnamed Route';
-                                final routeName = route.yplrouteNamebspr?.toString() ?? 'Unnamed Route';
-                                return Padding(
-                                    padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                    child: ListButton(
-                                      displayName: routeName,
-                                      onPressed: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => RouteOrganizationView(
-                                                  userNummer: widget.userNummer,
-                                                  username: widget.username,
-                                                  routeNummer: routeNumb,
-                                                  isTeamMemberUi: widget.isTeamMemberUi, 
-                                                  loggedUserNummer: widget.loggedUserNummer,
-                                                )));
-                                      },
-                                    ));
-                              },
-                            );
-                          }
-
-                        case Status.ERROR:
-                          if (snapshot.data!.message.toString() == "404") {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              showErrorAlertDialog(context, "No routes haven't been assigned yet.");
-                            });
-                          } else {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              showErrorAlertDialog(context, snapshot.data!.message.toString());
-                            });
-                          }
-                      }
-                    }
-                    return Container();
-                  },
-                ),
-              )
-            ],
-          ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );

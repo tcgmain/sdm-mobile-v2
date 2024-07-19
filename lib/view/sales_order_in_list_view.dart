@@ -38,14 +38,18 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   List<SalesOrder>? _allSalesOrderList;
   DateTimeRange? _selectedDateRange;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _salesOrderListBloc = SalesOrderListBloc();
-    _salesOrderListBloc.getSalesOrderList("IN", widget.organizationNummer);
+    _salesOrderListBloc.getSalesOrderInList(widget.organizationNummer);
     _searchController.addListener(_onSearchChanged);
     _dateRangeController.addListener(_onDateRangeChanged);
+    setState(() {
+      _isLoading = true;
+    });
   }
 
   @override
@@ -131,117 +135,134 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        const SizedBox(height: 10),
-        textField.TextField(
-          controller: _searchController,
-          obscureText: false,
-          inputType: 'none',
-          isRequired: true,
-          fillColor: CustomColors.textFieldFillColor,
-          filled: true,
-          labelText: "Type to search purchase order...",
-          onChangedFunction: () {},
-        ),
-        const SizedBox(height: 10),
-        GestureDetector(
-          onTap: () => _selectDateRange(context),
-          child: AbsorbPointer(
-            child: textField.TextField(
-              controller: _dateRangeController,
+        Column(
+          children: [
+            const SizedBox(height: 10),
+            textField.TextField(
+              controller: _searchController,
               obscureText: false,
               inputType: 'none',
-              isRequired: false,
+              isRequired: true,
               fillColor: CustomColors.textFieldFillColor,
               filled: true,
-              labelText: "Select Date Range",
+              labelText: "Type to search purchase order...",
               onChangedFunction: () {},
             ),
-          ),
-        ),
-        Expanded(
-          child: StreamBuilder<ResponseList<SalesOrder>>(
-            stream: _salesOrderListBloc.salesOrderListStream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                switch (snapshot.data!.status!) {
-                  case Status.LOADING:
-                    return Loading(loadingMessage: snapshot.data!.message.toString());
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () => _selectDateRange(context),
+              child: AbsorbPointer(
+                child: textField.TextField(
+                  controller: _dateRangeController,
+                  obscureText: false,
+                  inputType: 'none',
+                  isRequired: false,
+                  fillColor: CustomColors.textFieldFillColor,
+                  filled: true,
+                  labelText: "Select Date Range",
+                  onChangedFunction: () {},
+                ),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<ResponseList<SalesOrder>>(
+                stream: _salesOrderListBloc.salesOrderListStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    switch (snapshot.data!.status!) {
+                      case Status.LOADING:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                        });
 
-                  case Status.COMPLETED:
-                    _allSalesOrderList = snapshot.data!.data!;
-                    _filteredSalesOrderList ??= _allSalesOrderList;
-                    final totalOrganizations = _filteredSalesOrderList!.length;
+                      case Status.COMPLETED:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        });
+                        _allSalesOrderList = snapshot.data!.data!;
+                        _filteredSalesOrderList ??= _allSalesOrderList;
+                        final totalOrganizations = _filteredSalesOrderList!.length;
 
-                    if (_filteredSalesOrderList!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          "No sales orders found.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                        ),
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Total sales orders: $totalOrganizations',
-                                style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
-                              ),
+                        if (_filteredSalesOrderList!.isEmpty) {
+                          return Center(
+                            child: Text(
+                              "No purchase orders found.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: _filteredSalesOrderList!.length,
-                              itemBuilder: (context, index) {
-                                final salesOrderList = _filteredSalesOrderList![index];
-                                final salesOrderNummer = salesOrderList.nummer.toString();
-                                final salesOrderSearchWord = salesOrderList.such.toString();
-                                final salesOrderDate = salesOrderList.ydat.toString();
-
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                  child: ListButton(
-                                    displayName: "$salesOrderNummer - $salesOrderSearchWord",
-                                    rightPosition: salesOrderDate,
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) => SalesOrderView(
-                                                  title: "Purchase Order",
-                                                  userNummer: widget.userNummer,
-                                                  organizationNummer: widget.organizationNummer,
-                                                  isTeamMemberUi: widget.isTeamMemberUi,
-                                                  username: widget.username,
-                                                  loggedUserNummer: widget.loggedUserNummer,
-                                                  salesOrderNummer: salesOrderNummer,
-                                                )),
-                                      );
-                                    },
+                          );
+                        } else {
+                          return Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Total sales orders: $totalOrganizations',
+                                    style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                   ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    }
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: _filteredSalesOrderList!.length,
+                                  itemBuilder: (context, index) {
+                                    final salesOrderList = _filteredSalesOrderList![index];
+                                    final salesOrderNummer = salesOrderList.nummer.toString();
+                                    final salesOrderSearchWord = salesOrderList.such.toString();
+                                    final salesOrderDate = salesOrderList.ydat.toString();
 
-                  case Status.ERROR:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      showErrorAlertDialog(context, snapshot.data!.message.toString());
-                    });
-                }
-              }
-              return Container();
-            },
-          ),
-        )
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                      child: ListButton(
+                                        displayName: "$salesOrderNummer - $salesOrderSearchWord",
+                                        rightPosition: salesOrderDate,
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) => SalesOrderView(
+                                                      title: "Purchase Order",
+                                                      userNummer: widget.userNummer,
+                                                      organizationNummer: widget.organizationNummer,
+                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                      username: widget.username,
+                                                      loggedUserNummer: widget.loggedUserNummer,
+                                                      salesOrderNummer: salesOrderNummer,
+                                                    )),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                      case Status.ERROR:
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          showErrorAlertDialog(context, snapshot.data!.message.toString());
+                        });
+                    }
+                  }
+                  return Container();
+                },
+              ),
+            )
+          ],
+        ),
+        if (_isLoading) const Loading(),
       ],
     );
   }
