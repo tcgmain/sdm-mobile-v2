@@ -8,6 +8,7 @@ import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/icon_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -103,7 +104,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                             _isLoading = true;
                           });
                         });
-            
+
                       case Status.COMPLETED:
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           setState(() {
@@ -125,8 +126,8 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         final yaddressl3 = organization.yaddressl3.toString();
                         final yaddressl4 = organization.yaddressl4.toString();
                         final colour = organization.colour.toString();
-                        //final longitude = organization.longitude.toString();
-                        //final latitude = organization.latitude.toString();
+                        final longitude = organization.longitude.toString();
+                        final latitude = organization.latitude.toString();
                         //final distance = organization.distance.toString();
                         final yemail = organization.yemail.toString();
                         final yactiv = organization.yactiv.toString();
@@ -134,13 +135,13 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         final ysuporgNummer = organization.ysuporgNummer.toString();
                         final ysuporgNamebspr = organization.ysuporgNamebspr.toString();
                         final ycustypSuch = organization.ycustypSuch.toString();
-            
+
                         String fullAddress = "";
                         if (yaddressl1.isNotEmpty) fullAddress += yaddressl1;
                         if (yaddressl2.isNotEmpty) fullAddress += ", $yaddressl2";
                         if (yaddressl3.isNotEmpty) fullAddress += ", $yaddressl3";
                         if (yaddressl4.isNotEmpty) fullAddress += ", $yaddressl4";
-            
+
                         return ListView(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                           children: [
@@ -157,8 +158,8 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                             Text(
                               namebspr,
                               textAlign: TextAlign.center,
-                              style:
-                                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
+                              style: const TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
                             ),
                             const SizedBox(height: 10),
                             const Divider(
@@ -286,6 +287,12 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                               style: TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
                                             ),
                                           ),
+                                             CustomIconButton(
+                          tooltip: 'Navigate to google map', 
+                          icon: const Icon(Icons.directions), 
+                          onPressed: () {
+                            openGoogleMaps(double.parse(latitude), double.parse(longitude));
+                          })
                                         ],
                                       ),
                                     ),
@@ -310,12 +317,14 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                           yphone2.isNotEmpty
                                               ? Text(
                                                   " / $yphone2",
-                                                  style: TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
+                                                  style:
+                                                      TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
                                                 )
                                               : Container(),
                                           const Spacer(),
-                                          CommonAppButton(
-                                              buttonText: "  Call  ",
+                                          CustomIconButton(
+                                              tooltip: 'Call',
+                                              icon: const Icon(Icons.call),
                                               onPressed: () {
                                                 _showCallOptions(context, yphone1, yphone2);
                                               })
@@ -342,8 +351,9 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                               style: TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
                                             ),
                                           ),
-                                          CommonAppButton(
-                                              buttonText: "  Mail  ",
+                                          CustomIconButton(
+                                              tooltip: 'E-Mail',
+                                              icon: const Icon(Icons.send),
                                               onPressed: () {
                                                 _launchEmail(yemail);
                                               })
@@ -361,7 +371,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                             // ),
                           ],
                         );
-            
+
                       case Status.ERROR:
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           setState(() {

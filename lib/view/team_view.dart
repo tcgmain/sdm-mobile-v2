@@ -137,14 +137,15 @@ class _TeamViewState extends State<TeamView> {
                                         itemCount: _filteredTeam!.length,
                                         itemBuilder: (context, index) {
                                           final team = _filteredTeam![index];
-                                          final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
+                                          //final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
+                                          final memberSearchWord = team.such?.toString() ?? 'Unnamed Route';
                                           final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
                                           final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
 
                                           return Padding(
                                             padding: const EdgeInsets.only(bottom: 3, top: 3),
                                             child: ListButton(
-                                              displayName: memberName,
+                                              displayName: memberSearchWord,
                                               onPressed: () {
                                                 Navigator.of(context).push(MaterialPageRoute(
                                                     builder: (context) => HomePage(

@@ -70,7 +70,7 @@ class _OrganizationViewState extends State<OrganizationView> {
     if (result == true) {
       setState(() {
         _organizationBloc.getOrganization(widget.userNummer);
-        _isLoading = true;
+          _isLoading = true;
       });
     }
   }

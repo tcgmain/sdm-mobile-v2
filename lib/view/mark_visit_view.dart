@@ -11,6 +11,7 @@ import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
+import 'package:sdm/widgets/icon_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
@@ -88,6 +89,15 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   void dispose() {
     _markVisitBloc.dispose();
     super.dispose();
+  }
+
+  getFullAddress() {
+    String fullAddress = "";
+    if (widget.organizationAddress1.isNotEmpty) fullAddress += widget.organizationAddress1;
+    if (widget.organizationAddress2.isNotEmpty) fullAddress += ", ${widget.organizationAddress2}";
+    if (widget.organizationAddress3.isNotEmpty) fullAddress += ", ${widget.organizationAddress3}";
+    if (widget.organizationAddress4.isNotEmpty) fullAddress += ", ${widget.organizationAddress4}";
+    return fullAddress;
   }
 
   Future<void> _getCurrentLocation() async {
@@ -216,62 +226,34 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
                   ),
                   const SizedBox(height: 15),
-                  widget.organizationAddress1.isNotEmpty
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Icon(
-                              Icons.location_on,
-                              color: CustomColors.textColor,
-                              size: 25,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    widget.organizationAddress1,
-                                    style: TextStyle(
-                                      color: CustomColors.textColor,
-                                      fontSize: getFontSize(),
-                                    ),
-                                  ),
-                                  widget.organizationAddress2.isNotEmpty
-                                      ? Text(
-                                          widget.organizationAddress2,
-                                          style: TextStyle(
-                                            color: CustomColors.textColor,
-                                            fontSize: getFontSize(),
-                                          ),
-                                        )
-                                      : Container(),
-                                  widget.organizationAddress3.isNotEmpty
-                                      ? Text(
-                                          widget.organizationAddress3,
-                                          style: TextStyle(
-                                            color: CustomColors.textColor,
-                                            fontSize: getFontSize(),
-                                          ),
-                                        )
-                                      : Container(),
-                                  widget.organizationAddress4.isNotEmpty
-                                      ? Text(
-                                          widget.organizationAddress4,
-                                          style: TextStyle(
-                                            color: CustomColors.textColor,
-                                            fontSize: getFontSize(),
-                                          ),
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.location_on,
+                        color: CustomColors.textColor,
+                        size: 25,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          getFullAddress(),
+                          style: TextStyle(
+                            color: CustomColors.textColor,
+                            fontSize: getFontSize(),
+                          ),
+                        ),
+                      ),
+                      CustomIconButton(
+                          tooltip: 'Navigate to google map', 
+                          icon: const Icon(Icons.directions), 
+                          onPressed: () {
+                            openGoogleMaps(double.parse(widget.organizationLatitude), double.parse(widget.organizationLongitude));
+                          })
+                    ],
+                  ),
+                  const SizedBox(height: 15),
                   widget.organizationPhone1.isNotEmpty
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -300,16 +282,16 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                                   )
                                 : Container(),
                             const Spacer(),
-                            CommonAppButton(
-                              buttonText: '  Call   ',
-                              onPressed: () {
-                                _showCallOptions(context);
-                              },
-                            ),
+                            CustomIconButton(
+                                tooltip: 'Call',
+                                icon: const Icon(Icons.call),
+                                onPressed: () {
+                                  _showCallOptions(context);
+                                })
                           ],
                         )
                       : Container(),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 15),
                   widget.organizationMail.isNotEmpty
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -329,12 +311,12 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                               ),
                             ),
                             const Spacer(),
-                            CommonAppButton(
-                              buttonText: 'E-Mail',
-                              onPressed: () {
-                                _launchEmail(widget.organizationMail);
-                              },
-                            ),
+                            CustomIconButton(
+                                tooltip: 'E-Mail',
+                                icon: const Icon(Icons.send),
+                                onPressed: () {
+                                  _launchEmail(widget.organizationMail);
+                                })
                           ],
                         )
                       : Container(),
@@ -484,4 +466,21 @@ class _MarkVisitViewState extends State<MarkVisitView> {
       },
     );
   }
+
+//   Widget customIconButton(BuildContext context, String tooltip){
+// return CircleAvatar(
+//                         radius: 20,
+//                         backgroundColor: CustomColors.buttonColor1,
+//                         child: IconButton(
+//                           splashColor: CustomColors.buttonColor2,
+//                           highlightColor: CustomColors.buttonColor2,
+//                           hoverColor: CustomColors.buttonColor2,
+//                           focusColor: CustomColors.buttonColor2,
+//                           color: CustomColors.buttonTextColor,
+//                           icon: const Icon(Icons.directions),
+//                           tooltip: 'Navigate to google map',
+//                           onPressed: () {},
+//                         ),
+//                       );
+//   }
 }

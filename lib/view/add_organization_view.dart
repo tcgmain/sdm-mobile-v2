@@ -259,7 +259,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return null;
   }
 
-  // Validate Customer Type
+  //Validate Customer Type
   String? _validateCustomerType() {
     if (_selectedCustomerType == null) {
       return 'Please select an organization type';
@@ -573,22 +573,22 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               });
 
             case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
-              });
+              // WidgetsBinding.instance.addPostFrameCallback((_) {
+              //   setState(() {
+              //     _isLoading = false;
+              //   });
+              // });
               organizationNummer = snapshot.data!.data!.nummer.toString();
               organizationSearchWord = snapshot.data!.data!.such.toString();
 
               if (!_isAddGoodsManagementAPICall) {
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
                 _isAddGoodsManagementAPICall = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isLoading = true;
-                  });
-                });
+                // WidgetsBinding.instance.addPostFrameCallback((_) {
+                //   setState(() {
+                //     _isLoading = true;
+                //   });
+                // });
               }
 
               break;

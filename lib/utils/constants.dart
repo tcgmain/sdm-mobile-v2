@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomColors {
   static const Color appNameTextColor = Color(0xFF707070);
@@ -146,4 +147,15 @@ getBottomNavigationBarMargin() {
 getBottomNavigationBarPadding() {
   double bottomNavigationBarMargin = 20.0;
   return bottomNavigationBarMargin;
+}
+
+Future<void> openGoogleMaps(double latitude, double longitude) async {
+  final url = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+  print(url);
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
+  } else {
+    print('Could not launch $url');
+    throw 'Could not launch $url';
+  }
 }

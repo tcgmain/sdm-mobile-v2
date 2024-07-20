@@ -7,6 +7,7 @@ class Team {
     this.ypasdefBezeich,
     this.id,
     this.nummer,
+    this.such,
   });
 
   String? yorgNummer;
@@ -16,6 +17,7 @@ class Team {
   String? ypasdefBezeich;
   String? id;
   String? nummer;
+  String? such;
 
   factory Team.fromJson(Map<String, dynamic> json) => Team(
         yorgNummer: json["yorg^nummer"],
@@ -25,6 +27,7 @@ class Team {
         ypasdefBezeich: json["ypasdef^bezeich"],
         id: json["id"],
         nummer: json["nummer"],
+        such: json["such"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -35,5 +38,6 @@ class Team {
         "ypasdef^bezeich": ypasdefBezeich,
         "id": id,
         "nummer": nummer,
+        "such": such,
       };
 }
