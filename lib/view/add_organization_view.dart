@@ -279,13 +279,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         title: 'Add Organizations',
         onBackButtonPressed: () {
           Navigator.pop(context, true);
-          // Navigator.of(context).pushReplacement(MaterialPageRoute(
-          //     builder: (context) => OrganizationView(
-          //           userNummer: widget.userNummer,
-          //           loggedUserNummer: widget.loggedUserNummer,
-          //           username: widget.username,
-          //           isTeamMemberUi: widget.isTeamMemberUi,
-          //         )));
         },
         isHomePage: false,
       ),

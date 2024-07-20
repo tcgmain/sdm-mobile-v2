@@ -37,25 +37,6 @@ class _OrganizationViewState extends State<OrganizationView> {
   List<Organization>? _allOrganizations;
   bool _isLoading = false;
 
-  Future<void> _navigateToAddOrganization() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => AddOrganizationView(
-                userNummer: widget.userNummer,
-                loggedUserNummer: widget.loggedUserNummer,
-                username: widget.username,
-                isTeamMemberUi: widget.isTeamMemberUi,
-              )),
-    );
-
-    if (result != null && result == true) {
-      setState(() {
-
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -72,6 +53,26 @@ class _OrganizationViewState extends State<OrganizationView> {
     _organizationBloc.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _navigateToAddOrganizationView() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AddOrganizationView(
+                userNummer: widget.userNummer,
+                loggedUserNummer: widget.loggedUserNummer,
+                username: widget.username,
+                isTeamMemberUi: widget.isTeamMemberUi,
+              )),
+    );
+
+    if (result == true) {
+      setState(() {
+        _organizationBloc.getOrganization(widget.userNummer);
+        _isLoading = true;
+      });
+    }
   }
 
   void _onSearchChanged() {
@@ -95,7 +96,7 @@ class _OrganizationViewState extends State<OrganizationView> {
       floatingActionButton: widget.isTeamMemberUi == false
           ? FloatingActionButton(
               onPressed: () {
-                _navigateToAddOrganization();
+                _navigateToAddOrganizationView();
               },
               backgroundColor: CustomColors.buttonColor,
               child: const Icon(
