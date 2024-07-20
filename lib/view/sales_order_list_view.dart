@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/create_order_view.dart';
 import 'package:sdm/view/sales_order_in_list_view.dart';
 import 'package:sdm/view/sales_order_out_list_view.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -10,6 +11,9 @@ class SalesOrderListView extends StatefulWidget {
   final String username;
   final String loggedUserNummer;
   final String organizationNummer;
+  final String organizationName;
+  final String ysuporgNummer;
+  final String ysuporgNamebspr;
   final bool isTeamMemberUi;
 
   const SalesOrderListView({
@@ -18,6 +22,9 @@ class SalesOrderListView extends StatefulWidget {
     required this.username,
     required this.loggedUserNummer,
     required this.organizationNummer,
+    required this.organizationName,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
     required this.isTeamMemberUi,
   }) : super(key: key);
 
@@ -38,6 +45,19 @@ class _SalesOrderListViewState extends State<SalesOrderListView> {
       ),
         floatingActionButton: FloatingActionButton(
         onPressed: () {
+            Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => CreateOrderView(
+                                      userNummer: widget.userNummer,
+                                      organizationNummer: widget.organizationNummer,
+                                      organizationName: widget.organizationName,
+                                      ysuporgNummer: widget.ysuporgNummer,
+                                      ysuporgNamebspr: widget.ysuporgNamebspr,
+                                      isTeamMemberUi: widget.isTeamMemberUi, 
+                                      username: widget.username, 
+                                      loggedUserNummer: widget.loggedUserNummer, 
+                                    )),
+                          );
         },
         backgroundColor: CustomColors.buttonColor,
         child: const Icon(

@@ -18,6 +18,8 @@ class SubOrganizationView extends StatefulWidget {
   final String organizationName;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
+  final String ysuporgNummer;
+  final String ysuporgNamebspr;
 
   const SubOrganizationView({
     Key? key,
@@ -27,6 +29,8 @@ class SubOrganizationView extends StatefulWidget {
     required this.organizationName,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
   }) : super(key: key);
 
   @override
@@ -182,7 +186,9 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                     organizationDistance: subOrganizationDistance,
                                                     organizationMail: subOrganizationMail,
                                                     isTeamMemberUi: widget.isTeamMemberUi,
-                                                    loggedUserNummer: widget.loggedUserNummer,
+                                                    loggedUserNummer: widget.loggedUserNummer, 
+                                                    ysuporgNummer: widget.ysuporgNummer,
+                                                    ysuporgNamebspr: widget.ysuporgNamebspr,
                                                   )));
                                         },
                                       ),

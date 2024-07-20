@@ -38,6 +38,8 @@ class MarkVisitView extends StatefulWidget {
   final String organizationMail;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
+  final String ysuporgNummer;
+  final String ysuporgNamebspr;
 
   const MarkVisitView({
     Key? key,
@@ -60,6 +62,8 @@ class MarkVisitView extends StatefulWidget {
     required this.organizationMail,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
   }) : super(key: key);
 
   @override
@@ -433,7 +437,10 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                                 routeNummer: widget.routeNummer,
                                 visitNummer: visitNummer,
                                 loggedUserNummer: widget.loggedUserNummer,
-                                isTeamMemberUi: widget.isTeamMemberUi,
+                                isTeamMemberUi: widget.isTeamMemberUi, 
+                                organizationName: widget.organizationName, 
+                                ysuporgNummer: widget.ysuporgNummer, 
+                                ysuporgNamebspr: widget.ysuporgNamebspr,
                               )),
                     );
                   });

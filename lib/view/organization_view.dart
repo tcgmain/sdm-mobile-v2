@@ -70,7 +70,7 @@ class _OrganizationViewState extends State<OrganizationView> {
     if (result == true) {
       setState(() {
         _organizationBloc.getOrganization(widget.userNummer);
-          _isLoading = true;
+        _isLoading = true;
       });
     }
   }
@@ -197,7 +197,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                           final organizationDistance =
                                               organizations.distance?.toString() ?? 'Unnamed Route';
                                           final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-
+                                          final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                          final ysuporgNamebspr = organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
                                           return Padding(
                                             padding: const EdgeInsets.only(bottom: 3, top: 3),
                                             child: ListButton(
@@ -223,7 +224,9 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                           organizationDistance: organizationDistance,
                                                           organizationMail: organizationMail,
                                                           isTeamMemberUi: widget.isTeamMemberUi,
-                                                          loggedUserNummer: widget.loggedUserNummer,
+                                                          loggedUserNummer: widget.loggedUserNummer, 
+                                                          ysuporgNummer: ysuporgNummer,
+                                                          ysuporgNamebspr: ysuporgNamebspr,
                                                         )));
                                               },
                                             ),

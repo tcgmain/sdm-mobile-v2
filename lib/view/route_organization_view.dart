@@ -125,7 +125,9 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                   organizationDistance: organizationDistance,
                                                   organizationMail: organizationMail,
                                                   isTeamMemberUi: widget.isTeamMemberUi,
-                                                  loggedUserNummer: widget.loggedUserNummer,
+                                                  loggedUserNummer: widget.loggedUserNummer, 
+                                                  ysuporgNummer: '', 
+                                                  ysuporgNamebspr: '',
                                                 )));
                                       },
                                     ));

@@ -11,6 +11,9 @@ class HomeStockView extends StatefulWidget {
   final String loggedUserNummer;
   final String organizationId;
   final String organizationNummer;
+  final String organizationName;
+  final String ysuporgNummer;
+  final String ysuporgNamebspr;
   final String routeNummer;
   final String visitNummer;
   final bool isTeamMemberUi;
@@ -22,6 +25,9 @@ class HomeStockView extends StatefulWidget {
     required this.loggedUserNummer,
     required this.organizationId,
     required this.organizationNummer,
+    required this.organizationName,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
     required this.routeNummer,
     required this.visitNummer,
     required this.isTeamMemberUi,
@@ -54,8 +60,11 @@ class _HomeStockViewState extends State<HomeStockView> {
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,
-      isTeamMemberUi: widget.isTeamMemberUi, 
+      isTeamMemberUi: widget.isTeamMemberUi,
       organizationNummer: widget.organizationNummer,
+      organizationName: widget.organizationName,
+      ysuporgNummer: widget.ysuporgNummer,
+      ysuporgNamebspr: widget.ysuporgNamebspr,
     ),
     CameraView(
       userNummer: widget.userNummer,

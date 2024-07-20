@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
@@ -11,7 +10,6 @@ import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
-import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -51,6 +49,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String organizationNummer;
   late String organizationSearchWord;
   bool _isLoading = false;
+  bool _isOrganizationTypeShown = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -311,17 +310,18 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           addOrganizationResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
-                          if (_validateCustomerType() != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  _validateCustomerType()!,
-                                  style: const TextStyle(color: Colors.red),
+                          if (_isOrganizationTypeShown)
+                            if (_validateCustomerType() != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    _validateCustomerType()!,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
                                 ),
                               ),
-                            ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _nameController,
@@ -394,6 +394,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             child: CommonAppButton(
                               buttonText: 'Submit',
                               onPressed: () {
+                                setState(() {
+                                  _isLoading = true;
+                                });
                                 _nameController.text = capitalizeWords(_nameController.text);
                                 _phone1Controller.text = capitalizeWords(_phone1Controller.text);
                                 _phone2Controller.text = capitalizeWords(_phone2Controller.text);
@@ -404,12 +407,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
                                   _getCurrentLocation().then((_) {
                                     setState(() {
                                       _isSuccessMessageShown = false;
                                       _isAddGoodsManagementAPICall = false;
                                       _isErrorMessageShown = false;
-                                      _isLoading = true;
                                     });
 
                                     final customerTypeId = _selectedCustomerType.toString();
@@ -438,6 +443,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         widget.loggedUserNummer);
                                   });
                                 }
+                                setState(() {
+                                  _isLoading = false;
+                                });
                               },
                             ),
                           ),
@@ -470,6 +478,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.COMPLETED:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
+                  _isOrganizationTypeShown = true;
                   _isLoading = false;
                 });
               });

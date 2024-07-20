@@ -28,6 +28,8 @@ class HomeOrganizationView extends StatefulWidget {
   final String organizationMail;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
+  final String ysuporgNummer;
+  final String ysuporgNamebspr;
 
   const HomeOrganizationView({
     Key? key,
@@ -50,6 +52,8 @@ class HomeOrganizationView extends StatefulWidget {
     required this.organizationMail,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
   }) : super(key: key);
 
   @override
@@ -85,7 +89,9 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationDistance: widget.organizationDistance,
       organizationMail: widget.organizationMail,
       isTeamMemberUi: widget.isTeamMemberUi,
-      loggedUserNummer: widget.loggedUserNummer,
+      loggedUserNummer: widget.loggedUserNummer, 
+      ysuporgNummer: widget.ysuporgNummer, 
+      ysuporgNamebspr: widget.ysuporgNamebspr,
     ),
     StockView(
       userNummer: widget.userNummer,
@@ -99,14 +105,19 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationNummer: widget.organizationNummer,
       organizationName: widget.organizationName,
       isTeamMemberUi: widget.isTeamMemberUi,
-      loggedUserNummer: widget.loggedUserNummer,
+      loggedUserNummer: widget.loggedUserNummer, 
+      ysuporgNummer: widget.ysuporgNummer, 
+      ysuporgNamebspr: widget.ysuporgNamebspr,
     ),
     SalesOrderListView(
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,
       isTeamMemberUi: widget.isTeamMemberUi,
-      organizationNummer: widget.organizationNummer,
+      organizationNummer: widget.organizationNummer, 
+      organizationName: widget.organizationName, 
+      ysuporgNummer: widget.ysuporgNummer, 
+      ysuporgNamebspr: widget.ysuporgNamebspr,
     ),
   ];
 
