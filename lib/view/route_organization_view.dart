@@ -32,10 +32,14 @@ class RouteOrganizationView extends StatefulWidget {
 
 class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   late RouteOrganizationBloc _routeOrganizationBloc;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _isLoading = true;
+    });
     _routeOrganizationBloc = RouteOrganizationBloc();
     _routeOrganizationBloc.getRouteOrganization(widget.routeNummer);
   }
@@ -57,96 +61,115 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
         isHomePage: false,
       ),
       body: SafeArea(
-        child: BackgroundImage(
-          isTeamMemberUi: widget.isTeamMemberUi,
-          child: Column(
-            children: [
-              Expanded(
-                child: StreamBuilder<ResponseList<RouteOrganization>>(
-                  stream: _routeOrganizationBloc.routeOrganizationStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      switch (snapshot.data!.status!) {
-                        case Status.LOADING:
-                          return Loading(loadingMessage: snapshot.data!.message.toString());
-
-                        case Status.COMPLETED:
-                          int noOfOrganizations = snapshot.data!.data!.length;
-                          if (noOfOrganizations == 0) {
-                            return Center(
-                              child: Text(
-                                "No organizations have been assigned for this route.",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                              ),
-                            );
-                          } else {
-                            return ListView.builder(
-                              itemCount: snapshot.data!.data!.length,
-                              itemBuilder: (context, index) {
-                                final organizations = snapshot.data!.data![index];
-                                final organizationId = organizations.ysdmorgId.toString();
-                                final organizationNummer = organizations.orgnummer.toString();
-                                final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
-                                final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
-                                final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
-                                final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
-                                final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
-                                final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
-                                final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
-                                final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
-                                final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-
-                                return Padding(
-                                    padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                    child: ListButton(
-                                      displayName: organizationName,
-                                      onPressed: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => HomeOrganizationView(
-                                                  userNummer: widget.userNummer,
-                                                  username: widget.username,
-                                                  routeNummer: widget.routeNummer,
-                                                  organizationId: organizationId,
-                                                  organizationNummer: organizationNummer,
-                                                  organizationName: organizationName,
-                                                  organizationPhone1: organizationPhone1,
-                                                  organizationPhone2: organizationPhone2,
-                                                  organizationAddress1: organizationAddress1,
-                                                  organizationAddress2: organizationAddress2,
-                                                  organizationAddress3: organizationAddress3,
-                                                  organizationAddress4: organizationAddress4,
-                                                  organizationColour: organizationColour,
-                                                  organizationLongitude: organizationLongitude,
-                                                  organizationLatitude: organizationLatitude,
-                                                  organizationDistance: organizationDistance,
-                                                  organizationMail: organizationMail,
-                                                  isTeamMemberUi: widget.isTeamMemberUi,
-                                                  loggedUserNummer: widget.loggedUserNummer, 
-                                                  ysuporgNummer: '', 
-                                                  ysuporgNamebspr: '',
-                                                )));
-                                      },
-                                    ));
-                              },
-                            );
+        child: Stack(
+          children: [
+            BackgroundImage(
+              isTeamMemberUi: widget.isTeamMemberUi,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder<ResponseList<RouteOrganization>>(
+                      stream: _routeOrganizationBloc.routeOrganizationStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data!.status!) {
+                            case Status.LOADING:
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                              });
+            
+                            case Status.COMPLETED:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                              int noOfOrganizations = snapshot.data!.data!.length;
+                              if (noOfOrganizations == 0) {
+                                return Center(
+                                  child: Text(
+                                    "No organizations have been assigned for this route.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                  ),
+                                );
+                              } else {
+                                return ListView.builder(
+                                  itemCount: snapshot.data!.data!.length,
+                                  itemBuilder: (context, index) {
+                                    final organizations = snapshot.data!.data![index];
+                                    final organizationId = organizations.ysdmorgId.toString();
+                                    final organizationNummer = organizations.orgnummer.toString();
+                                    final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
+                                    final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
+                                    final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
+                                    final organizationAddress1 = organizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                    final organizationAddress2 = organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                    final organizationAddress3 = organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                    final organizationAddress4 = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                    final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
+                                    final organizationLongitude = organizations.longitude?.toString() ?? 'Unnamed Route';
+                                    final organizationLatitude = organizations.latitude?.toString() ?? 'Unnamed Route';
+                                    final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
+                                    final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
+                                    final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                    final ysuporgNamebspr = organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+            
+                                    return Padding(
+                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                        child: ListButton(
+                                          displayName: organizationName,
+                                          onPressed: () {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => HomeOrganizationView(
+                                                      userNummer: widget.userNummer,
+                                                      username: widget.username,
+                                                      routeNummer: widget.routeNummer,
+                                                      organizationId: organizationId,
+                                                      organizationNummer: organizationNummer,
+                                                      organizationName: organizationName,
+                                                      organizationPhone1: organizationPhone1,
+                                                      organizationPhone2: organizationPhone2,
+                                                      organizationAddress1: organizationAddress1,
+                                                      organizationAddress2: organizationAddress2,
+                                                      organizationAddress3: organizationAddress3,
+                                                      organizationAddress4: organizationAddress4,
+                                                      organizationColour: organizationColour,
+                                                      organizationLongitude: organizationLongitude,
+                                                      organizationLatitude: organizationLatitude,
+                                                      organizationDistance: organizationDistance,
+                                                      organizationMail: organizationMail,
+                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                      loggedUserNummer: widget.loggedUserNummer, 
+                                                      ysuporgNummer: ysuporgNummer, 
+                                                      ysuporgNamebspr: ysuporgNamebspr,
+                                                    )));
+                                          },
+                                        ));
+                                  },
+                                );
+                              }
+            
+                            case Status.ERROR:
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                              });
                           }
-
-                        case Status.ERROR:
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            showErrorAlertDialog(context, snapshot.data!.message.toString());
-                          });
-                      }
-                    }
-                    return Container();
-                  },
-                ),
-              )
-            ],
-          ),
+                        }
+                        return Container();
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+            if (_isLoading) const Loading(),
+          ],
         ),
       ),
     );

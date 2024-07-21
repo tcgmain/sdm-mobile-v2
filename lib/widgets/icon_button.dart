@@ -16,12 +16,12 @@ class CustomIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius: 20,
+      radius: 21,
       backgroundColor: CustomColors.buttonColor1,
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [
                 CustomColors.buttonColor3,
                 CustomColors.buttonColor2,
@@ -29,6 +29,10 @@ class CustomIconButton extends StatelessWidget {
                begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
+            border: Border.all(
+            color: CustomColors.buttonBorderColor, 
+            width: 1.0, 
+          ),
           ),
         child: IconButton(
           splashColor: CustomColors.buttonColor2,

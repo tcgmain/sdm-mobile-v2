@@ -3,6 +3,7 @@ import 'package:sdm/blocs/stock_bloc.dart';
 import 'package:sdm/models/stock.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -85,6 +86,15 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                   _buildProductDropdown(),
                   const SizedBox(height: 20),
                   _buildSelectedProductsTable(),
+                  const SizedBox(height: 20),
+                  CommonAppButton(
+                    buttonText: "Create Order", 
+                    onPressed: (){
+                      print("pressed");
+
+                    }
+                  )
+
                 ],
               ),
             ),
@@ -165,16 +175,25 @@ class _CreateOrderViewState extends State<CreateOrderView> {
   }
 
   Widget _buildProductDropdown() {
-    return MultiSelectDialogField(
-      items:
-          _availableProducts.map((product) => MultiSelectItem<Product>(product, product.yproddesc.toString())).toList(),
+    return MultiSelectBottomSheetField<Product?>(
+      initialChildSize: 0.4,
+      maxChildSize: 0.95,
       title: const Text("Select Products"),
+      buttonText: Text(
+        "Select Products",
+        style: TextStyle(
+          color: CustomColors.cardTextColor,
+          fontSize: getFontSize(),
+        ),
+      ),
+      items: _availableProducts.map((product) => MultiSelectItem<Product?>(product, "${product.yprodnummer} - ${product.yproddesc}")).toList(),
+      searchable: true,
       selectedColor: CustomColors.appBarColor1,
       decoration: BoxDecoration(
         color: CustomColors.textColor,
         borderRadius: const BorderRadius.all(Radius.circular(40)),
         border: Border.all(
-          color: CustomColors.cardBackgroundColor1,
+          color: CustomColors.tableBackgroundColor2,
           width: 2,
         ),
       ),
@@ -182,44 +201,33 @@ class _CreateOrderViewState extends State<CreateOrderView> {
         Icons.arrow_drop_down,
         color: CustomColors.cardTextColor,
       ),
-      buttonText: const Text(
-        "Select Products",
-        style: TextStyle(
-          color: CustomColors.cardTextColor,
-          fontSize: 16,
-        ),
-      ),
       onConfirm: (results) {
         setState(() {
           _selectedProducts.addAll(results.cast<Product>());
           _filterAvailableProducts();
         });
       },
-      chipDisplay: MultiSelectChipDisplay(
-        onTap: (product) {
-          setState(() {
-            _selectedProducts.remove(product);
-            _filterAvailableProducts();
-          });
-        },
-      ),
+      chipDisplay: MultiSelectChipDisplay.none(),
     );
   }
+
 
   Widget _buildSelectedProductsTable() {
     return Container(
       clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.circular(8),
-          ),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
+          // ignore: deprecated_member_use
+          dataRowHeight: 70,
           headingRowColor: WidgetStateProperty.all(CustomColors.tableBackgroundColor1),
           columns: [
             DataColumn(
@@ -261,9 +269,9 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                           maxWidth: MediaQuery.of(context).size.width * 0.5,
                         ),
                         child: Text(
-                          product.yproddesc.toString(),
+                          "${product.yprodnummer} - ${product.yproddesc}",
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                          maxLines: 4,
                         ),
                       ),
                     ),
