@@ -160,6 +160,10 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                     final subOrganizationDistance =
                                         subOrganizations.distance?.toString() ?? 'Unnamed Route';
                                     final subOrganizationMail = subOrganizations.yemail?.toString() ?? 'Unnamed Route';
+                                    final subOrganizationSuperiorOrgNummer =
+                                        subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                    final subOrganizationSuperiorOrgNamebspr =
+                                        subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -186,9 +190,9 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                     organizationDistance: subOrganizationDistance,
                                                     organizationMail: subOrganizationMail,
                                                     isTeamMemberUi: widget.isTeamMemberUi,
-                                                    loggedUserNummer: widget.loggedUserNummer, 
-                                                    ysuporgNummer: widget.ysuporgNummer,
-                                                    ysuporgNamebspr: widget.ysuporgNamebspr,
+                                                    loggedUserNummer: widget.loggedUserNummer,
+                                                    ysuporgNummer: subOrganizationSuperiorOrgNummer,
+                                                    ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
                                                   )));
                                         },
                                       ),

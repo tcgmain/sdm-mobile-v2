@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sdm/blocs/create_so_bloc.dart';
 import 'package:sdm/blocs/stock_bloc.dart';
+import 'package:sdm/models/create_so.dart';
 import 'package:sdm/models/stock.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -9,6 +13,7 @@ import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:sdm/widgets/success_alert.dart';
 
 class CreateOrderView extends StatefulWidget {
   final String userNummer;
@@ -38,10 +43,14 @@ class CreateOrderView extends StatefulWidget {
 
 class _CreateOrderViewState extends State<CreateOrderView> {
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
+  bool _isSuccessMessageShown = false;
   late StockBloc _stockBloc;
+  late CreateSoBloc _createSoBloc;
   List<Product>? _allProducts;
   List<Product> _selectedProducts = [];
   List<Product> _availableProducts = [];
+  Map<String, String> _productQuantities = {};
 
   @override
   void initState() {
@@ -51,11 +60,13 @@ class _CreateOrderViewState extends State<CreateOrderView> {
     });
     _stockBloc = StockBloc();
     _stockBloc.getProductStock(widget.userNummer, widget.organizationNummer);
+    _createSoBloc = CreateSoBloc();
   }
 
   @override
   void dispose() {
     _stockBloc.dispose();
+    _createSoBloc.dispose();
     super.dispose();
   }
 
@@ -77,6 +88,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
               child: ListView(
                 children: [
                   getProductsResponse(),
+                  createSoResponse(),
                   salesOrderDetails("Date", getCurrentDate()),
                   salesOrderDetails("Created By", widget.username),
                   const Divider(),
@@ -88,13 +100,28 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                   _buildSelectedProductsTable(),
                   const SizedBox(height: 20),
                   CommonAppButton(
-                    buttonText: "Create Order", 
-                    onPressed: (){
-                      print("pressed");
+                      buttonText: "Create Order",
+                      onPressed: () {
+                        setState(() {
+                          _isErrorMessageShown = false;
+                          _isSuccessMessageShown = false;
+                        });
+                        print("pressed");
 
-                    }
-                  )
+                        List<Map<String, String?>> orderedList = _selectedProducts.map((product) {
+                          return {'yprod': product.yprodnummer, 'yqty': _productQuantities[product.yprodnummer] ?? '0'};
+                        }).toList();
 
+                        bool hasZeroQuantity = orderedList.any((product) => product['yqty'] == '0');
+                        if (orderedList.isEmpty) {
+                          showErrorAlertDialog(context, "Please add product/s to create order");
+                        } else if (hasZeroQuantity) {
+                          showErrorAlertDialog(context, "Product quantity cannot be zero. Please adjust quantities.");
+                        } else {
+                          _createSoBloc.createSO(widget.loggedUserNummer, getCurrentDate(), widget.ysuporgNummer,
+                              widget.organizationNummer, orderedList);
+                        }
+                      })
                 ],
               ),
             ),
@@ -186,7 +213,9 @@ class _CreateOrderViewState extends State<CreateOrderView> {
           fontSize: getFontSize(),
         ),
       ),
-      items: _availableProducts.map((product) => MultiSelectItem<Product?>(product, "${product.yprodnummer} - ${product.yproddesc}")).toList(),
+      items: _availableProducts
+          .map((product) => MultiSelectItem<Product?>(product, "${product.yprodnummer} - ${product.yproddesc}"))
+          .toList(),
       searchable: true,
       selectedColor: CustomColors.appBarColor1,
       decoration: BoxDecoration(
@@ -203,7 +232,11 @@ class _CreateOrderViewState extends State<CreateOrderView> {
       ),
       onConfirm: (results) {
         setState(() {
-          _selectedProducts.addAll(results.cast<Product>());
+          for (var product in results) {
+            if (!_selectedProducts.contains(product)) {
+              _selectedProducts.add(product as Product);
+            }
+          }
           _filterAvailableProducts();
         });
       },
@@ -211,104 +244,168 @@ class _CreateOrderViewState extends State<CreateOrderView> {
     );
   }
 
-
   Widget _buildSelectedProductsTable() {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    String productCount = _selectedProducts.length.toString();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "$productCount Product/s added to list",
+          style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
         ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          // ignore: deprecated_member_use
-          dataRowHeight: 70,
-          headingRowColor: WidgetStateProperty.all(CustomColors.tableBackgroundColor1),
-          columns: [
-            DataColumn(
-              label: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
-                child: Text(
-                  'Product Name',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.3),
-                child: Text(
-                  'Quantity',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
-                ),
-              ),
-            ),
-            DataColumn(
-              label: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.2),
-                child: Text(
-                  'Remove',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
-                ),
-              ),
-            ),
-          ],
-          rows: _selectedProducts
-              .map(
-                (product) => DataRow(
-                  color: WidgetStateProperty.all(CustomColors.tableBackgroundColor2),
-                  cells: [
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.5,
-                        ),
-                        child: Text(
-                          "${product.yprodnummer} - ${product.yproddesc}",
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 4,
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        child: TextFormField(
-                          initialValue: '1',
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            // Handle quantity change
-                          },
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.2,
-                        child: IconButton(
-                          icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              _selectedProducts.remove(product);
-                              _filterAvailableProducts();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-              .toList(),
+        const SizedBox(
+          height: 10,
         ),
-      ),
+        Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [CustomColors.tableBackgroundColor1, CustomColors.tableBackgroundColor2],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              // ignore: deprecated_member_use
+              dataRowHeight: 70,
+              headingRowColor: WidgetStateProperty.all(CustomColors.tableBackgroundColor1),
+              columns: [
+                DataColumn(
+                  label: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
+                    child: Text(
+                      'Product Name',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
+                    ),
+                  ),
+                ),
+                DataColumn(
+                  label: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.3),
+                    child: Text(
+                      'Quantity',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
+                    ),
+                  ),
+                ),
+                DataColumn(
+                  label: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.2),
+                    child: Text(
+                      'Remove',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: getFontSize()),
+                    ),
+                  ),
+                ),
+              ],
+              rows: _selectedProducts
+                  .map(
+                    (product) => DataRow(
+                      color: WidgetStateProperty.all(CustomColors.tableBackgroundColor2),
+                      cells: [
+                        DataCell(
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.5,
+                            ),
+                            child: Text(
+                              "${product.yprodnummer} - ${product.yproddesc}",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 4,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.3,
+                            ),
+                            child: TextFormField(
+                              initialValue: '0',
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                _productQuantities[product.yprodnummer.toString()] = value;
+                              },
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.2,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedProducts.remove(product);
+                                  _productQuantities.remove(product.yprodnummer);
+                                  _filterAvailableProducts();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget createSoResponse() {
+    return StreamBuilder<Response<CreateSO>>(
+      stream: _createSoBloc.createSoStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
+
+              break;
+            case Status.COMPLETED:
+              String orderNummer = snapshot.data!.data!.nummer.toString();
+              String orderSearchWord = snapshot.data!.data!.such.toString();
+              print(orderNummer);
+
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isSuccessMessageShown) {
+                  showSuccessAlertDialog(context, "Order no: $orderSearchWord($orderNummer) has been created.");
+                  setState(() {
+                    _isLoading = false;
+                    _isSuccessMessageShown = true;
+                    _selectedProducts.clear();
+                    _productQuantities.clear();
+                    _filterAvailableProducts();
+                  });
+                }
+              });
+
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isErrorMessageShown) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isLoading = false;
+                    _isErrorMessageShown = true;
+                  });
+                }
+              });
+              break;
+          }
+        }
+        return Container();
+      },
     );
   }
 }
