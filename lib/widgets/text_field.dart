@@ -12,6 +12,7 @@ class TextField extends StatelessWidget {
   final function;
   final VoidCallback onChangedFunction;
   final fillColor;
+  final FocusNode? myFocusNode;
   final bool? filled;
   final String? labelText;
   final Widget? suffixIcon;
@@ -25,6 +26,7 @@ class TextField extends StatelessWidget {
       this.function,
       required this.onChangedFunction,
       this.fillColor,
+      this.myFocusNode,
       this.filled,
       this.labelText,
       this.suffixIcon,
@@ -32,7 +34,9 @@ class TextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FocusNode myFocusNode = FocusNode();
+    
+      final focusNode = myFocusNode ?? FocusNode();
+
     return TextFormField(
       style: const TextStyle(color: CustomColors.textFieldTextColor, fontWeight: FontWeight.bold),
       onChanged: (value) {
@@ -40,7 +44,7 @@ class TextField extends StatelessWidget {
       },
       controller: controller,
       obscureText: obscureText!,
-      focusNode: myFocusNode,
+      focusNode: focusNode ,
       autofocus: autoFocus == true ? true : false,
       decoration: InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -58,7 +62,7 @@ class TextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(50.0),
           ),
           labelStyle: TextStyle(
-              color: myFocusNode.hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
+              color: focusNode .hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
 
       // ignore: missing_return
       validator: (v) {

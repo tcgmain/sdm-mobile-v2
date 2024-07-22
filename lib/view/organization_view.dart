@@ -197,38 +197,53 @@ class _OrganizationViewState extends State<OrganizationView> {
                                           final organizationDistance =
                                               organizations.distance?.toString() ?? 'Unnamed Route';
                                           final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-                                          final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
-                                          final ysuporgNamebspr = organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                          return Padding(
-                                            padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                            child: ListButton(
-                                              displayName: organizationName,
-                                              onPressed: () {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                    builder: (context) => HomeOrganizationView(
-                                                          userNummer: widget.userNummer,
-                                                          username: widget.username,
-                                                          routeNummer: "",
-                                                          organizationId: organizationId,
-                                                          organizationNummer: organizationNummer,
-                                                          organizationName: organizationName,
-                                                          organizationPhone1: organizationPhone1,
-                                                          organizationPhone2: organizationPhone2,
-                                                          organizationAddress1: organizationAddress1,
-                                                          organizationAddress2: organizationAddress2,
-                                                          organizationAddress3: organizationAddress3,
-                                                          organizationAddress4: organizationAddress4,
-                                                          organizationColour: organizationColour,
-                                                          organizationLongitude: organizationLongitude,
-                                                          organizationLatitude: organizationLatitude,
-                                                          organizationDistance: organizationDistance,
-                                                          organizationMail: organizationMail,
-                                                          isTeamMemberUi: widget.isTeamMemberUi,
-                                                          loggedUserNummer: widget.loggedUserNummer, 
-                                                          ysuporgNummer: ysuporgNummer,
-                                                          ysuporgNamebspr: ysuporgNamebspr,
-                                                        )));
-                                              },
+                                          final ysuporgNummer =
+                                              organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                          final ysuporgNamebspr =
+                                              organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+                                          return Dismissible(
+                                            key: Key(organizationId),
+                                            background: Container(
+                                              color: Colors.blue,
+                                              alignment: Alignment.centerRight,
+                                              padding: EdgeInsets.symmetric(horizontal: 20),
+                                              child: Icon(Icons.edit, color: Colors.white),
+                                            ),
+                                            direction: DismissDirection.endToStart,
+                                            onDismissed: (direction) {
+                                              // Perform any action on dismiss (if needed)
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                              child: ListButton(
+                                                displayName: organizationName,
+                                                onPressed: () {
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) => HomeOrganizationView(
+                                                            userNummer: widget.userNummer,
+                                                            username: widget.username,
+                                                            routeNummer: "",
+                                                            organizationId: organizationId,
+                                                            organizationNummer: organizationNummer,
+                                                            organizationName: organizationName,
+                                                            organizationPhone1: organizationPhone1,
+                                                            organizationPhone2: organizationPhone2,
+                                                            organizationAddress1: organizationAddress1,
+                                                            organizationAddress2: organizationAddress2,
+                                                            organizationAddress3: organizationAddress3,
+                                                            organizationAddress4: organizationAddress4,
+                                                            organizationColour: organizationColour,
+                                                            organizationLongitude: organizationLongitude,
+                                                            organizationLatitude: organizationLatitude,
+                                                            organizationDistance: organizationDistance,
+                                                            organizationMail: organizationMail,
+                                                            isTeamMemberUi: widget.isTeamMemberUi,
+                                                            loggedUserNummer: widget.loggedUserNummer,
+                                                            ysuporgNummer: ysuporgNummer,
+                                                            ysuporgNamebspr: ysuporgNamebspr,
+                                                          )));
+                                                },
+                                              ),
                                             ),
                                           );
                                         },

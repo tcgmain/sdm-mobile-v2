@@ -4,12 +4,14 @@ import 'package:sdm/utils/constants.dart';
 class ListButton extends StatelessWidget {
   final String displayName;
   final String? rightPosition;
+  final bool? isLeftAlign;
   final VoidCallback onPressed;
 
   const ListButton({
     Key? key,
     required this.displayName,
     this.rightPosition,
+    this.isLeftAlign,
     required this.onPressed,
   }) : super(key: key);
 
@@ -36,14 +38,17 @@ class ListButton extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextButton(
-                  onPressed: onPressed,
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(15),
-                    textStyle: TextStyle(fontSize: getFontSize()),
+                child: Align(
+                  alignment: isLeftAlign == true ? Alignment.centerLeft: Alignment.center,
+                  child: TextButton(
+                    onPressed: onPressed,
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.all(15),
+                      textStyle: TextStyle(fontSize: getFontSize()),
+                    ),
+                    child: Text(displayName),
                   ),
-                  child: Text(displayName),
                 ),
               ),
               if (rightPosition != null)

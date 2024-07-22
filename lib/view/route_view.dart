@@ -113,7 +113,7 @@ class _RouteViewState extends State<RouteView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}',
+                        'Date: ${DateFormat('yyyy/MM/dd').format(_selectedDate)}',
                         style: TextStyle(fontSize: getFontSize(), color: Colors.white),
                       ),
                       CommonAppButton(
@@ -162,6 +162,7 @@ class _RouteViewState extends State<RouteView> {
                                     return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: ListButton(
+                                          isLeftAlign:true,
                                           displayName: routeName,
                                           onPressed: () {
                                             Navigator.of(context).push(MaterialPageRoute(

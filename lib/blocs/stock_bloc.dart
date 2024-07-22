@@ -20,13 +20,16 @@ class StockBloc {
     stockSink.add(Response.loading(''));
     try {
       Stock res = await _stockRepository.getProductStock(userNummer, organizationNummer);
-      stockSink.add(Response.completed(res));
+      if (!_stockController!.isClosed) {
+        stockSink.add(Response.completed(res));
+      }
 
       print("GET STOCK SUCCESS");
-    } 
-    
-    catch (e) {
-      stockSink.add(Response.error(e.toString()));
+    } catch (e) {
+      if (!_stockController!.isClosed) {
+        stockSink.add(Response.error(e.toString()));
+      }
+
       print("GET STOCK ERROR");
       print(e);
     }

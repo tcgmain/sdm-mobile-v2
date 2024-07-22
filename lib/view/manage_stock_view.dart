@@ -50,13 +50,16 @@ class _ManageStockViewState extends State<ManageStockView> {
   late String newLastUpdatedDate;
   late String newLastUpdatedUser;
   bool _isLoading = false;
+  bool _isLoading1 = false;
   final Map<String, TextEditingController> _stockControllers = {};
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     setState(() {
       _isLoading = true;
+      _isLoading1 = true;
     });
     _stockBloc = StockBloc();
     _stockBloc.getProductStock(widget.userNummer, widget.organizationNummer);
@@ -73,6 +76,7 @@ class _ManageStockViewState extends State<ManageStockView> {
     _updateStockBloc.dispose();
     _goodMangementIdBloc.dispose();
     _stockControllers.values.forEach((controller) => controller.dispose());
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -91,6 +95,13 @@ class _ManageStockViewState extends State<ManageStockView> {
       product.ycurstoc = newStock;
       product.ylastud = newLastUpdatedDate;
       product.ylastub = newLastUpdatedUser;
+    });
+  }
+
+  void _handleStockFieldTap(TextEditingController controller) {
+    _searchFocusNode.unfocus();
+    controller.addListener(() {
+      _searchFocusNode.unfocus();
     });
   }
 
@@ -118,6 +129,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                         obscureText: false,
                         inputType: 'none',
                         isRequired: true,
+                        myFocusNode: _searchFocusNode,
                         fillColor: CustomColors.textFieldFillColor,
                         filled: true,
                         labelText: "Type to search product...",
@@ -175,29 +187,37 @@ class _ManageStockViewState extends State<ManageStockView> {
                                       final TextEditingController newStockController = _stockControllers[productCode]!;
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                        child: CustomStockCard(
-                                          productId: productCode,
-                                          productName: productName,
-                                          availableStock: availableStock,
-                                          newStockController: newStockController,
-                                          lastUpdatedDate: lastUpdatedDate,
-                                          lastUpdatedUser: lastUpdatedUser,
-                                          onPressedUpdate: () {
-                                            _updateStockBloc
-                                                .updateStock(
-                                              goodsManagementId,
-                                              getCurrentDate(),
-                                              productCode,
-                                              newStockController.text.toString(),
-                                              widget.username,
-                                              widget.visitNummer,
-                                            )
-                                                .then((_) {
-                                              _updateStockCallback(products, double.parse(newStockController.text),
-                                                  getCurrentDate(), widget.username);
-                                              newStockController.clear();
-                                            });
-                                          },
+                                        child: GestureDetector(
+                                          onTap: () => _handleStockFieldTap(newStockController),
+                                          child: CustomStockCard(
+                                            productId: productCode,
+                                            productName: productName,
+                                            availableStock: availableStock,
+                                            newStockController: newStockController,
+                                            lastUpdatedDate: lastUpdatedDate,
+                                            lastUpdatedUser: lastUpdatedUser,
+                                            onPressedUpdate: () {
+                                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                setState(() {
+                                                  _isLoading = false;
+                                                });
+                                              });
+                                              _updateStockBloc
+                                                  .updateStock(
+                                                goodsManagementId,
+                                                getCurrentDate(),
+                                                productCode,
+                                                newStockController.text.toString(),
+                                                widget.username,
+                                                widget.visitNummer,
+                                              )
+                                                  .then((_) {
+                                                _updateStockCallback(products, double.parse(newStockController.text),
+                                                    getCurrentDate(), widget.username);
+                                                newStockController.clear();
+                                              });
+                                            },
+                                          ),
                                         ),
                                       );
                                     },
@@ -223,7 +243,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                 ],
               ),
             ),
-            if (_isLoading) const Loading(),
+            if (_isLoading || _isLoading1) const Loading(),
           ],
         ),
       ),
@@ -270,46 +290,50 @@ class _ManageStockViewState extends State<ManageStockView> {
     );
   }
 
-  Widget organizationIdResponse() {
-    return StreamBuilder<ResponseList<GoodManagementID>>(
-      stream: _goodMangementIdBloc.goodManagementIdStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = true;
-                });
+Widget organizationIdResponse() {
+  return StreamBuilder<ResponseList<GoodManagementID>>(
+    stream: _goodMangementIdBloc.goodManagementIdStream,
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        switch (snapshot.data!.status!) {
+          case Status.LOADING:
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading1 = true;
               });
-            case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
+            });
+            break;
+          case Status.COMPLETED:
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading1 = false;
               });
-              var dataList = snapshot.data!.data!;
-              if (dataList.isNotEmpty) {
-                var items = dataList[0];
-                goodsManagementId = items.id.toString();
-              } else {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(context, "Goods management record is not created for this organization.");
-                });
-              }
-              break;
-            case Status.ERROR:
+            });
+            var dataList = snapshot.data!.data!;
+            if (dataList.isNotEmpty) {
+              var items = dataList[0];
+              goodsManagementId = items.id.toString();
+            } else {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                showErrorAlertDialog(context, "Goods management record is not created for this organization.");
               });
-              break;
-          }
+            }
+            break;
+          case Status.ERROR:
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading1 = false;
+              });
+            });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showErrorAlertDialog(context, snapshot.data!.message.toString());
+            });
+            break;
         }
-        return Container();
-      },
-    );
-  }
+      }
+      return Container();
+    },
+  );
+}
+
 }

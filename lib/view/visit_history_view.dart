@@ -7,6 +7,7 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:intl/intl.dart';
 
 class VisitHistoryView extends StatefulWidget {
   final String userNummer;
@@ -84,6 +85,32 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
                               });
                               if (snapshot.data!.data!.isNotEmpty) {
                                 var visits = snapshot.data!.data!;
+                                
+                                final dateFormat = DateFormat("dd/MM/yyyy");
+                                final timeFormat = DateFormat("HH:mm");
+
+                                visits.sort((a, b) {
+                                  try {
+                                    DateTime dateTimeA = DateTime(
+                                      dateFormat.parse(a.yvdat.toString()).year,
+                                      dateFormat.parse(a.yvdat.toString()).month,
+                                      dateFormat.parse(a.yvdat.toString()).day,
+                                      timeFormat.parse(a.yvtim.toString()).hour,
+                                      timeFormat.parse(a.yvtim.toString()).minute,
+                                    );
+                                    DateTime dateTimeB = DateTime(
+                                      dateFormat.parse(b.yvdat.toString()).year,
+                                      dateFormat.parse(b.yvdat.toString()).month,
+                                      dateFormat.parse(b.yvdat.toString()).day,
+                                      timeFormat.parse(b.yvtim.toString()).hour,
+                                      timeFormat.parse(b.yvtim.toString()).minute,
+                                    );
+                                    return dateTimeB.compareTo(dateTimeA);
+                                  } catch (e) {
+                                    return 0;
+                                  }
+                                });
+
                                 var organizationName =
                                     visits.isNotEmpty ? visits[0].yorgNamebspr.toString() : "Unknown Organization";
 
@@ -111,7 +138,6 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
                                               ),
                                             ),
                                             child: ListTile(
-                                              //contentPadding: const EdgeInsets.all(16.0),
                                               title: Text('${visit.yvdat.toString()} at ${visit.yvtim.toString()}',
                                                   style: TextStyle(
                                                       color: CustomColors.textColor, fontSize: getFontSize())),
@@ -120,7 +146,6 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
                                                       style: TextStyle(
                                                           color: CustomColors.textColor, fontSize: getFontSizeSmall()))
                                                   : Container(),
-                                              //tileColor: Colors.black12, // Adjust as needed
                                             ),
                                           ),
                                         )

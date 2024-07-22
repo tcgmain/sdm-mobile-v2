@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sdm/blocs/create_so_bloc.dart';
 import 'package:sdm/blocs/stock_bloc.dart';
 import 'package:sdm/models/create_so.dart';
@@ -14,6 +15,7 @@ import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sdm/widgets/success_alert.dart';
+import 'package:sdm/widgets/confirmation_dialog.dart';
 
 class CreateOrderView extends StatefulWidget {
   final String userNummer;
@@ -51,6 +53,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
   List<Product> _selectedProducts = [];
   List<Product> _availableProducts = [];
   Map<String, String> _productQuantities = {};
+  List<FocusNode> _focusNodes = [];
 
   @override
   void initState() {
@@ -65,9 +68,15 @@ class _CreateOrderViewState extends State<CreateOrderView> {
 
   @override
   void dispose() {
+    _focusNodes.forEach((node) => node.dispose());
     _stockBloc.dispose();
     _createSoBloc.dispose();
     super.dispose();
+  }
+
+  void _updateFocusNodes() {
+    _focusNodes.forEach((node) => node.dispose());
+    _focusNodes = List.generate(_selectedProducts.length, (index) => FocusNode());
   }
 
   @override
@@ -109,14 +118,24 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                         print("pressed");
 
                         List<Map<String, String?>> orderedList = _selectedProducts.map((product) {
-                          return {'yprod': product.yprodnummer, 'yqty': _productQuantities[product.yprodnummer] ?? '0'};
+                          return {'yprod': product.yprodnummer, 'yqty': _productQuantities[product.yprodnummer] ?? ''};
                         }).toList();
 
-                        bool hasZeroQuantity = orderedList.any((product) => product['yqty'] == '0');
+                        bool hasEmptyQuantity =
+                            orderedList.any((product) => product['yqty'] == '' || product['yqty'] == '0');
                         if (orderedList.isEmpty) {
                           showErrorAlertDialog(context, "Please add product/s to create order");
-                        } else if (hasZeroQuantity) {
-                          showErrorAlertDialog(context, "Product quantity cannot be zero. Please adjust quantities.");
+                        } else if (orderedList.every((product) => product['yqty'] == '') || orderedList.every((product) => product['yqty'] == '0')) {
+                          showErrorAlertDialog(context, "Please enter quantities");
+                        } else if (hasEmptyQuantity) {
+                          showConfirmationDialog(context, () {
+                            _createSoBloc.createSO(
+                                widget.loggedUserNummer,
+                                getCurrentDate(),
+                                widget.ysuporgNummer,
+                                widget.organizationNummer,
+                                orderedList.where((product) => product['yqty'] != '').toList());
+                          }, "This product list has empty quantities. Do you want to proceed?", "Empty Quantities");
                         } else {
                           _createSoBloc.createSO(widget.loggedUserNummer, getCurrentDate(), widget.ysuporgNummer,
                               widget.organizationNummer, orderedList);
@@ -246,6 +265,13 @@ class _CreateOrderViewState extends State<CreateOrderView> {
 
   Widget _buildSelectedProductsTable() {
     String productCount = _selectedProducts.length.toString();
+
+    // Create focus nodes only if needed
+    if (_focusNodes.length != _selectedProducts.length) {
+      _focusNodes.forEach((node) => node.dispose()); // Dispose old nodes
+      _focusNodes = List.generate(_selectedProducts.length, (index) => FocusNode());
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -253,9 +279,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
           "$productCount Product/s added to list",
           style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -269,7 +293,6 @@ class _CreateOrderViewState extends State<CreateOrderView> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
-              // ignore: deprecated_member_use
               dataRowHeight: 70,
               headingRowColor: WidgetStateProperty.all(CustomColors.tableBackgroundColor1),
               columns: [
@@ -301,56 +324,66 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                   ),
                 ),
               ],
-              rows: _selectedProducts
-                  .map(
-                    (product) => DataRow(
-                      color: WidgetStateProperty.all(CustomColors.tableBackgroundColor2),
-                      cells: [
-                        DataCell(
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.5,
-                            ),
-                            child: Text(
-                              "${product.yprodnummer} - ${product.yproddesc}",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 4,
-                            ),
-                          ),
+              rows: _selectedProducts.asMap().entries.map((entry) {
+                int index = entry.key;
+                Product product = entry.value;
+                return DataRow(
+                  color: WidgetStateProperty.all(CustomColors.tableBackgroundColor2),
+                  cells: [
+                    DataCell(
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
+                        child: Text(
+                          "${product.yprodnummer} - ${product.yproddesc}",
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 4,
                         ),
-                        DataCell(
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.3,
-                            ),
-                            child: TextFormField(
-                              initialValue: '0',
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                _productQuantities[product.yprodnummer.toString()] = value;
-                              },
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.2,
-                            child: IconButton(
-                              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  _selectedProducts.remove(product);
-                                  _productQuantities.remove(product.yprodnummer);
-                                  _filterAvailableProducts();
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  )
-                  .toList(),
+                    DataCell(
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.3),
+                        child: TextFormField(
+                          focusNode: _focusNodes[index],
+                          initialValue: _productQuantities[product.yprodnummer] ?? '',
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _productQuantities[product.yprodnummer.toString()] = value;
+                            });
+                          },
+                          onFieldSubmitted: (value) {
+                            if (index < _focusNodes.length - 1) {
+                              FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+                            } else {
+                              FocusScope.of(context).unfocus();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        child: IconButton(
+                          icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              _selectedProducts.remove(product);
+                              _productQuantities.remove(product.yprodnummer);
+                              _filterAvailableProducts();
+                              _updateFocusNodes(); // Update focus nodes list
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
             ),
           ),
         ),
@@ -373,12 +406,10 @@ class _CreateOrderViewState extends State<CreateOrderView> {
 
               break;
             case Status.COMPLETED:
-              String orderNummer = snapshot.data!.data!.nummer.toString();
-              String orderSearchWord = snapshot.data!.data!.such.toString();
-              print(orderNummer);
-
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!_isSuccessMessageShown) {
+                  String orderNummer = snapshot.data!.data!.nummer.toString();
+                  String orderSearchWord = snapshot.data!.data!.such.toString();
                   showSuccessAlertDialog(context, "Order no: $orderSearchWord($orderNummer) has been created.");
                   setState(() {
                     _isLoading = false;

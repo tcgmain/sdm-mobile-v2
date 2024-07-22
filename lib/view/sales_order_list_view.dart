@@ -5,6 +5,7 @@ import 'package:sdm/view/sales_order_in_list_view.dart';
 import 'package:sdm/view/sales_order_out_list_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/error_alert.dart';
 
 class SalesOrderListView extends StatefulWidget {
   final String userNummer;
@@ -43,21 +44,25 @@ class _SalesOrderListViewState extends State<SalesOrderListView> {
         },
         isHomePage: false,
       ),
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
+          if (widget.ysuporgNummer == "") {
+            showErrorAlertDialog(context, "You cannot create orders in this organization");
+          } else {
             Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => CreateOrderView(
-                                      userNummer: widget.userNummer,
-                                      organizationNummer: widget.organizationNummer,
-                                      organizationName: widget.organizationName,
-                                      ysuporgNummer: widget.ysuporgNummer,
-                                      ysuporgNamebspr: widget.ysuporgNamebspr,
-                                      isTeamMemberUi: widget.isTeamMemberUi, 
-                                      username: widget.username, 
-                                      loggedUserNummer: widget.loggedUserNummer, 
-                                    )),
-                          );
+              MaterialPageRoute(
+                  builder: (context) => CreateOrderView(
+                        userNummer: widget.userNummer,
+                        organizationNummer: widget.organizationNummer,
+                        organizationName: widget.organizationName,
+                        ysuporgNummer: widget.ysuporgNummer,
+                        ysuporgNamebspr: widget.ysuporgNamebspr,
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                        username: widget.username,
+                        loggedUserNummer: widget.loggedUserNummer,
+                      )),
+            );
+          }
         },
         backgroundColor: CustomColors.buttonColor,
         child: const Icon(

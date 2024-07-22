@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sdm/utils/constants.dart';
 
 class CustomStockCard extends StatelessWidget {
@@ -70,6 +71,9 @@ class CustomStockCard extends StatelessWidget {
                         ),
                       ),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                     ),
                   ),
                   IconButton(
@@ -84,7 +88,10 @@ class CustomStockCard extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.all(0),
           ),
-          Text("Last Modified $lastUpdatedDate by $lastUpdatedUser", style: TextStyle(fontSize: getFontSizeExtraSmall()),)
+          Text(
+            "Last Modified $lastUpdatedDate by $lastUpdatedUser",
+            style: TextStyle(fontSize: getFontSizeExtraSmall()),
+          )
         ],
       ),
     );

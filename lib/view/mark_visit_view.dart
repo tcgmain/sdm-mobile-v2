@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sdm/blocs/mark_visit_bloc.dart';
 import 'package:sdm/models/mark_visit.dart';
@@ -404,75 +405,71 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     );
   }
 
-  //Mark Visit response
-  Widget markVisitResponse() {
-    return StreamBuilder<Response<MarkVisit>>(
-      stream: _markVisitBloc.markVisitStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = true;
+//Mark Visit response
+Widget markVisitResponse() {
+  return StreamBuilder<Response<MarkVisit>>(
+    stream: _markVisitBloc.markVisitStream,
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        switch (snapshot.data!.status!) {
+          case Status.LOADING:
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading = true;
+              });
+            });
+            break;
+          case Status.COMPLETED:
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading = false;
+              });
+            });
+            if (!_isSuccessMessageShown) {
+              String visitNummer = snapshot.data!.data!.nummer.toString();
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => HomeStockView(
+                              userNummer: widget.userNummer,
+                              username: widget.username,
+                              organizationId: widget.organizationId,
+                              organizationNummer: widget.organizationNummer,
+                              routeNummer: widget.routeNummer,
+                              visitNummer: visitNummer,
+                              loggedUserNummer: widget.loggedUserNummer,
+                              isTeamMemberUi: widget.isTeamMemberUi,
+                              organizationName: widget.organizationName,
+                              ysuporgNummer: widget.ysuporgNummer,
+                              ysuporgNamebspr: widget.ysuporgNamebspr,
+                            )),
+                  );
                 });
               });
-            case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
+              _isSuccessMessageShown = true;
+            }
+            break;
+          case Status.ERROR:
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _isLoading = false;
               });
-              if (!_isSuccessMessageShown) {
-                String visitNummer = snapshot.data!.data!.nummer.toString();
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => HomeStockView(
-                                userNummer: widget.userNummer,
-                                username: widget.username,
-                                organizationId: widget.organizationId,
-                                organizationNummer: widget.organizationNummer,
-                                routeNummer: widget.routeNummer,
-                                visitNummer: visitNummer,
-                                loggedUserNummer: widget.loggedUserNummer,
-                                isTeamMemberUi: widget.isTeamMemberUi, 
-                                organizationName: widget.organizationName, 
-                                ysuporgNummer: widget.ysuporgNummer, 
-                                ysuporgNamebspr: widget.ysuporgNamebspr,
-                              )),
-                    );
-                  });
-                });
-                setState(() {
-                  _isSuccessMessageShown = true;
-                });
-              }
-
-              break;
-            case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
+            });
+            if (!_isErrorMessageShown) {
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
-              if (!_isErrorMessageShown) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                });
-                setState(() {
-                  _isErrorMessageShown = true;
-                });
-              }
-
-              break;
-          }
+              _isErrorMessageShown = true;
+            }
+            break;
         }
-        return Container();
-      },
-    );
-  }
+      }
+      return Container();
+    },
+  );
+}
+
 
 //   Widget customIconButton(BuildContext context, String tooltip){
 // return CircleAvatar(
