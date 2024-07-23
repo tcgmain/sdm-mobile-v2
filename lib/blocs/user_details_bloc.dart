@@ -26,6 +26,13 @@ class UserDetailsBloc {
       //Saving userDetails in local storage
       SharedPreferences prefsUserID = await SharedPreferences.getInstance();
       await prefsUserID.setString('userNummer', res[0].nummer.toString());
+
+      SharedPreferences prefsUserOrganizationNummer = await SharedPreferences.getInstance();
+      await prefsUserOrganizationNummer.setString('userOrganizationNummer', res[0].yorgNummer.toString());
+
+      SharedPreferences prefsUserDesignationNummer = await SharedPreferences.getInstance();
+      await prefsUserDesignationNummer.setString('userDesignationNummer', res[0].yorgNummer.toString());
+
       print("USER DETAILS SUCCESS");
     } catch (e) {
       userDetailsSink.add(ResponseList.error(e.toString()));

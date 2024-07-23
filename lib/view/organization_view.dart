@@ -18,6 +18,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class OrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String userOrganizationNummer;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
 
@@ -25,6 +26,7 @@ class OrganizationView extends StatefulWidget {
     Key? key,
     required this.userNummer,
     required this.username,
+    required this.userOrganizationNummer,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
   }) : super(key: key);
@@ -65,6 +67,7 @@ class _OrganizationViewState extends State<OrganizationView> {
           builder: (context) => AddOrganizationView(
                 userNummer: widget.userNummer,
                 loggedUserNummer: widget.loggedUserNummer,
+                userOrganizationNummer: widget.userOrganizationNummer,
                 username: widget.username,
                 isTeamMemberUi: widget.isTeamMemberUi,
               )),

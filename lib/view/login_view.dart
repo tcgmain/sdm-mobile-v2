@@ -350,6 +350,8 @@ class _LoginPageState extends State<LoginPage> {
 
             case Status.COMPLETED:
               var userNummer = snapshot.data!.data![0].nummer.toString();
+              var userOrganizationNummer = snapshot.data!.data![0].yorgNummer.toString();
+              var designationNummer = snapshot.data!.data![0].designationNummer.toString();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -357,8 +359,10 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (context) => HomePage(
                             username: username,
                             userNummer: userNummer,
+                            userOrganizationNummer: userOrganizationNummer,
                             loggedUserNummer: userNummer,
-                            isTeamMemberUi: false,
+                            isTeamMemberUi: false, 
+                            designationNummer: designationNummer,
                           )),
                   (Route<dynamic> route) => false,
                 );

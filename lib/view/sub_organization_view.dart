@@ -4,12 +4,14 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_organization_view.dart';
+import 'package:sdm/view/update_organization_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class SubOrganizationView extends StatefulWidget {
   final String userNummer;
@@ -60,6 +62,47 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
     _subOrganizationBloc.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+    Future<void> _navigateToUpdateOrganizationView(
+      organizationId,
+      organizationNummer,
+      organizationName,
+      organizationTypeId,
+      organizationMail,
+      organizationPhone1,
+      organizationPhone2,
+      organizationAddress1,
+      organizationAddress2,
+      organizationAddress3,
+      organizationAddress4) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UpdateOrganizationView(
+              userNummer: widget.userNummer,
+              loggedUserNummer: widget.loggedUserNummer,
+              username: widget.username,
+              isTeamMemberUi: widget.isTeamMemberUi,
+              organizationId: organizationId,
+              organizationNummer: organizationNummer,
+              organizationName: organizationName,
+              organizationTypeId: organizationTypeId,
+              organizationMail: organizationMail,
+              organizationPhone1: organizationPhone1,
+              organizationPhone2: organizationPhone2,
+              organizationAddress1: organizationAddress1,
+              organizationAddress2: organizationAddress2,
+              organizationAddress3: organizationAddress3,
+              organizationAddress4: organizationAddress4)),
+    );
+
+    if (result == true) {
+      setState(() {
+        _subOrganizationBloc.getSubOrganization(widget.organizationNummer);
+        _isLoading = true;
+      });
+    }
   }
 
   void _onSearchChanged() {
@@ -164,37 +207,71 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                         subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
                                     final subOrganizationSuperiorOrgNamebspr =
                                         subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+                                        final subOrganizationCustomerTypeId =
+                                        subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                      child: ListButton(
-                                        displayName: subOrganizationName,
-                                        onPressed: () {
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                              builder: (context) => HomeOrganizationView(
-                                                    userNummer: widget.userNummer,
-                                                    username: widget.username,
-                                                    routeNummer: "",
-                                                    organizationId: subOrganizationId,
-                                                    organizationNummer: subOrganizationNummer,
-                                                    organizationName: subOrganizationName,
-                                                    organizationPhone1: subOrganizationPhone1,
-                                                    organizationPhone2: subOrganizationPhone2,
-                                                    organizationAddress1: subOrganizationAddress1,
-                                                    organizationAddress2: subOrganizationAddress2,
-                                                    organizationAddress3: subOrganizationAddress3,
-                                                    organizationAddress4: subOrganizationAddress4,
-                                                    organizationColour: subOrganizationColour,
-                                                    organizationLongitude: subOrganizationLongitude,
-                                                    organizationLatitude: subOrganizationLatitude,
-                                                    organizationDistance: subOrganizationDistance,
-                                                    organizationMail: subOrganizationMail,
-                                                    isTeamMemberUi: widget.isTeamMemberUi,
-                                                    loggedUserNummer: widget.loggedUserNummer,
-                                                    ysuporgNummer: subOrganizationSuperiorOrgNummer,
-                                                    ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
-                                                  )));
-                                        },
+                                      child: Slidable(
+                                          key: const ValueKey(0),
+
+                                              // The end action pane is the one at the right or the bottom side.
+                                              endActionPane: ActionPane(
+                                                extentRatio: 0.2,
+                                                motion: const ScrollMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    onPressed: (context) {
+                                                      print("Pressed");
+
+                                                      _navigateToUpdateOrganizationView(
+                                                          subOrganizationId,
+                                                          subOrganizationNummer,
+                                                          subOrganizationName,
+                                                          subOrganizationCustomerTypeId,
+                                                          subOrganizationMail,
+                                                          subOrganizationPhone1,
+                                                          subOrganizationPhone2,
+                                                          subOrganizationAddress1,
+                                                          subOrganizationAddress2,
+                                                          subOrganizationAddress3,
+                                                          subOrganizationAddress4);
+                                                    },
+                                                    backgroundColor: CustomColors.buttonColor,
+                                                    foregroundColor: CustomColors.buttonTextColor,
+                                                    icon: Icons.edit,
+                                                  ),
+                                                ],
+                                              ),
+                                        child: ListButton(
+                                          displayName: subOrganizationName,
+                                          onPressed: () {
+                                            Navigator.of(context).push(MaterialPageRoute(
+                                                builder: (context) => HomeOrganizationView(
+                                                      userNummer: widget.userNummer,
+                                                      username: widget.username,
+                                                      routeNummer: "",
+                                                      organizationId: subOrganizationId,
+                                                      organizationNummer: subOrganizationNummer,
+                                                      organizationName: subOrganizationName,
+                                                      organizationPhone1: subOrganizationPhone1,
+                                                      organizationPhone2: subOrganizationPhone2,
+                                                      organizationAddress1: subOrganizationAddress1,
+                                                      organizationAddress2: subOrganizationAddress2,
+                                                      organizationAddress3: subOrganizationAddress3,
+                                                      organizationAddress4: subOrganizationAddress4,
+                                                      organizationColour: subOrganizationColour,
+                                                      organizationLongitude: subOrganizationLongitude,
+                                                      organizationLatitude: subOrganizationLatitude,
+                                                      organizationDistance: subOrganizationDistance,
+                                                      organizationMail: subOrganizationMail,
+                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                      loggedUserNummer: widget.loggedUserNummer,
+                                                      ysuporgNummer: subOrganizationSuperiorOrgNummer,
+                                                      ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
+                                                    )));
+                                          },
+                                        ),
                                       ),
                                     );
                                   },

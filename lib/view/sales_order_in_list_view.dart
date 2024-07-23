@@ -75,7 +75,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   List<SalesOrder>? _filterSalesOrders() {
     if (_allSalesOrderList == null) return null;
 
-    return _allSalesOrderList!.where((salesOrder) {
+    final filteredList = _allSalesOrderList!.where((salesOrder) {
       final matchesSearch = salesOrder.nummer!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           salesOrder.such!.toLowerCase().contains(_searchController.text.toLowerCase());
 
@@ -84,6 +84,15 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
 
       return matchesSearch && matchesDateRange;
     }).toList();
+
+    // Sort the filtered list by salesOrderDate in descending order
+    filteredList.sort((a, b) {
+      final dateA = _dateFormat.parse(a.ydat!);
+      final dateB = _dateFormat.parse(b.ydat!);
+      return dateB.compareTo(dateA);
+    });
+
+    return filteredList;
   }
 
   bool _isWithinDateRange(String date) {
@@ -147,7 +156,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
               isRequired: true,
               fillColor: CustomColors.textFieldFillColor,
               filled: true,
-              labelText: "Type to search purchase order...",
+              labelText: "Type to search in-orders...",
               onChangedFunction: () {},
             ),
             const SizedBox(height: 10),
@@ -178,6 +187,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                             _isLoading = true;
                           });
                         });
+                        break;
 
                       case Status.COMPLETED:
                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -186,13 +196,13 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                           });
                         });
                         _allSalesOrderList = snapshot.data!.data!;
-                        _filteredSalesOrderList ??= _allSalesOrderList;
+                        _filteredSalesOrderList ??= _filterSalesOrders();
                         final totalOrganizations = _filteredSalesOrderList!.length;
 
                         if (_filteredSalesOrderList!.isEmpty) {
                           return Center(
                             child: Text(
-                              "No purchase orders found.",
+                              "No in-orders found.",
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                             ),
@@ -205,7 +215,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Total sales orders: $totalOrganizations',
+                                    'Total out-orders: $totalOrganizations',
                                     style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                   ),
                                 ),
@@ -228,7 +238,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) => SalesOrderView(
-                                                      title: "Purchase Order",
+                                                      title: "IN Order",
                                                       userNummer: widget.userNummer,
                                                       organizationNummer: widget.organizationNummer,
                                                       isTeamMemberUi: widget.isTeamMemberUi,
@@ -254,6 +264,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                           });
                           showErrorAlertDialog(context, snapshot.data!.message.toString());
                         });
+                        break;
                     }
                   }
                   return Container();

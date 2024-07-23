@@ -141,6 +141,8 @@ class _TeamViewState extends State<TeamView> {
                                           final memberSearchWord = team.such?.toString() ?? 'Unnamed Route';
                                           final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
                                           final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
+                                          final memberOrganizationNummer = team.nummer?.toString() ?? 'Unnamed Route';
+                                          final memberDesignationNummer = team.designationNummer?.toString() ?? 'Unnamed Route';
 
                                           return Padding(
                                             padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -151,8 +153,10 @@ class _TeamViewState extends State<TeamView> {
                                                     builder: (context) => HomePage(
                                                           username: memberOperatorId,
                                                           userNummer: memberNummer,
+                                                          userOrganizationNummer: memberOrganizationNummer,
                                                           loggedUserNummer: widget.userNummer,
-                                                          isTeamMemberUi: true,
+                                                          isTeamMemberUi: true, 
+                                                          designationNummer: memberDesignationNummer,
                                                         )));
                                               },
                                             ),

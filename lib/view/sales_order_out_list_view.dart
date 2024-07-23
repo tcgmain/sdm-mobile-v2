@@ -75,7 +75,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
   List<SalesOrder>? _filterSalesOrders() {
     if (_allSalesOrderList == null) return null;
 
-    return _allSalesOrderList!.where((salesOrder) {
+    final filteredList = _allSalesOrderList!.where((salesOrder) {
       final matchesSearch = salesOrder.nummer!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
           salesOrder.such!.toLowerCase().contains(_searchController.text.toLowerCase());
 
@@ -84,6 +84,15 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
 
       return matchesSearch && matchesDateRange;
     }).toList();
+
+    // Sort the filtered list by salesOrderDate in descending order
+    filteredList.sort((a, b) {
+      final dateA = _dateFormat.parse(a.ydat!);
+      final dateB = _dateFormat.parse(b.ydat!);
+      return dateB.compareTo(dateA);
+    });
+
+    return filteredList;
   }
 
   bool _isWithinDateRange(String date) {
@@ -115,8 +124,8 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
             colorScheme: ColorScheme.fromSwatch(
                 primarySwatch: Colors.red,
                 accentColor: Colors.grey,
-                backgroundColor: Colors.pink,
-                cardColor: Colors.pink,
+                backgroundColor: Colors.grey.shade200,
+                cardColor: Colors.grey.shade300,
                 brightness: Brightness.light),
           ),
           child: child!,
@@ -179,6 +188,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                             _isLoading = true;
                           });
                         });
+                        break;
 
                       case Status.COMPLETED:
                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -187,13 +197,13 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                           });
                         });
                         _allSalesOrderList = snapshot.data!.data!;
-                        _filteredSalesOrderList ??= _allSalesOrderList;
+                        _filteredSalesOrderList ??= _filterSalesOrders();
                         final totalOrganizations = _filteredSalesOrderList!.length;
 
                         if (_filteredSalesOrderList!.isEmpty) {
                           return Center(
                             child: Text(
-                              "No sales orders found.",
+                              "No out-orders found.",
                               textAlign: TextAlign.center,
                               style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                             ),
@@ -206,7 +216,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Total sales orders: $totalOrganizations',
+                                    'Total out-orders: $totalOrganizations',
                                     style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                   ),
                                 ),
@@ -255,6 +265,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                           });
                           showErrorAlertDialog(context, snapshot.data!.message.toString());
                         });
+                        break;
                     }
                   }
                   return Container();

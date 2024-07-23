@@ -21,6 +21,7 @@ import 'package:geolocator/geolocator.dart';
 class AddOrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String userOrganizationNummer;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
 
@@ -28,6 +29,7 @@ class AddOrganizationView extends StatefulWidget {
     Key? key,
     required this.userNummer,
     required this.username,
+    required this.userOrganizationNummer,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
   }) : super(key: key);
@@ -429,7 +431,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                           latitude,
                                           longitude,
                                           customerTypeId,
-                                          widget.loggedUserNummer);
+                                          widget.loggedUserNummer,
+                                          widget.userOrganizationNummer);
                                     }
                                   });
                                 }

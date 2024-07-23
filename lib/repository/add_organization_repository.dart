@@ -23,6 +23,7 @@ class AddOrganizationRepository {
     String longitude,
     String customerTypeId,
     String assignToNummer,
+    String userOrganizationNummer
   ) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
@@ -41,7 +42,8 @@ class AddOrganizationRepository {
       "ygpslon": longitude,
       "ycustyp": customerTypeId,
       "yassigto": assignToNummer,
-      "yvisdis": "300"
+      "yvisdis": "300",
+      "ysuporg": userOrganizationNummer
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);

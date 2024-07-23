@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/all_visit_history_view.dart';
 import 'package:sdm/view/change_password_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';
@@ -31,6 +32,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
   String username = '';
   String userNummer = '';
   String userId = '';
+  String userOrganizationNummer = '';
+  String userDesignationNummer = '';
 
   @override
   void initState() {
@@ -38,6 +41,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
     _getUsername();
     _getUserNummer();
     _getUserId();
+    _getUserOrganizationNummer();
+    _getUserDesignationNummer();
   }
 
   Future<void> _getUsername() async {
@@ -54,10 +59,24 @@ class _CommonAppBarState extends State<CommonAppBar> {
     });
   }
 
-  Future<void> _getUserId() async {
-    SharedPreferences prefsUserNummer = await SharedPreferences.getInstance();
+  Future<void> _getUserId() async {//userDesignationNummer
+    SharedPreferences prefsUserId = await SharedPreferences.getInstance();
     setState(() {
-      userId = prefsUserNummer.getString('userId') ?? 'Guest';
+      userId = prefsUserId.getString('userId') ?? 'Guest';
+    });
+  }
+
+  Future<void> _getUserOrganizationNummer() async {
+    SharedPreferences prefsOrganizationNummer = await SharedPreferences.getInstance();
+    setState(() {
+      userOrganizationNummer = prefsOrganizationNummer.getString('userOrganizationNummer') ?? 'Guest';
+    });
+  }
+
+   Future<void> _getUserDesignationNummer() async {
+    SharedPreferences prefsUserDesignationNummer = await SharedPreferences.getInstance();
+    setState(() {
+      userDesignationNummer = prefsUserDesignationNummer.getString('userDesignationNummer') ?? 'Guest';
     });
   }
 
@@ -99,8 +118,10 @@ class _CommonAppBarState extends State<CommonAppBar> {
                       builder: (context) => HomePage(
                             username: username,
                             userNummer: userNummer,
+                            userOrganizationNummer: userOrganizationNummer,
                             loggedUserNummer: userNummer,
-                            isTeamMemberUi: false,
+                            isTeamMemberUi: false, 
+                            designationNummer: userDesignationNummer,
                           )),
                   (Route<dynamic> route) => false,
                 );
@@ -117,6 +138,15 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
                 break;
               case 'activityLog':
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const AllVisitHistoryView(
+                            userNummer: 'widget.userNummer',
+                            username: '',
+                            loggedUserNummer: '',
+                            isTeamMemberUi: true,
+                          )),
+                );
                 break;
               case 'logout':
                 WidgetsBinding.instance.addPostFrameCallback((_) {

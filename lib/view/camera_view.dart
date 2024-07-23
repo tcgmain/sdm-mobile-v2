@@ -23,7 +23,7 @@ class CameraView extends StatefulWidget {
 }
 
 class _CameraViewState extends State<CameraView> {
-  bool _isLoading = true; // Change this based on your logic
+  bool _isLoading = true; 
 
   @override
   Widget build(BuildContext context) {

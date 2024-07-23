@@ -90,11 +90,11 @@ class _SalesOrderListViewState extends State<SalesOrderListView> {
                   indicatorPadding: const EdgeInsets.symmetric(horizontal: 16),
                   tabs: const [
                     Tab(
-                      text: 'Purchase Orders',
+                      text: 'IN Orders',
                       icon: Icon(Icons.arrow_downward, size: 22),
                     ),
                     Tab(
-                      text: 'Sales Orders',
+                      text: 'OUT Orders',
                       icon: Icon(Icons.arrow_upward, size: 22),
                     ),
                   ],
