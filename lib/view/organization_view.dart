@@ -274,25 +274,6 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                           organizationAddress2,
                                                           organizationAddress3,
                                                           organizationAddress4);
-                                                      // Navigator.of(context).push(
-                                                      //   MaterialPageRoute(
-                                                      //       builder: (context) => UpdateOrganizationView(
-                                                      //           userNummer: widget.userNummer,
-                                                      //           loggedUserNummer: widget.loggedUserNummer,
-                                                      //           username: widget.username,
-                                                      //           isTeamMemberUi: widget.isTeamMemberUi,
-                                                      //           organizationId: organizationId,
-                                                      //           organizationNummer: organizationNummer,
-                                                      //           organizationName: organizationName,
-                                                      //           organizationTypeId: organizationTypeId,
-                                                      //           organizationMail: organizationMail,
-                                                      //           organizationPhone1: organizationPhone1,
-                                                      //           organizationPhone2: organizationPhone2,
-                                                      //           organizationAddress1: organizationAddress1,
-                                                      //           organizationAddress2: organizationAddress2,
-                                                      //           organizationAddress3: organizationAddress3,
-                                                      //           organizationAddress4: organizationAddress4)),
-                                                      // );
                                                     },
                                                     backgroundColor: CustomColors.buttonColor,
                                                     foregroundColor: CustomColors.buttonTextColor,

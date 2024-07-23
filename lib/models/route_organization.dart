@@ -18,8 +18,8 @@ class RouteOrganization {
       this.distance,
       this.yemail,
       this.ysuporgNummer,
-      this.ysuporgNamebspr
-      });
+      this.ysuporgNamebspr,
+      this.ycustypId});
 
   String? nummer;
   String? namebsprRoute;
@@ -40,6 +40,7 @@ class RouteOrganization {
   String? yemail;
   String? ysuporgNummer;
   String? ysuporgNamebspr;
+  String? ycustypId;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -65,6 +66,7 @@ class RouteOrganization {
       yemail: json["ysdmorg^yemail"] ?? '',
       ysuporgNummer: json["ysdmorg^ysuporg^nummer"] ?? '',
       ysuporgNamebspr: json["ysdmorg^ysuporg^namebspr"] ?? '',
+      ycustypId: json["ysdmorg^ycustyp^id"] ?? '',
     );
   }
 
@@ -87,5 +89,6 @@ class RouteOrganization {
         "ysdmorg^yemail": yemail ?? '',
         "ysdmorg^ysuporg^nummer": ysuporgNummer ?? '',
         "ysdmorg^ysuporg^namebspr": ysuporgNamebspr ?? '',
+        "ysdmorg^ycustyp^id": ycustypId ?? '',
       };
 }

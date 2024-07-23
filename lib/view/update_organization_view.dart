@@ -196,7 +196,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   }
 
   String? _validateEmail(String? value) {
-    if (!value!.isValidEmail) {
+    if (value!.isNotEmpty && !value.isValidEmail) {
       return 'Please enter a valid email';
     }
     return null;
@@ -309,13 +309,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               child: CommonAppButton(
                                 buttonText: 'Update',
                                 onPressed: () {
-                                  //_isUpdatePressed = false;
                                   if (!_isUpdatePressed) {
                                     _isUpdatePressed = true;
-
-                                    setState(() {
-                                      _isUpdateLoading = true;
-                                    });
 
                                     _isSuccessMessageShown = false;
                                     _isErrorMessageShown = false;
@@ -331,16 +326,18 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       setState(() {
                                         _isUpdateLoading = true;
                                       });
-                                      _updateOrganizationBloc.updateOrganization(
-                                          widget.organizationId,
-                                          widget.organizationMail,
-                                          widget.organizationPhone1,
-                                          widget.organizationPhone2,
-                                          widget.organizationAddress1,
-                                          widget.organizationAddress2,
-                                          widget.organizationAddress3,
-                                          widget.organizationAddress4,
-                                          widget.organizationTypeId);
+
+                                      final customerTypeId = _selectedCustomerType.toString();
+                                      final email = _emailController.text.toString();
+                                      final phone1 = _phone1Controller.text.toString();
+                                      final phone2 = _phone2Controller.text.toString();
+                                      final address1 = _address1Controller.text.toString();
+                                      final address2 = _address2Controller.text.toString();
+                                      final address3 = _address3Controller.text.toString();
+                                      final address4 = _address4Controller.text.toString();
+
+                                      _updateOrganizationBloc.updateOrganization(widget.organizationId, email, phone1,
+                                          phone2, address1, address2, address3, address4, customerTypeId);
                                     }
                                   }
                                 },
@@ -492,7 +489,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "${widget.organizationName}has been updated.");
+                  showSuccessAlertDialog(context, "${widget.organizationName} has been updated.");
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
