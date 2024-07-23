@@ -41,23 +41,23 @@ class _CameraViewState extends State<CameraView> {
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
               child: ListView(
-                children: [
+                children: const [
                   Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                  Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
+                  // Text('6787878', style: TextStyle(fontSize: 20),),
                 ],
               ),
             ),
             if (_isLoading)
-              Loading(), // Display loading indicator if _isLoading is true
+              const Loading(), // Display loading indicator if _isLoading is true
           ],
         ),
       ),

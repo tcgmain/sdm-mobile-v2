@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/add_organization_view.dart';
 import 'package:sdm/view/home_organization_view.dart';
+import 'package:sdm/view/update_organization_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class OrganizationView extends StatefulWidget {
   final String userNummer;
@@ -65,6 +68,47 @@ class _OrganizationViewState extends State<OrganizationView> {
                 username: widget.username,
                 isTeamMemberUi: widget.isTeamMemberUi,
               )),
+    );
+
+    if (result == true) {
+      setState(() {
+        _organizationBloc.getOrganization(widget.userNummer);
+        _isLoading = true;
+      });
+    }
+  }
+
+  Future<void> _navigateToUpdateOrganizationView(
+      organizationId,
+      organizationNummer,
+      organizationName,
+      organizationTypeId,
+      organizationMail,
+      organizationPhone1,
+      organizationPhone2,
+      organizationAddress1,
+      organizationAddress2,
+      organizationAddress3,
+      organizationAddress4) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UpdateOrganizationView(
+              userNummer: widget.userNummer,
+              loggedUserNummer: widget.loggedUserNummer,
+              username: widget.username,
+              isTeamMemberUi: widget.isTeamMemberUi,
+              organizationId: organizationId,
+              organizationNummer: organizationNummer,
+              organizationName: organizationName,
+              organizationTypeId: organizationTypeId,
+              organizationMail: organizationMail,
+              organizationPhone1: organizationPhone1,
+              organizationPhone2: organizationPhone2,
+              organizationAddress1: organizationAddress1,
+              organizationAddress2: organizationAddress2,
+              organizationAddress3: organizationAddress3,
+              organizationAddress4: organizationAddress4)),
     );
 
     if (result == true) {
@@ -201,20 +245,62 @@ class _OrganizationViewState extends State<OrganizationView> {
                                               organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
                                           final ysuporgNamebspr =
                                               organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                          return Dismissible(
-                                            key: Key(organizationId),
-                                            background: Container(
-                                              color: Colors.blue,
-                                              alignment: Alignment.centerRight,
-                                              padding: EdgeInsets.symmetric(horizontal: 20),
-                                              child: Icon(Icons.edit, color: Colors.white),
-                                            ),
-                                            direction: DismissDirection.endToStart,
-                                            onDismissed: (direction) {
-                                              // Perform any action on dismiss (if needed)
-                                            },
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                          final organizationTypeId =
+                                              organizations.ycustypId?.toString() ?? 'Unnamed Route';
+
+                                          return Padding(
+                                            padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                            child: Slidable(
+                                              key: const ValueKey(0),
+
+                                              // The end action pane is the one at the right or the bottom side.
+                                              endActionPane: ActionPane(
+                                                extentRatio: 0.2,
+                                                motion: const ScrollMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    onPressed: (context) {
+                                                      print("Pressed");
+
+                                                      _navigateToUpdateOrganizationView(
+                                                          organizationId,
+                                                          organizationNummer,
+                                                          organizationName,
+                                                          organizationTypeId,
+                                                          organizationMail,
+                                                          organizationPhone1,
+                                                          organizationPhone2,
+                                                          organizationAddress1,
+                                                          organizationAddress2,
+                                                          organizationAddress3,
+                                                          organizationAddress4);
+                                                      // Navigator.of(context).push(
+                                                      //   MaterialPageRoute(
+                                                      //       builder: (context) => UpdateOrganizationView(
+                                                      //           userNummer: widget.userNummer,
+                                                      //           loggedUserNummer: widget.loggedUserNummer,
+                                                      //           username: widget.username,
+                                                      //           isTeamMemberUi: widget.isTeamMemberUi,
+                                                      //           organizationId: organizationId,
+                                                      //           organizationNummer: organizationNummer,
+                                                      //           organizationName: organizationName,
+                                                      //           organizationTypeId: organizationTypeId,
+                                                      //           organizationMail: organizationMail,
+                                                      //           organizationPhone1: organizationPhone1,
+                                                      //           organizationPhone2: organizationPhone2,
+                                                      //           organizationAddress1: organizationAddress1,
+                                                      //           organizationAddress2: organizationAddress2,
+                                                      //           organizationAddress3: organizationAddress3,
+                                                      //           organizationAddress4: organizationAddress4)),
+                                                      // );
+                                                    },
+                                                    backgroundColor: CustomColors.buttonColor,
+                                                    foregroundColor: CustomColors.buttonTextColor,
+                                                    icon: Icons.edit,
+                                                  ),
+                                                ],
+                                              ),
+
                                               child: ListButton(
                                                 displayName: organizationName,
                                                 onPressed: () {

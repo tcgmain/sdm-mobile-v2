@@ -48,7 +48,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isErrorMessageShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
-  bool _isLoading = false;
+  bool _isUpdateLoading = false;
+  bool _isCustomerTypeLoading = false;
+  bool _isSubmitPressed = false;
   bool _isOrganizationTypeShown = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -155,8 +157,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   void initState() {
     super.initState();
     setState(() {
-      _isLoading = true;
+      _isCustomerTypeLoading = true;
     });
+    _isCustomerTypeLoading = true;
     _customerTypeBloc = CustomerTypeBloc();
     _customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
@@ -201,16 +204,16 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           _validationStatus['email'] = _validationMessages['email'] == null;
           break;
         case 'phone1':
-          _validationMessages['phone1'] = _validatePhone(_phone1Controller.text);
-          _validationStatus['phone1'] = _validationMessages['phone1'] == null;
+          _validationMessages['phone1'] = null;
+          _validationStatus['phone1'] = true;
           break;
         case 'phone2':
           _validationMessages['phone2'] = null;
           _validationStatus['phone2'] = true;
           break;
         case 'address1':
-          _validationMessages['address1'] = _validateAddress(_address1Controller.text);
-          _validationStatus['address1'] = _validationMessages['address1'] == null;
+          _validationMessages['address1'] = null;
+          _validationStatus['address1'] = true;
           break;
         case 'address2':
           _validationMessages['address2'] = null;
@@ -236,24 +239,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an email';
-    } else if (!value.isValidEmail) {
+    if (!value!.isValidEmail) {
       return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validatePhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a phone number';
-    }
-    return null;
-  }
-
-  String? _validateAddress(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an address';
     }
     return null;
   }
@@ -346,7 +333,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             fieldName: 'phone1',
                             keyboardType: TextInputType.phone,
                             focusNode: _phone1FocusNode,
-                            validator: _validatePhone,
+                            validator: (value) => null,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -363,7 +350,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             label: 'Address Line 1',
                             fieldName: 'address1',
                             focusNode: _address1FocusNode,
-                            validator: _validateAddress,
+                            validator: (value) => null,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -395,7 +382,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                               buttonText: 'Submit',
                               onPressed: () {
                                 setState(() {
-                                  _isLoading = true;
+                                  _isUpdateLoading = true;
                                 });
                                 _nameController.text = capitalizeWords(_nameController.text);
                                 _phone1Controller.text = capitalizeWords(_phone1Controller.text);
@@ -408,7 +395,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
                                   setState(() {
-                                    _isLoading = true;
+                                    _isUpdateLoading = true;
                                   });
                                   _getCurrentLocation().then((_) {
                                     setState(() {
@@ -427,25 +414,25 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     final address3 = _address3Controller.text.toString();
                                     final address4 = _address4Controller.text.toString();
 
-                                    _addOrganizationBloc.addOrganization(
-                                        getSearchWord(name),
-                                        name,
-                                        email,
-                                        phone1,
-                                        phone2,
-                                        address1,
-                                        address2,
-                                        address3,
-                                        address4,
-                                        latitude,
-                                        longitude,
-                                        customerTypeId,
-                                        widget.loggedUserNummer);
+                                    if (!_isSubmitPressed) {
+                                      _isSubmitPressed = true;
+                                      _addOrganizationBloc.addOrganization(
+                                          getSearchWord(name),
+                                          name,
+                                          email,
+                                          phone1,
+                                          phone2,
+                                          address1,
+                                          address2,
+                                          address3,
+                                          address4,
+                                          latitude,
+                                          longitude,
+                                          customerTypeId,
+                                          widget.loggedUserNummer);
+                                    }
                                   });
                                 }
-                                setState(() {
-                                  _isLoading = false;
-                                });
                               },
                             ),
                           ),
@@ -456,7 +443,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 ),
               ),
             ),
-            if (_isLoading) const Loading(),
+            if (_isUpdateLoading || _isCustomerTypeLoading) const Loading(),
           ],
         ),
       ),
@@ -472,14 +459,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.LOADING:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = true;
+                  _isCustomerTypeLoading = true;
                 });
               });
             case Status.COMPLETED:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   _isOrganizationTypeShown = true;
-                  _isLoading = false;
+                  _isCustomerTypeLoading = false;
                 });
               });
               _allCustomerTypes = snapshot.data!.data!;
@@ -515,7 +502,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = false;
+                  _isCustomerTypeLoading = false;
                 });
                 showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
@@ -556,14 +543,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             _validateField(fieldName);
           },
         ),
-        if (_validationMessages[fieldName] != null && !_validationStatus[fieldName]!)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              _validationMessages[fieldName]!,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
       ],
     );
   }
@@ -577,34 +556,24 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.LOADING:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = true;
+                  _isUpdateLoading = true;
                 });
               });
 
             case Status.COMPLETED:
-              // WidgetsBinding.instance.addPostFrameCallback((_) {
-              //   setState(() {
-              //     _isLoading = false;
-              //   });
-              // });
               organizationNummer = snapshot.data!.data!.nummer.toString();
               organizationSearchWord = snapshot.data!.data!.such.toString();
 
               if (!_isAddGoodsManagementAPICall) {
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
                 _isAddGoodsManagementAPICall = true;
-                // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //   setState(() {
-                //     _isLoading = true;
-                //   });
-                // });
               }
-
+              _isSubmitPressed = false;
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = false;
+                  _isUpdateLoading = false;
                 });
               });
               if (!_isErrorMessageShown) {
@@ -615,6 +584,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   });
                 });
               }
+              _isSubmitPressed = false;
           }
         }
         return Container();
@@ -631,14 +601,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.LOADING:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = true;
+                  _isUpdateLoading = true;
                 });
               });
 
             case Status.COMPLETED:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = false;
+                  _isUpdateLoading = false;
                 });
               });
               if (!_isSuccessMessageShown) {
@@ -659,7 +629,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isLoading = false;
+                  _isUpdateLoading = false;
                 });
               });
               if (!_isErrorMessageShown) {

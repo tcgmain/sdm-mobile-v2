@@ -18,13 +18,16 @@ class CustomerTypeBloc {
   }
 
   getCustomerType() async {
+    if (_customerTypeController?.isClosed ?? true) return;
     customerTypeSink.add(ResponseList.loading(''));
     try {
       List<CustomerType> res = await _customerTypeRepository.getCustomerType();
+      if (_customerTypeController?.isClosed ?? true) return;
       customerTypeSink.add(ResponseList.completed(res));
 
       print("CUSTOMER TYPE SUCCESS");
     } catch (e) {
+      if (_customerTypeController?.isClosed ?? true) return;
       customerTypeSink.add(ResponseList.error(e.toString()));
       print("CUSTOMER TYPE ERROR $e");
     }

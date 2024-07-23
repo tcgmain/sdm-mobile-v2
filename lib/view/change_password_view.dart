@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/change_password_bloc.dart';
 import 'package:sdm/models/change_password.dart';
 import 'package:sdm/networking/response.dart';
