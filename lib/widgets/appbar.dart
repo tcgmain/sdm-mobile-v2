@@ -13,12 +13,14 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBackButtonPressed;
   final bool isHomePage;
+  final List<Widget>? customActions;
 
   const CommonAppBar({
     Key? key,
     required this.title,
     required this.onBackButtonPressed,
     required this.isHomePage,
+    this.customActions,
   }) : super(key: key);
 
   @override
@@ -29,54 +31,26 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CommonAppBarState extends State<CommonAppBar> {
-  String username = '';
-  String userNummer = '';
-  String userId = '';
-  String userOrganizationNummer = '';
-  String userDesignationNummer = '';
+  String username = 'Guest';
+  String userNummer = 'Guest';
+  String userId = 'Guest';
+  String userOrganizationNummer = 'Guest';
+  String userDesignationNummer = 'Guest';
 
   @override
   void initState() {
     super.initState();
-    _getUsername();
-    _getUserNummer();
-    _getUserId();
-    _getUserOrganizationNummer();
-    _getUserDesignationNummer();
+    _loadUserPreferences();
   }
 
-  Future<void> _getUsername() async {
-    SharedPreferences prefsUserName = await SharedPreferences.getInstance();
+  Future<void> _loadUserPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      username = prefsUserName.getString('username') ?? 'Guest';
-    });
-  }
-
-  Future<void> _getUserNummer() async {
-    SharedPreferences prefsUserNummer = await SharedPreferences.getInstance();
-    setState(() {
-      userNummer = prefsUserNummer.getString('userNummer') ?? 'Guest';
-    });
-  }
-
-  Future<void> _getUserId() async {//userDesignationNummer
-    SharedPreferences prefsUserId = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefsUserId.getString('userId') ?? 'Guest';
-    });
-  }
-
-  Future<void> _getUserOrganizationNummer() async {
-    SharedPreferences prefsOrganizationNummer = await SharedPreferences.getInstance();
-    setState(() {
-      userOrganizationNummer = prefsOrganizationNummer.getString('userOrganizationNummer') ?? 'Guest';
-    });
-  }
-
-   Future<void> _getUserDesignationNummer() async {
-    SharedPreferences prefsUserDesignationNummer = await SharedPreferences.getInstance();
-    setState(() {
-      userDesignationNummer = prefsUserDesignationNummer.getString('userDesignationNummer') ?? 'Guest';
+      username = prefs.getString('username') ?? 'Guest';
+      userNummer = prefs.getString('userNummer') ?? 'Guest';
+      userId = prefs.getString('userId') ?? 'Guest';
+      userOrganizationNummer = prefs.getString('userOrganizationNummer') ?? 'Guest';
+      userDesignationNummer = prefs.getString('userDesignationNummer') ?? 'Guest';
     });
   }
 
@@ -107,7 +81,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
               onPressed: widget.onBackButtonPressed,
             ),
       actions: [
-        if (!widget.isHomePage)
+        if (!widget.isHomePage && widget.customActions == null)
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () {
@@ -120,7 +94,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                             userNummer: userNummer,
                             userOrganizationNummer: userOrganizationNummer,
                             loggedUserNummer: userNummer,
-                            isTeamMemberUi: false, 
+                            isTeamMemberUi: false,
                             designationNummer: userDesignationNummer,
                           )),
                   (Route<dynamic> route) => false,
@@ -128,6 +102,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
               });
             },
           ),
+        if (widget.customActions != null) ...widget.customActions!,
         PopupMenuButton<String>(
           onSelected: (String result) {
             switch (result) {
@@ -136,17 +111,6 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 break;
               case 'changePassword':
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
-                break;
-              case 'activityLog':
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => const AllVisitHistoryView(
-                            userNummer: 'widget.userNummer',
-                            username: '',
-                            loggedUserNummer: '',
-                            isTeamMemberUi: true,
-                          )),
-                );
                 break;
               case 'logout':
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -179,13 +143,6 @@ class _CommonAppBarState extends State<CommonAppBar> {
               child: ListTile(
                 leading: Icon(Icons.lock),
                 title: Text('Change Password'),
-              ),
-            ),
-            const PopupMenuItem<String>(
-              value: 'activityLog',
-              child: ListTile(
-                leading: Icon(Icons.history),
-                title: Text('Activity Log'),
               ),
             ),
             const PopupMenuItem<String>(

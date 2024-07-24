@@ -159,3 +159,16 @@ Future<void> openGoogleMaps(double latitude, double longitude) async {
     throw 'Could not launch $url';
   }
 }
+
+bool isDataViewer(String userDesignationNummer) {
+  switch (userDesignationNummer) {
+    case '2346'://Innovation Manager
+      return true;
+    case '4713'://Sales coordinator
+      return true;
+    case '4958'://IT manager
+      return true;
+    default:
+      return false; 
+  }
+}

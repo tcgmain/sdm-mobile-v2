@@ -31,6 +31,7 @@ class AllVisitHistoryView extends StatefulWidget {
 
 class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
   bool _isLoading = false;
+  bool _isFiltersVisible = false;
   late VisitBloc _visitBloc;
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _organizationController = TextEditingController();
@@ -146,6 +147,12 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
     });
   }
 
+  void _toggleFilters() {
+    setState(() {
+      _isFiltersVisible = !_isFiltersVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,6 +162,12 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
           Navigator.pop(context);
         },
         isHomePage: true,
+        customActions: [
+          IconButton(
+            icon: Icon(_isFiltersVisible ? Icons.filter_list_off : Icons.filter_list),
+            onPressed: _toggleFilters,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Stack(
@@ -163,51 +176,53 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
               isTeamMemberUi: widget.isTeamMemberUi,
               child: Column(
                 children: [
-                  const SizedBox(height: 10),
-                  textField.TextField(
-                    controller: _searchController,
-                    obscureText: false,
-                    inputType: 'none',
-                    isRequired: true,
-                    fillColor: CustomColors.textFieldFillColor,
-                    filled: true,
-                    labelText: "Type to search visitor...",
-                    onChangedFunction: () {},
-                  ),
-                  const SizedBox(height: 10),
-                  textField.TextField(
-                    controller: _organizationController,
-                    obscureText: false,
-                    inputType: 'none',
-                    isRequired: true,
-                    fillColor: CustomColors.textFieldFillColor,
-                    filled: true,
-                    labelText: "Type to search organization...",
-                    onChangedFunction: () {},
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () => _selectDateRange(context),
-                    child: AbsorbPointer(
-                      child: textField.TextField(
-                        controller: _dateRangeController,
-                        obscureText: false,
-                        inputType: 'none',
-                        isRequired: false,
-                        fillColor: CustomColors.textFieldFillColor,
-                        filled: true,
-                        labelText: "Select date range",
-                        onChangedFunction: () {},
+                  if (_isFiltersVisible) ...[
+                    const SizedBox(height: 10),
+                    textField.TextField(
+                      controller: _searchController,
+                      obscureText: false,
+                      inputType: 'none',
+                      isRequired: true,
+                      fillColor: CustomColors.textFieldFillColor,
+                      filled: true,
+                      labelText: "Type to search visitor...",
+                      onChangedFunction: () {},
+                    ),
+                    const SizedBox(height: 10),
+                    textField.TextField(
+                      controller: _organizationController,
+                      obscureText: false,
+                      inputType: 'none',
+                      isRequired: true,
+                      fillColor: CustomColors.textFieldFillColor,
+                      filled: true,
+                      labelText: "Type to search organization...",
+                      onChangedFunction: () {},
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => _selectDateRange(context),
+                      child: AbsorbPointer(
+                        child: textField.TextField(
+                          controller: _dateRangeController,
+                          obscureText: false,
+                          inputType: 'none',
+                          isRequired: false,
+                          fillColor: CustomColors.textFieldFillColor,
+                          filled: true,
+                          labelText: "Select date range",
+                          onChangedFunction: () {},
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  CommonAppButton(
-                      buttonText: "Reset All Filters",
-                      onPressed: () {
-                        _resetFilters();
-                      }),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                    CommonAppButton(
+                        buttonText: "Reset All Filters",
+                        onPressed: () {
+                          _resetFilters();
+                        }),
+                    const SizedBox(height: 10),
+                  ],
                   Expanded(
                     child: StreamBuilder<ResponseList<Visit>>(
                       stream: _visitBloc.visitStream,

@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     _pages = [
-      (widget.designationNummer == "2346" || widget.designationNummer == "4713" || widget.designationNummer == "4958")
+      isDataViewer(widget.designationNummer) == true
           ? AllVisitHistoryView(
               username: widget.username,
               userNummer: widget.userNummer,
@@ -96,9 +96,7 @@ class _HomePageState extends State<HomePage> {
               onTabChange: _navigateBottomBar,
               padding: const EdgeInsets.all(16),
               tabs: [
-                (widget.designationNummer == "2346" ||
-                        widget.designationNummer == "4713" ||
-                        widget.designationNummer == "4958")
+                isDataViewer(widget.designationNummer) == true
                     ? const GButton(
                         icon: Icons.history,
                         text: 'Visit History',
