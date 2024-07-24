@@ -36,6 +36,8 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _organizationController = TextEditingController();
   final TextEditingController _dateRangeController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final FocusNode _organizationFocusNode = FocusNode();
   List<Visit>? _filteredVisitList;
   List<Visit>? _allVisitList;
   DateTimeRange? _selectedDateRange;
@@ -59,6 +61,8 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
     _searchController.dispose();
     _organizationController.dispose();
     _dateRangeController.dispose();
+    _searchFocusNode.dispose();
+    _organizationFocusNode.dispose();
     super.dispose();
   }
 
@@ -122,10 +126,28 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
 
   Future<void> _selectDateRange(BuildContext context) async {
     final DateTimeRange? picked = await showDateRangePicker(
+      switchToCalendarEntryModeIcon: const Icon(Icons.calendar_month),
+      switchToInputEntryModeIcon: const Icon(Icons.calendar_month),
+      initialEntryMode: DatePickerEntryMode.calendar,
+      saveText: "OK",
+      confirmText: 'OK',
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDateRange: _selectedDateRange,
+        builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.red,
+                accentColor: Colors.grey,
+                backgroundColor: Colors.grey.shade200,
+                cardColor: Colors.grey.shade300,
+                brightness: Brightness.light),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDateRange) {
       setState(() {
@@ -180,17 +202,19 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                     const SizedBox(height: 10),
                     textField.TextField(
                       controller: _searchController,
+                      myFocusNode: _searchFocusNode,
                       obscureText: false,
                       inputType: 'none',
                       isRequired: true,
                       fillColor: CustomColors.textFieldFillColor,
                       filled: true,
-                      labelText: "Type to search visitor...",
+                      labelText: "Type to search visitors...",
                       onChangedFunction: () {},
                     ),
                     const SizedBox(height: 10),
                     textField.TextField(
                       controller: _organizationController,
+                      myFocusNode: _organizationFocusNode,
                       obscureText: false,
                       inputType: 'none',
                       isRequired: true,
@@ -283,8 +307,8 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                                       child: Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          'Total out-orders: $totalVisits',
-                                          style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                          'Total visits: $totalVisits',
+                                          style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                         ),
                                       ),
                                     ),

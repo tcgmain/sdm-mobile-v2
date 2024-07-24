@@ -4,6 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/mark_visit_view.dart';
+import 'package:sdm/view/organization_info_view.dart';
 import 'package:sdm/view/sales_order_list_view.dart';
 import 'package:sdm/view/stock_view.dart';
 import 'package:sdm/view/sub_organization_view.dart';
@@ -30,6 +31,7 @@ class HomeOrganizationView extends StatefulWidget {
   final String loggedUserNummer;
   final String ysuporgNummer;
   final String ysuporgNamebspr;
+  final String designationNummer;
 
   const HomeOrganizationView({
     Key? key,
@@ -54,6 +56,7 @@ class HomeOrganizationView extends StatefulWidget {
     required this.loggedUserNummer,
     required this.ysuporgNummer,
     required this.ysuporgNamebspr,
+    required this.designationNummer,
   }) : super(key: key);
 
   @override
@@ -70,29 +73,37 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
   }
 
   late final List<Widget> _pages = [
-    MarkVisitView(
-      username: widget.username,
-      userNummer: widget.userNummer,
-      routeNummer: widget.routeNummer,
-      organizationId: widget.organizationId,
-      organizationNummer: widget.organizationNummer,
-      organizationName: widget.organizationName,
-      organizationPhone1: widget.organizationPhone1,
-      organizationPhone2: widget.organizationPhone2,
-      organizationAddress1: widget.organizationAddress1,
-      organizationAddress2: widget.organizationAddress2,
-      organizationAddress3: widget.organizationAddress3,
-      organizationAddress4: widget.organizationAddress4,
-      organizationColour: widget.organizationColour,
-      organizationLongitude: widget.organizationLongitude,
-      organizationLatitude: widget.organizationLatitude,
-      organizationDistance: widget.organizationDistance,
-      organizationMail: widget.organizationMail,
-      isTeamMemberUi: widget.isTeamMemberUi,
-      loggedUserNummer: widget.loggedUserNummer, 
-      ysuporgNummer: widget.ysuporgNummer, 
-      ysuporgNamebspr: widget.ysuporgNamebspr,
-    ),
+    isDataViewer(widget.designationNummer) == true
+        ? OrganizationInfoView(
+            username: widget.username,
+            userNummer: widget.userNummer,
+            organizationNummer: widget.organizationNummer,
+            isTeamMemberUi: widget.isTeamMemberUi,
+            loggedUserNummer: widget.loggedUserNummer,
+          )
+        : MarkVisitView(
+            username: widget.username,
+            userNummer: widget.userNummer,
+            routeNummer: widget.routeNummer,
+            organizationId: widget.organizationId,
+            organizationNummer: widget.organizationNummer,
+            organizationName: widget.organizationName,
+            organizationPhone1: widget.organizationPhone1,
+            organizationPhone2: widget.organizationPhone2,
+            organizationAddress1: widget.organizationAddress1,
+            organizationAddress2: widget.organizationAddress2,
+            organizationAddress3: widget.organizationAddress3,
+            organizationAddress4: widget.organizationAddress4,
+            organizationColour: widget.organizationColour,
+            organizationLongitude: widget.organizationLongitude,
+            organizationLatitude: widget.organizationLatitude,
+            organizationDistance: widget.organizationDistance,
+            organizationMail: widget.organizationMail,
+            isTeamMemberUi: widget.isTeamMemberUi,
+            loggedUserNummer: widget.loggedUserNummer,
+            ysuporgNummer: widget.ysuporgNummer,
+            ysuporgNamebspr: widget.ysuporgNamebspr,
+          ),
     StockView(
       userNummer: widget.userNummer,
       organizationNummer: widget.organizationNummer,
@@ -105,18 +116,19 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       organizationNummer: widget.organizationNummer,
       organizationName: widget.organizationName,
       isTeamMemberUi: widget.isTeamMemberUi,
-      loggedUserNummer: widget.loggedUserNummer, 
-      ysuporgNummer: widget.ysuporgNummer, 
+      loggedUserNummer: widget.loggedUserNummer,
+      ysuporgNummer: widget.ysuporgNummer,
       ysuporgNamebspr: widget.ysuporgNamebspr,
+      designationNummer: widget.designationNummer,
     ),
     SalesOrderListView(
       userNummer: widget.userNummer,
       username: widget.username,
       loggedUserNummer: widget.loggedUserNummer,
       isTeamMemberUi: widget.isTeamMemberUi,
-      organizationNummer: widget.organizationNummer, 
-      organizationName: widget.organizationName, 
-      ysuporgNummer: widget.ysuporgNummer, 
+      organizationNummer: widget.organizationNummer,
+      organizationName: widget.organizationName,
+      ysuporgNummer: widget.ysuporgNummer,
       ysuporgNamebspr: widget.ysuporgNamebspr,
     ),
   ];
@@ -148,20 +160,25 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
               gap: 20,
               onTabChange: _navigateBottomBar,
               padding: const EdgeInsets.all(16),
-              tabs: const [
-                GButton(
+              tabs: [
+                isDataViewer(widget.designationNummer) == true ? 
+                const GButton(
+                  icon: Icons.info,
+                  text: 'Organization Info',
+                ):
+                const GButton(
                   icon: Icons.flag,
                   text: 'Mark Visit',
                 ),
-                GButton(
+                const GButton(
                   icon: Icons.list_alt_rounded,
                   text: 'View Stock',
                 ),
-                GButton(
+                const GButton(
                   icon: Icons.corporate_fare,
                   text: 'Sub Region',
                 ),
-                GButton(
+                const GButton(
                   icon: Icons.receipt,
                   text: 'Sales Order',
                 ),

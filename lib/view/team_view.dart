@@ -156,7 +156,7 @@ class _TeamViewState extends State<TeamView> {
                                                           userOrganizationNummer: memberOrganizationNummer,
                                                           loggedUserNummer: widget.userNummer,
                                                           isTeamMemberUi: true, 
-                                                          designationNummer: memberDesignationNummer,
+                                                          designationNummer: "",
                                                         )));
                                               },
                                             ),

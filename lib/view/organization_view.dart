@@ -21,6 +21,7 @@ class OrganizationView extends StatefulWidget {
   final String userOrganizationNummer;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
+  final String designationNummer;
 
   const OrganizationView({
     Key? key,
@@ -29,6 +30,7 @@ class OrganizationView extends StatefulWidget {
     required this.userOrganizationNummer,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
+    required this.designationNummer,
   }) : super(key: key);
 
   @override
@@ -46,7 +48,9 @@ class _OrganizationViewState extends State<OrganizationView> {
   void initState() {
     super.initState();
     _organizationBloc = OrganizationBloc();
-    _organizationBloc.getOrganization(widget.userNummer);
+    isDataViewer(widget.designationNummer) == true
+        ? _organizationBloc.getOrganization("")
+        : _organizationBloc.getOrganization(widget.userNummer);
     _searchController.addListener(_onSearchChanged);
     setState(() {
       _isLoading = true;
@@ -134,13 +138,17 @@ class _OrganizationViewState extends State<OrganizationView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: widget.isTeamMemberUi == true ? 'Region - ${widget.username} ' : 'My Region',
+        title: widget.isTeamMemberUi == true
+            ? 'Region - ${widget.username} '
+            : isDataViewer(widget.designationNummer) == true
+                ? 'All Organizations'
+                : 'My Region',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
-      floatingActionButton: widget.isTeamMemberUi == false
+      floatingActionButton: widget.isTeamMemberUi == false || isDataViewer(widget.designationNummer) == false
           ? FloatingActionButton(
               onPressed: () {
                 _navigateToAddOrganizationView();
@@ -310,7 +318,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                             isTeamMemberUi: widget.isTeamMemberUi,
                                                             loggedUserNummer: widget.loggedUserNummer,
                                                             ysuporgNummer: ysuporgNummer,
-                                                            ysuporgNamebspr: ysuporgNamebspr,
+                                                            ysuporgNamebspr: ysuporgNamebspr, 
+                                                            designationNummer: widget.designationNummer,
                                                           )));
                                                 },
                                               ),

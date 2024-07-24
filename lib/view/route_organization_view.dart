@@ -18,6 +18,7 @@ class RouteOrganizationView extends StatefulWidget {
   final String routeNummer;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
+  final String designationNummer;
 
   const RouteOrganizationView({
     Key? key,
@@ -26,6 +27,7 @@ class RouteOrganizationView extends StatefulWidget {
     required this.routeNummer,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
+    required this.designationNummer,
   }) : super(key: key);
 
   @override
@@ -224,7 +226,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                         isTeamMemberUi: widget.isTeamMemberUi,
                                                         loggedUserNummer: widget.loggedUserNummer,
                                                         ysuporgNummer: ysuporgNummer,
-                                                        ysuporgNamebspr: ysuporgNamebspr,
+                                                        ysuporgNamebspr: ysuporgNamebspr, 
+                                                        designationNummer: widget.designationNummer,
                                                       )));
                                             },
                                           ),

@@ -56,14 +56,16 @@ class _HomePageState extends State<HomePage> {
               username: widget.username,
               userNummer: widget.userNummer,
               isTeamMemberUi: widget.isTeamMemberUi,
-              loggedUserNummer: widget.loggedUserNummer,
+              loggedUserNummer: widget.loggedUserNummer, 
+              designationNummer: widget.designationNummer,
             ),
       OrganizationView(
         username: widget.username,
         userNummer: widget.userNummer,
         userOrganizationNummer: widget.userOrganizationNummer,
         loggedUserNummer: widget.loggedUserNummer,
-        isTeamMemberUi: widget.isTeamMemberUi,
+        isTeamMemberUi: widget.isTeamMemberUi, 
+        designationNummer: widget.designationNummer,
       ),
       TeamView(
         userNummer: widget.userNummer,
@@ -105,9 +107,9 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.route,
                         text: 'Routes',
                       ),
-                const GButton(
+                 GButton(
                   icon: Icons.location_on,
-                  text: 'Region',
+                  text: isDataViewer(widget.designationNummer) == true ? 'All Organizations': 'Region',
                 ),
                 const GButton(
                   icon: Icons.people,
