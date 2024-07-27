@@ -258,6 +258,10 @@ class _OrganizationViewState extends State<OrganizationView> {
                                               organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
                                           final organizationTypeId =
                                               organizations.ycustypId?.toString() ?? 'Unnamed Route';
+                                              final organizationTypeNamebspr =
+                                              organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+                                          final organizationAssignTo =
+                                              organizations.yassigto?.toString() ?? 'Unnamed Route';
 
                                           return Padding(
                                             padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -293,36 +297,65 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                 ],
                                               ),
 
-                                              child: ListButton(
-                                                displayName: organizationName,
-                                                onPressed: () {
-                                                  Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => HomeOrganizationView(
-                                                            userNummer: widget.userNummer,
-                                                            username: widget.username,
-                                                            routeNummer: "",
-                                                            organizationId: organizationId,
-                                                            organizationNummer: organizationNummer,
-                                                            organizationName: organizationName,
-                                                            organizationPhone1: organizationPhone1,
-                                                            organizationPhone2: organizationPhone2,
-                                                            organizationAddress1: organizationAddress1,
-                                                            organizationAddress2: organizationAddress2,
-                                                            organizationAddress3: organizationAddress3,
-                                                            organizationAddress4: organizationAddress4,
-                                                            organizationColour: organizationColour,
-                                                            organizationLongitude: organizationLongitude,
-                                                            organizationLatitude: organizationLatitude,
-                                                            organizationDistance: organizationDistance,
-                                                            organizationMail: organizationMail,
-                                                            isTeamMemberUi: widget.isTeamMemberUi,
-                                                            loggedUserNummer: widget.loggedUserNummer,
-                                                            ysuporgNummer: ysuporgNummer,
-                                                            ysuporgNamebspr: ysuporgNamebspr, 
-                                                            designationNummer: widget.designationNummer,
-                                                          )));
-                                                },
-                                              ),
+                                              child: (!isDataViewer(widget.designationNummer))
+                                                  ? ListButton(
+                                                      displayName: organizationName,
+                                                      onPressed: () {
+                                                        Navigator.of(context).push(MaterialPageRoute(
+                                                            builder: (context) => HomeOrganizationView(
+                                                                  userNummer: widget.userNummer,
+                                                                  username: widget.username,
+                                                                  routeNummer: "",
+                                                                  organizationId: organizationId,
+                                                                  organizationNummer: organizationNummer,
+                                                                  organizationName: organizationName,
+                                                                  organizationPhone1: organizationPhone1,
+                                                                  organizationPhone2: organizationPhone2,
+                                                                  organizationAddress1: organizationAddress1,
+                                                                  organizationAddress2: organizationAddress2,
+                                                                  organizationAddress3: organizationAddress3,
+                                                                  organizationAddress4: organizationAddress4,
+                                                                  organizationColour: organizationColour,
+                                                                  organizationLongitude: organizationLongitude,
+                                                                  organizationLatitude: organizationLatitude,
+                                                                  organizationDistance: organizationDistance,
+                                                                  organizationMail: organizationMail,
+                                                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                                                  loggedUserNummer: widget.loggedUserNummer,
+                                                                  ysuporgNummer: ysuporgNummer,
+                                                                  ysuporgNamebspr: ysuporgNamebspr,
+                                                                  designationNummer: widget.designationNummer,
+                                                                  organizationTypeNamebspr: organizationTypeNamebspr
+                                                                )));
+                                                      },
+                                                    )
+                                                  : ClipRRect(
+                                                    borderRadius: BorderRadius.circular(5),
+                                                    child: Container(
+                                                        decoration: const BoxDecoration(
+                                                          gradient: LinearGradient(
+                                                            colors: <Color>[
+                                                              Colors.black,
+                                                              Colors.black26,
+                                                            ],
+                                                            begin: Alignment.topCenter,
+                                                            end: Alignment.bottomCenter,
+                                                          ),
+                                                        ),
+                                                        child: ListTile(
+                                                          leading: CircleAvatar(
+                                                                        backgroundColor: getColor(organizationColour),
+                                                                        radius: 20,
+                                                                        child: const Icon(
+                                                                          Icons.business,
+                                                                          size: 20,
+                                                                        ),
+                                                                      ),
+                                                          title: Text(organizationName, style: TextStyle(color: CustomColors.textColor)),
+                                                          subtitle: Text(organizationAssignTo, style: TextStyle(color: CustomColors.textColor2),),
+                                                        ),
+                                                      ),
+                                                  ),
                                             ),
                                           );
                                         },

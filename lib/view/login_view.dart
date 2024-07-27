@@ -5,6 +5,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/user_details.dart';
+import 'package:sdm/view/home_v2_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -208,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                           suffixIcon: getPasswordSuffixIcon(_togglePasswordVisibility, _showPassword),
                           onChangedFunction: () {
                             setState(() {
-                              _isErrorMessageShown = true; 
+                              _isErrorMessageShown = true;
                             });
                           }),
                       const SizedBox(height: 10.0),
@@ -352,21 +353,37 @@ class _LoginPageState extends State<LoginPage> {
               var userNummer = snapshot.data!.data![0].nummer.toString();
               var userOrganizationNummer = snapshot.data!.data![0].yorgNummer.toString();
               var designationNummer = snapshot.data!.data![0].designationNummer.toString();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(
-                            username: username,
-                            userNummer: userNummer,
-                            userOrganizationNummer: userOrganizationNummer,
-                            loggedUserNummer: userNummer,
-                            isTeamMemberUi: false, 
-                            designationNummer: designationNummer,
-                          )),
-                  (Route<dynamic> route) => false,
-                );
-              });
+              (isDataViewer(designationNummer))
+                  ? WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomeV2Page(
+                                  username: username,
+                                  userNummer: userNummer,
+                                  userOrganizationNummer: userOrganizationNummer,
+                                  loggedUserNummer: userNummer,
+                                  isTeamMemberUi: false,
+                                  designationNummer: designationNummer,
+                                )),
+                        (Route<dynamic> route) => false,
+                      );
+                    })
+                  : WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  username: username,
+                                  userNummer: userNummer,
+                                  userOrganizationNummer: userOrganizationNummer,
+                                  loggedUserNummer: userNummer,
+                                  isTeamMemberUi: false,
+                                  designationNummer: designationNummer,
+                                )),
+                        (Route<dynamic> route) => false,
+                      );
+                    });
 
               usernameController = TextEditingController(text: '');
               passwordController = TextEditingController(text: '');

@@ -8,7 +8,7 @@ import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
 
-class HomePage extends StatefulWidget {
+class HomeV2Page extends StatefulWidget {
   final String userNummer;
   final String userOrganizationNummer;
   final String username;
@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
   final bool isTeamMemberUi;
   final String designationNummer;
 
-  const HomePage({
+  const HomeV2Page({
     super.key,
     required this.userNummer,
     required this.userOrganizationNummer,
@@ -27,10 +27,10 @@ class HomePage extends StatefulWidget {
   });
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomeV2PageState createState() => _HomeV2PageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeV2PageState extends State<HomeV2Page> {
   int _selectedIndex = 0;
   late final List<Widget> _pages;
 
@@ -45,20 +45,18 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     _pages = [
-   
-           RouteView(
-              username: widget.username,
-              userNummer: widget.userNummer,
-              isTeamMemberUi: widget.isTeamMemberUi,
-              loggedUserNummer: widget.loggedUserNummer, 
-              designationNummer: widget.designationNummer,
-            ),
+      AllVisitHistoryView(
+        username: widget.username,
+        userNummer: widget.userNummer,
+        isTeamMemberUi: widget.isTeamMemberUi,
+        loggedUserNummer: widget.loggedUserNummer,
+      ),
       OrganizationView(
         username: widget.username,
         userNummer: widget.userNummer,
         userOrganizationNummer: widget.userOrganizationNummer,
         loggedUserNummer: widget.loggedUserNummer,
-        isTeamMemberUi: widget.isTeamMemberUi, 
+        isTeamMemberUi: widget.isTeamMemberUi,
         designationNummer: widget.designationNummer,
       ),
       TeamView(
@@ -91,16 +89,16 @@ class _HomePageState extends State<HomePage> {
               gap: 20,
               onTabChange: _navigateBottomBar,
               padding: const EdgeInsets.all(16),
-              tabs: [
-                const GButton(
-                        icon: Icons.route,
-                        text: 'Routes',
-                      ),
-                 GButton(
-                  icon: Icons.location_on,
-                  text: isDataViewer(widget.designationNummer) == true ? 'All Organizations': 'Region',
+              tabs: const [
+                GButton(
+                  icon: Icons.history,
+                  text: 'Visit History',
                 ),
-                const GButton(
+                GButton(
+                  icon: Icons.location_on,
+                  text: 'All Organizations',
+                ),
+                GButton(
                   icon: Icons.people,
                   text: 'Team',
                 )

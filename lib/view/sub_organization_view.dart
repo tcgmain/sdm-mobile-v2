@@ -66,7 +66,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
     super.dispose();
   }
 
-    Future<void> _navigateToUpdateOrganizationView(
+  Future<void> _navigateToUpdateOrganizationView(
       organizationId,
       organizationNummer,
       organizationName,
@@ -209,42 +209,44 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                         subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
                                     final subOrganizationSuperiorOrgNamebspr =
                                         subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                        final subOrganizationCustomerTypeId =
+                                    final subOrganizationCustomerTypeId =
                                         subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
+                                    final subOrganizationCustomerTypeNamebspr =
+                                        subOrganizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
                                       child: Slidable(
-                                          key: const ValueKey(0),
+                                        key: const ValueKey(0),
 
-                                              // The end action pane is the one at the right or the bottom side.
-                                              endActionPane: ActionPane(
-                                                extentRatio: 0.2,
-                                                motion: const ScrollMotion(),
-                                                children: [
-                                                  SlidableAction(
-                                                    onPressed: (context) {
-                                                      print("Pressed");
+                                        // The end action pane is the one at the right or the bottom side.
+                                        endActionPane: ActionPane(
+                                          extentRatio: 0.2,
+                                          motion: const ScrollMotion(),
+                                          children: [
+                                            SlidableAction(
+                                              onPressed: (context) {
+                                                print("Pressed");
 
-                                                      _navigateToUpdateOrganizationView(
-                                                          subOrganizationId,
-                                                          subOrganizationNummer,
-                                                          subOrganizationName,
-                                                          subOrganizationCustomerTypeId,
-                                                          subOrganizationMail,
-                                                          subOrganizationPhone1,
-                                                          subOrganizationPhone2,
-                                                          subOrganizationAddress1,
-                                                          subOrganizationAddress2,
-                                                          subOrganizationAddress3,
-                                                          subOrganizationAddress4);
-                                                    },
-                                                    backgroundColor: CustomColors.buttonColor,
-                                                    foregroundColor: CustomColors.buttonTextColor,
-                                                    icon: Icons.edit,
-                                                  ),
-                                                ],
-                                              ),
+                                                _navigateToUpdateOrganizationView(
+                                                    subOrganizationId,
+                                                    subOrganizationNummer,
+                                                    subOrganizationName,
+                                                    subOrganizationCustomerTypeId,
+                                                    subOrganizationMail,
+                                                    subOrganizationPhone1,
+                                                    subOrganizationPhone2,
+                                                    subOrganizationAddress1,
+                                                    subOrganizationAddress2,
+                                                    subOrganizationAddress3,
+                                                    subOrganizationAddress4);
+                                              },
+                                              backgroundColor: CustomColors.buttonColor,
+                                              foregroundColor: CustomColors.buttonTextColor,
+                                              icon: Icons.edit,
+                                            ),
+                                          ],
+                                        ),
                                         child: ListButton(
                                           displayName: subOrganizationName,
                                           onPressed: () {
@@ -270,8 +272,9 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                       isTeamMemberUi: widget.isTeamMemberUi,
                                                       loggedUserNummer: widget.loggedUserNummer,
                                                       ysuporgNummer: subOrganizationSuperiorOrgNummer,
-                                                      ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr, 
-                                                      designationNummer: widget.designationNummer,
+                                                      ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
+                                                      designationNummer: widget.designationNummer, 
+                                                      organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr,
                                                     )));
                                           },
                                         ),

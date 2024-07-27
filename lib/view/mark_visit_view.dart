@@ -26,6 +26,7 @@ class MarkVisitView extends StatefulWidget {
   final String organizationId;
   final String organizationNummer;
   final String organizationName;
+  final String organizationTypeNamebspr;
   final String organizationPhone1;
   final String organizationPhone2;
   final String organizationAddress1;
@@ -65,6 +66,7 @@ class MarkVisitView extends StatefulWidget {
     required this.loggedUserNummer,
     required this.ysuporgNummer,
     required this.ysuporgNamebspr,
+    required this.organizationTypeNamebspr
   }) : super(key: key);
 
   @override
@@ -229,6 +231,11 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     widget.organizationName,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
+                  ),
+                     Text(
+                    widget.organizationTypeNamebspr,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: getFontSize(), fontWeight: FontWeight.normal, color: CustomColors.textColor2),
                   ),
                   const SizedBox(height: 15),
                   Row(

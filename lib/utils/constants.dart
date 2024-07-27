@@ -15,6 +15,7 @@ class CustomColors {
   static const Color borderColor1 = Color(0xFFf0e020);
   static const Color formBackgroundColor = Color(0xFFFFFFFF);
   static const Color textColor = Color(0xFFEEEEEE);
+  static const Color textColor2 = Color(0xFFB2B0B0);
   static const Color textHighlightColor = Color(0xFFFFCEC663);
   static const Color textHighlightColor1 = Color(0xFFEEEEEE);
   static const Color textColorBlue = Color(0xFF0062A9);

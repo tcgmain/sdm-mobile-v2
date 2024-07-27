@@ -167,6 +167,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                     final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
                                     final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
                                     final ysuporgNamebspr = organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+    final organizationTypeNamebspr = organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+
                                     return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: Slidable(
@@ -227,7 +229,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                         loggedUserNummer: widget.loggedUserNummer,
                                                         ysuporgNummer: ysuporgNummer,
                                                         ysuporgNamebspr: ysuporgNamebspr, 
-                                                        designationNummer: widget.designationNummer,
+                                                        designationNummer: widget.designationNummer, 
+                                                        organizationTypeNamebspr: organizationTypeNamebspr,
                                                       )));
                                             },
                                           ),

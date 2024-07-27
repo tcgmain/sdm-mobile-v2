@@ -32,6 +32,7 @@ class HomeOrganizationView extends StatefulWidget {
   final String ysuporgNummer;
   final String ysuporgNamebspr;
   final String designationNummer;
+  final String organizationTypeNamebspr;
 
   const HomeOrganizationView({
     Key? key,
@@ -57,6 +58,7 @@ class HomeOrganizationView extends StatefulWidget {
     required this.ysuporgNummer,
     required this.ysuporgNamebspr,
     required this.designationNummer,
+    required this.organizationTypeNamebspr,
   }) : super(key: key);
 
   @override
@@ -73,7 +75,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
   }
 
   late final List<Widget> _pages = [
-    isDataViewer(widget.designationNummer) == true
+    isDataViewer(widget.designationNummer)
         ? OrganizationInfoView(
             username: widget.username,
             userNummer: widget.userNummer,
@@ -102,7 +104,8 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
             isTeamMemberUi: widget.isTeamMemberUi,
             loggedUserNummer: widget.loggedUserNummer,
             ysuporgNummer: widget.ysuporgNummer,
-            ysuporgNamebspr: widget.ysuporgNamebspr,
+            ysuporgNamebspr: widget.ysuporgNamebspr, 
+            organizationTypeNamebspr: widget.organizationTypeNamebspr,
           ),
     StockView(
       userNummer: widget.userNummer,
