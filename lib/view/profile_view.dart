@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';

@@ -73,6 +73,7 @@ class CustomStockCard extends StatelessWidget {
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(5),
                       ],
                     ),
                   ),

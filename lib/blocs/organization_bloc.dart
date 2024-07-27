@@ -23,7 +23,6 @@ class OrganizationBloc {
     try {
       List<Organization> res = await _organizationRepository.getOrganization(userNummer);
       organizationSink.add(ResponseList.completed(res));
-
       print("ORGANIZATION SUCCESS");
     } catch (e) {
       organizationSink.add(ResponseList.error(e.toString()));

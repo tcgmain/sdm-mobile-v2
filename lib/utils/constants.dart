@@ -162,13 +162,15 @@ Future<void> openGoogleMaps(double latitude, double longitude) async {
 
 bool isDataViewer(String userDesignationNummer) {
   switch (userDesignationNummer) {
-    case '2346'://Innovation Manager
+    case '2346': //Innovation Manager
       return true;
-    case '4713'://Sales coordinator
+    case '4713': //Sales coordinator
       return true;
-    case '4958'://IT manager
+    case '4958': //IT manager
+      return true;
+    case '4959': //Executive Sales Administration
       return true;
     default:
-      return false; 
+      return false;
   }
 }

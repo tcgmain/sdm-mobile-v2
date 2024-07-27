@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
+import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
+import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
@@ -15,6 +17,7 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/success_alert.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -40,9 +43,11 @@ class AddOrganizationView extends StatefulWidget {
 
 class _AddOrganizationViewState extends State<AddOrganizationView> {
   late CustomerTypeBloc _customerTypeBloc;
+  late OrganizationBloc _organizationBloc;
   late AddOrganizationBloc _addOrganizationBloc;
   late AddGoodsManagementBloc _addGoodsManagementBloc;
   List<CustomerType>? _allCustomerTypes;
+  //List<Organization>? _allNearbyOrganizations;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
@@ -52,6 +57,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String organizationSearchWord;
   bool _isUpdateLoading = false;
   bool _isCustomerTypeLoading = false;
+  bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
   bool _isOrganizationTypeShown = false;
 
@@ -130,6 +136,100 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     longitude = position.longitude.toString();
   }
 
+Future<bool> isNearByOrganization(String? organizationLatitude, String? organizationLongitude) async {
+  if (organizationLatitude == null || organizationLongitude == null) {
+    return false;
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+  }
+
+  if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+    return false;
+  }
+
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return false;
+  }
+
+  try {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    double currentLatitude = position.latitude;
+    double currentLongitude = position.longitude;
+
+    double orgLatitude = double.parse(organizationLatitude);
+    double orgLongitude = double.parse(organizationLongitude);
+
+    return LocationUtils.isWithinRadius(currentLatitude, currentLongitude, orgLatitude, orgLongitude, 100);
+  } catch (e) {
+    // Handle location retrieval error
+    return false;
+  }
+}
+
+
+  getNearlyOrganizations() {
+    return StreamBuilder<ResponseList<Organization>>(
+      stream: _organizationBloc.organizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoadingNearlyOrganizations = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              Future.microtask(() async {
+                List<Organization> nearbyOrganizations = [];
+                for (var organization in snapshot.data!.data!) {
+                  bool isNearby = await isNearByOrganization(organization.latitude, organization.longitude);
+                  if (isNearby) {
+                    nearbyOrganizations.add(organization);
+                  }
+                }
+                if (nearbyOrganizations.isNotEmpty) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _isLoadingNearlyOrganizations = false;
+                    });
+                  });
+                  bool proceed = await showNearbyOrganizationsPopup(context, nearbyOrganizations);
+                  if (!proceed) {
+                    Navigator.pop(context); // Go back to the previous screen
+                  }
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _isCustomerTypeLoading = true;
+                      _isLoadingNearlyOrganizations = false;
+                    });
+                  });
+                  _customerTypeBloc.getCustomerType();
+                }
+              });
+              break;
+
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoadingNearlyOrganizations = false;
+                });
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+              break;
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
   String capitalizeWords(String input) {
     if (input.isEmpty) return input;
     return input.split(' ').map((word) {
@@ -158,14 +258,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _isCustomerTypeLoading = true;
-    });
-    _isCustomerTypeLoading = true;
     _customerTypeBloc = CustomerTypeBloc();
-    _customerTypeBloc.getCustomerType();
+    //_customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
+    _organizationBloc = OrganizationBloc();
+    //_organizationBloc.getOrganization("");
+
+    setState(() {
+      _isLoadingNearlyOrganizations = true;
+    });
+    _organizationBloc.getOrganization("");
   }
 
   @override
@@ -189,6 +292,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address2FocusNode.dispose();
     _address3FocusNode.dispose();
     _address4FocusNode.dispose();
+    _organizationBloc.dispose();
     super.dispose();
   }
 
@@ -226,8 +330,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           _validationStatus['address3'] = true;
           break;
         case 'address4':
-          _validationMessages['address4'] = null;
-          _validationStatus['address4'] = true;
+          _validationMessages['address4'] = _validateCity(_address4Controller.text);
+          _validationStatus['address4'] = _validationMessages['address4'] == null;
           break;
       }
     });
@@ -236,6 +340,13 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a name';
+    }
+    return null;
+  }
+
+  String? _validateCity(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter city';
     }
     return null;
   }
@@ -296,6 +407,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
+                          getNearlyOrganizations(),
                           addOrganizationResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
@@ -373,15 +485,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _address4Controller,
-                            label: 'Address Line 4',
+                            label: 'City',
                             fieldName: 'address4',
                             focusNode: _address4FocusNode,
-                            validator: (value) => null,
+                            validator: _validateCity,
                           ),
                           const SizedBox(height: 16),
                           Center(
                             child: CommonAppButton(
-                              buttonText: 'Submit',
+                              buttonText: 'Register',
                               onPressed: () {
                                 setState(() {
                                   _isUpdateLoading = true;
@@ -446,7 +558,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 ),
               ),
             ),
-            if (_isUpdateLoading || _isCustomerTypeLoading) const Loading(),
+            if (_isUpdateLoading || _isCustomerTypeLoading || _isLoadingNearlyOrganizations) const Loading(),
           ],
         ),
       ),
@@ -478,27 +590,30 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 children: [
                   const Text('Organization Type', style: TextStyle(color: CustomColors.cardTextColor1)),
                   const SizedBox(height: 8),
-                  ToggleButtons(
-                    color: CustomColors.cardTextColor1,
-                    selectedColor: CustomColors.textColor,
-                    fillColor: CustomColors.buttonColor3,
-                    highlightColor: CustomColors.buttonColor2,
-                    isSelected: List.generate(
-                      _allCustomerTypes!.length,
-                      (index) => index == _selectedCustomerTypeIndex,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ToggleButtons(
+                      color: CustomColors.cardTextColor1,
+                      selectedColor: CustomColors.textColor,
+                      fillColor: CustomColors.buttonColor3,
+                      highlightColor: CustomColors.buttonColor2,
+                      isSelected: List.generate(
+                        _allCustomerTypes!.length,
+                        (index) => index == _selectedCustomerTypeIndex,
+                      ),
+                      onPressed: (index) {
+                        setState(() {
+                          _selectedCustomerTypeIndex = index;
+                          _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
+                        });
+                      },
+                      children: _allCustomerTypes!.map((CustomerType type) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(type.aebez.toString()),
+                        );
+                      }).toList(),
                     ),
-                    onPressed: (index) {
-                      setState(() {
-                        _selectedCustomerTypeIndex = index;
-                        _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
-                      });
-                    },
-                    children: _allCustomerTypes!.map((CustomerType type) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(type.aebez.toString()),
-                      );
-                    }).toList(),
                   ),
                 ],
               );
@@ -648,5 +763,80 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         return Container();
       },
     );
+  }
+
+  Future<bool> showNearbyOrganizationsPopup(BuildContext context, List<Organization> nearbyOrganizations) async {
+    String organizationCount = nearbyOrganizations.length.toString();
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+                side: const BorderSide(color: CustomColors.successAlertBorderColor),
+              ),
+              backgroundColor: CustomColors.tableBackgroundColor1,
+              elevation: 24.0,
+              titlePadding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
+              contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
+              actionsPadding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
+              title: Text(
+                "Nearby Locations Found",
+                style: TextStyle(
+                  color: CustomColors.errorAlertTitleTextColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: getFontSizeLarge(),
+                ),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "This location has $organizationCount nearby organizations. Do you want to continue?",
+                        style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      ...nearbyOrganizations
+                          .map((org) => Text(
+                                "  - ${org.namebspr}",
+                                style: TextStyle(fontSize: getFontSize()),
+                              ))
+                          .toList(),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("No",
+                      style: TextStyle(
+                        color: CustomColors.errorAlertTitleTextColor,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _customerTypeBloc.getCustomerType();
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text("Yes",
+                      style: TextStyle(
+                        color: CustomColors.errorAlertTitleTextColor,
+                        fontWeight: FontWeight.bold,
+                      )),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }

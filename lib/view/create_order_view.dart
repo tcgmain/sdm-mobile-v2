@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -349,6 +348,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(5),
                           ],
                           onChanged: (value) {
                             setState(() {
