@@ -18,10 +18,22 @@ class OrganizationBloc {
   }
 
   getOrganization(String userNummer) async {
-   
     organizationSink.add(ResponseList.loading(''));
     try {
       List<Organization> res = await _organizationRepository.getOrganization(userNummer);
+      organizationSink.add(ResponseList.completed(res));
+      print("ORGANIZATION SUCCESS");
+    } catch (e) {
+      organizationSink.add(ResponseList.error(e.toString()));
+      print("ORGANIZATION ERROR $e");
+    }
+  }
+
+  getOrganizationByLocation(minLongitude, maxLongitude, minLatitude, maxLatitude) async {
+    organizationSink.add(ResponseList.loading(''));
+    try {
+      List<Organization> res =
+          await _organizationRepository.getOrganizationByLocation(minLongitude, maxLongitude, minLatitude, maxLatitude);
       organizationSink.add(ResponseList.completed(res));
       print("ORGANIZATION SUCCESS");
     } catch (e) {

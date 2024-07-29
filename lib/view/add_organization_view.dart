@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
@@ -52,14 +53,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String longitude;
   bool _isSuccessMessageShown = false;
   bool _isAddGoodsManagementAPICall = false;
-  bool _isErrorMessageShown = false;
+  bool _isAddOrganizationErrorMessageShown = false;
+  bool _isNearbyOrganizationErrorMessageShown = false;
+  bool _isNearbyOrganizationPopupShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
   bool _isUpdateLoading = false;
   bool _isCustomerTypeLoading = false;
   bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
-  bool _isOrganizationTypeShown = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -134,44 +136,34 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     latitude = position.latitude.toString();
     longitude = position.longitude.toString();
+
+    calculateLatLngRange(double.parse(latitude), double.parse(longitude), 100);
   }
 
-Future<bool> isNearByOrganization(String? organizationLatitude, String? organizationLongitude) async {
-  if (organizationLatitude == null || organizationLongitude == null) {
-    return false;
+  calculateLatLngRange(double lat, double lon, double distanceInMeters) {
+    const double earthRadius = 6371.0; // Earth's radius in km
+    double distanceInKm = distanceInMeters / 1000.0;
+
+    // Latitude range
+    double latRange = distanceInKm / (earthRadius * (pi / 180));
+
+    // Longitude range (adjusted by latitude)
+    double lonRange = distanceInKm / (earthRadius * (pi / 180) * cos(lat * pi / 180));
+
+    double minLat = lat - latRange;
+    double maxLat = lat + latRange;
+    double minLon = lon - lonRange;
+    double maxLon = lon + lonRange;
+
+    print(minLat);
+    print(maxLat);
+    print(minLon);
+    print(maxLon);
+    _organizationBloc.getOrganizationByLocation(
+        minLon.toString(), maxLon.toString(), minLat.toString(), maxLat.toString());
   }
 
-  LocationPermission permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-  }
-
-  if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-    return false;
-  }
-
-  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    return false;
-  }
-
-  try {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    double currentLatitude = position.latitude;
-    double currentLongitude = position.longitude;
-
-    double orgLatitude = double.parse(organizationLatitude);
-    double orgLongitude = double.parse(organizationLongitude);
-
-    return LocationUtils.isWithinRadius(currentLatitude, currentLongitude, orgLatitude, orgLongitude, 100);
-  } catch (e) {
-    // Handle location retrieval error
-    return false;
-  }
-}
-
-
-  getNearlyOrganizations() {
+  getNearlyOrganizationsResponse() {
     return StreamBuilder<ResponseList<Organization>>(
       stream: _organizationBloc.organizationStream,
       builder: (context, snapshot) {
@@ -185,43 +177,35 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
               });
 
             case Status.COMPLETED:
-              Future.microtask(() async {
-                List<Organization> nearbyOrganizations = [];
-                for (var organization in snapshot.data!.data!) {
-                  bool isNearby = await isNearByOrganization(organization.latitude, organization.longitude);
-                  if (isNearby) {
-                    nearbyOrganizations.add(organization);
-                  }
-                }
-                if (nearbyOrganizations.isNotEmpty) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    setState(() {
-                      _isLoadingNearlyOrganizations = false;
-                    });
-                  });
-                  bool proceed = await showNearbyOrganizationsPopup(context, nearbyOrganizations);
-                  if (!proceed) {
-                    Navigator.pop(context); // Go back to the previous screen
-                  }
-                } else {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    setState(() {
-                      _isCustomerTypeLoading = true;
-                      _isLoadingNearlyOrganizations = false;
-                    });
-                  });
-                  _customerTypeBloc.getCustomerType();
-                }
-              });
-              break;
-
-            case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   _isLoadingNearlyOrganizations = false;
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
+              List<Organization>? nearByOrganizations = snapshot.data!.data;
+
+              if (nearByOrganizations!.isNotEmpty) {
+                if (!_isNearbyOrganizationPopupShown) {
+                  _isNearbyOrganizationPopupShown = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showNearbyOrganizationsPopup(context, nearByOrganizations);
+                  });
+                }
+              }
+
+              break;
+
+            case Status.ERROR:
+              if (!_isNearbyOrganizationErrorMessageShown) {
+                _isNearbyOrganizationErrorMessageShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoadingNearlyOrganizations = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+
               break;
           }
         }
@@ -259,16 +243,15 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
   void initState() {
     super.initState();
     _customerTypeBloc = CustomerTypeBloc();
-    //_customerTypeBloc.getCustomerType();
+    _customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
     _organizationBloc = OrganizationBloc();
-    //_organizationBloc.getOrganization("");
+    _getCurrentLocation();
 
     setState(() {
       _isLoadingNearlyOrganizations = true;
     });
-    _organizationBloc.getOrganization("");
   }
 
   @override
@@ -299,7 +282,7 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
   void _validateField(String fieldName) {
     setState(() {
       _isSuccessMessageShown = true;
-      _isErrorMessageShown = true;
+      _isAddOrganizationErrorMessageShown = true;
       switch (fieldName) {
         case 'name':
           _validationMessages['name'] = _validateName(_nameController.text);
@@ -407,22 +390,21 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          getNearlyOrganizations(),
+                          getNearlyOrganizationsResponse(),
                           addOrganizationResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
-                          if (_isOrganizationTypeShown)
-                            if (_validateCustomerType() != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    _validateCustomerType()!,
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
+                          if (_validateCustomerType() != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _validateCustomerType()!,
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
+                            ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _nameController,
@@ -510,43 +492,39 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
                                   setState(() {
                                     _isUpdateLoading = true;
+                                    _isSuccessMessageShown = false;
+                                    _isAddGoodsManagementAPICall = false;
+                                    _isAddOrganizationErrorMessageShown = false;
                                   });
-                                  _getCurrentLocation().then((_) {
-                                    setState(() {
-                                      _isSuccessMessageShown = false;
-                                      _isAddGoodsManagementAPICall = false;
-                                      _isErrorMessageShown = false;
-                                    });
 
-                                    final customerTypeId = _selectedCustomerType.toString();
-                                    final name = _nameController.text.toString();
-                                    final email = _emailController.text.toString();
-                                    final phone1 = _phone1Controller.text.toString();
-                                    final phone2 = _phone2Controller.text.toString();
-                                    final address1 = _address1Controller.text.toString();
-                                    final address2 = _address2Controller.text.toString();
-                                    final address3 = _address3Controller.text.toString();
-                                    final address4 = _address4Controller.text.toString();
+                                  final customerTypeId = _selectedCustomerType.toString();
+                                  final name = _nameController.text.toString();
+                                  final email = _emailController.text.toString();
+                                  final phone1 = _phone1Controller.text.toString();
+                                  final phone2 = _phone2Controller.text.toString();
+                                  final address1 = _address1Controller.text.toString();
+                                  final address2 = _address2Controller.text.toString();
+                                  final address3 = _address3Controller.text.toString();
+                                  final address4 = _address4Controller.text.toString();
 
-                                    if (!_isSubmitPressed) {
-                                      _isSubmitPressed = true;
-                                      _addOrganizationBloc.addOrganization(
-                                          getSearchWord(name),
-                                          name,
-                                          email,
-                                          phone1,
-                                          phone2,
-                                          address1,
-                                          address2,
-                                          address3,
-                                          address4,
-                                          latitude,
-                                          longitude,
-                                          customerTypeId,
-                                          widget.loggedUserNummer,
-                                          widget.userOrganizationNummer);
-                                    }
-                                  });
+                                  if (!_isSubmitPressed) {
+                                    _isSubmitPressed = true;
+                                    _addOrganizationBloc.addOrganization(
+                                        getSearchWord(name),
+                                        name,
+                                        email,
+                                        phone1,
+                                        phone2,
+                                        address1,
+                                        address2,
+                                        address3,
+                                        address4,
+                                        latitude,
+                                        longitude,
+                                        customerTypeId,
+                                        widget.loggedUserNummer,
+                                        widget.userOrganizationNummer);
+                                  }
                                 }
                               },
                             ),
@@ -580,7 +558,6 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
             case Status.COMPLETED:
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
-                  _isOrganizationTypeShown = true;
                   _isCustomerTypeLoading = false;
                 });
               });
@@ -694,11 +671,11 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
                   _isUpdateLoading = false;
                 });
               });
-              if (!_isErrorMessageShown) {
+              if (!_isAddOrganizationErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {
-                    _isErrorMessageShown = true;
+                    _isAddOrganizationErrorMessageShown = true;
                   });
                 });
               }
@@ -750,11 +727,11 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
                   _isUpdateLoading = false;
                 });
               });
-              if (!_isErrorMessageShown) {
+              if (!_isAddOrganizationErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {
-                    _isErrorMessageShown = true;
+                    _isAddOrganizationErrorMessageShown = true;
                   });
                 });
               }
@@ -765,78 +742,80 @@ Future<bool> isNearByOrganization(String? organizationLatitude, String? organiza
     );
   }
 
-  Future<bool> showNearbyOrganizationsPopup(BuildContext context, List<Organization> nearbyOrganizations) async {
+  showNearbyOrganizationsPopup(BuildContext context, List<Organization> nearbyOrganizations) {
     String organizationCount = nearbyOrganizations.length.toString();
-    return await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-                side: const BorderSide(color: CustomColors.successAlertBorderColor),
-              ),
-              backgroundColor: CustomColors.tableBackgroundColor1,
-              elevation: 24.0,
-              titlePadding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
-              contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
-              actionsPadding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
-              title: Text(
-                "Nearby Locations Found",
-                style: TextStyle(
-                  color: CustomColors.errorAlertTitleTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: getFontSizeLarge(),
-                ),
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "This location has $organizationCount nearby organizations. Do you want to continue?",
-                        style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      ...nearbyOrganizations
-                          .map((org) => Text(
-                                "  - ${org.namebspr}",
-                                style: TextStyle(fontSize: getFontSize()),
-                              ))
-                          .toList(),
-                    ],
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            side: const BorderSide(color: CustomColors.successAlertBorderColor),
+          ),
+          backgroundColor: CustomColors.tableBackgroundColor1,
+          elevation: 24.0,
+          titlePadding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
+          contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
+          actionsPadding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
+          title: Text(
+            "Nearby Locations Found",
+            style: TextStyle(
+              color: CustomColors.errorAlertTitleTextColor,
+              fontWeight: FontWeight.bold,
+              fontSize: getFontSizeLarge(),
+            ),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "This location has $organizationCount nearby organizations. Do you want to continue?",
+                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
                   ),
-                ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  ...nearbyOrganizations
+                      .map((org) => Text(
+                            "  - ${org.namebspr}",
+                            style: TextStyle(fontSize: getFontSize()),
+                          ))
+                      .toList(),
+                ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("No",
-                      style: TextStyle(
-                        color: CustomColors.errorAlertTitleTextColor,
-                        fontWeight: FontWeight.bold,
-                      )),
-                ),
-                TextButton(
-                  onPressed: () {
-                    _customerTypeBloc.getCustomerType();
-                    Navigator.of(context).pop(true);
-                  },
-                  child: const Text("Yes",
-                      style: TextStyle(
-                        color: CustomColors.errorAlertTitleTextColor,
-                        fontWeight: FontWeight.bold,
-                      )),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text("No",
+                  style: TextStyle(
+                    color: CustomColors.errorAlertTitleTextColor,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                //_customerTypeBloc.getCustomerType();
+              },
+              child: const Text("Yes",
+                  style: TextStyle(
+                    color: CustomColors.errorAlertTitleTextColor,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
