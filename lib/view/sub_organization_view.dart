@@ -23,6 +23,7 @@ class SubOrganizationView extends StatefulWidget {
   final String ysuporgNummer;
   final String ysuporgNamebspr;
   final String designationNummer;
+  final String userOrganizationNummer;
 
   const SubOrganizationView({
     Key? key,
@@ -35,6 +36,7 @@ class SubOrganizationView extends StatefulWidget {
     required this.ysuporgNummer,
     required this.ysuporgNamebspr,
     required this.designationNummer,
+    required this.userOrganizationNummer,
   }) : super(key: key);
 
   @override
@@ -77,7 +79,11 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       organizationAddress1,
       organizationAddress2,
       organizationAddress3,
-      organizationAddress4) async {
+      organizationAddress4,
+      ownerName,
+      isMasonry,
+      isWaterproofing,
+      isFlooring) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -96,7 +102,13 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
               organizationAddress1: organizationAddress1,
               organizationAddress2: organizationAddress2,
               organizationAddress3: organizationAddress3,
-              organizationAddress4: organizationAddress4)),
+              organizationAddress4: organizationAddress4,
+              ownerName: ownerName,
+              isMasonry: isMasonry,
+              isWaterproofing: isWaterproofing,
+              isFlooring: isFlooring, 
+              userOrganizationNummer: widget.userOrganizationNummer, 
+              designationNummer: widget.userOrganizationNummer,)),
     );
 
     if (result == true) {
@@ -213,6 +225,11 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                         subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
                                     final subOrganizationCustomerTypeNamebspr =
                                         subOrganizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+                                    final ownerName = subOrganizations.yowname?.toString() ?? 'Unnamed Route';
+                                    final isMasonry = subOrganizations.ymasonry?.toString() ?? 'Unnamed Route';
+                                    final isWaterproofing = subOrganizations.ywaterpr?.toString() ?? 'Unnamed Route';
+                                    final isFlooring = subOrganizations.yflooring?.toString() ?? 'Unnamed Route';
+
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -239,7 +256,12 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                     subOrganizationAddress1,
                                                     subOrganizationAddress2,
                                                     subOrganizationAddress3,
-                                                    subOrganizationAddress4);
+                                                    subOrganizationAddress4,
+                                                    ownerName,
+                                                    isMasonry,
+                                                    isWaterproofing,
+                                                    isFlooring
+                                                    );
                                               },
                                               backgroundColor: CustomColors.buttonColor,
                                               foregroundColor: CustomColors.buttonTextColor,
@@ -273,8 +295,9 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                       loggedUserNummer: widget.loggedUserNummer,
                                                       ysuporgNummer: subOrganizationSuperiorOrgNummer,
                                                       ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
-                                                      designationNummer: widget.designationNummer, 
-                                                      organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr,
+                                                      designationNummer: widget.designationNummer,
+                                                      organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr, 
+                                                      userOrganizationNummer: widget.userOrganizationNummer,
                                                     )));
                                           },
                                         ),

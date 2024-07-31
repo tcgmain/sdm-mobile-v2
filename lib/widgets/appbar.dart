@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/all_visit_history_view.dart';
 import 'package:sdm/view/change_password_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';

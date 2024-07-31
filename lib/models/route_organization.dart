@@ -21,8 +21,11 @@ class RouteOrganization {
       this.ysuporgNamebspr,
       this.ycustypId,
       this.ycustypSuch,
-      this.ycustypNamebspr
-      });
+      this.ycustypNamebspr,
+      this.yowname,
+      this.ymasonry,
+      this.ywaterpr,
+      this.yflooring});
 
   String? nummer;
   String? namebsprRoute;
@@ -46,6 +49,10 @@ class RouteOrganization {
   String? ycustypId;
   String? ycustypSuch;
   String? ycustypNamebspr;
+  String? yowname;
+  bool? ymasonry;
+  bool? ywaterpr;
+  bool? yflooring;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -74,6 +81,10 @@ class RouteOrganization {
       ycustypId: json["ysdmorg^ycustyp^id"] ?? '',
       ycustypSuch: json["ysdmorg^ycustyp^such"] ?? '',
       ycustypNamebspr: json["ysdmorg^ycustyp^namebspr"] ?? '',
+      yowname: json["ysdmorg^yowname"] ?? '',
+      ymasonry: json["ysdmorg^ymasonry"] ?? '',
+      ywaterpr: json["ysdmorg^ywaterpr"] ?? '',
+      yflooring: json["ysdmorg^yflooring"] ?? '',
     );
   }
 
@@ -99,5 +110,9 @@ class RouteOrganization {
         "ysdmorg^ycustyp^id": ycustypId ?? '',
         "ysdmorg^ycustyp^such": ycustypSuch ?? '',
         "ysdmorg^ycustyp^namebspr": ycustypNamebspr ?? '',
+        "ysdmorg^yowname": yowname ?? '',
+        "ysdmorg^ymasonry": ymasonry ?? '',
+        "ysdmorg^ywaterpr": ywaterpr ?? '',
+        "ysdmorg^yflooring": yflooring ?? '',
       };
 }

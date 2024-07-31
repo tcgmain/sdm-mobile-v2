@@ -3,7 +3,6 @@
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/all_visit_history_view.dart';
 import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
@@ -51,7 +50,8 @@ class _HomePageState extends State<HomePage> {
               userNummer: widget.userNummer,
               isTeamMemberUi: widget.isTeamMemberUi,
               loggedUserNummer: widget.loggedUserNummer, 
-              designationNummer: widget.designationNummer,
+              designationNummer: widget.designationNummer, 
+              userOrganizationNummer: widget.userOrganizationNummer,
             ),
       OrganizationView(
         username: widget.username,

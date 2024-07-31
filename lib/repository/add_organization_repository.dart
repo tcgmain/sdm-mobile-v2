@@ -10,21 +10,24 @@ class AddOrganizationRepository {
   dynamic inputBody, requestHeaders;
 
   Future<AddOrganization> addOrganization(
-    String searchWord,
-    String name,
-    String email,
-    String phone1,
-    String phone2,
-    String address1,
-    String address2,
-    String address3,
-    String address4,
-    String latitude,
-    String longitude,
-    String customerTypeId,
-    String assignToNummer,
-    String userOrganizationNummer
-  ) async {
+      String searchWord,
+      String name,
+      String email,
+      String phone1,
+      String phone2,
+      String address1,
+      String address2,
+      String address3,
+      String address4,
+      String latitude,
+      String longitude,
+      String customerTypeId,
+      String assignToNummer,
+      String userOrganizationNummer,
+      String ownerName,
+      String isMasonry,
+      String isWaterproofing,
+      String isFlooring) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -43,7 +46,11 @@ class AddOrganizationRepository {
       "ycustyp": customerTypeId,
       "yassigto": assignToNummer,
       "yvisdis": "300",
-      "ysuporg": userOrganizationNummer
+      "ysuporg": userOrganizationNummer,
+      "yowname": ownerName,
+      "ymasonry": isMasonry,
+      "ywaterpr": isWaterproofing,
+      "yflooring": isFlooring,
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);

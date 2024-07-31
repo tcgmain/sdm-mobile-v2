@@ -19,6 +19,7 @@ class RouteOrganizationView extends StatefulWidget {
   final bool isTeamMemberUi;
   final String loggedUserNummer;
   final String designationNummer;
+  final String userOrganizationNummer;
 
   const RouteOrganizationView({
     Key? key,
@@ -28,6 +29,7 @@ class RouteOrganizationView extends StatefulWidget {
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
     required this.designationNummer,
+    required this.userOrganizationNummer,
   }) : super(key: key);
 
   @override
@@ -54,7 +56,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
     super.dispose();
   }
 
-    Future<void> _navigateToUpdateOrganizationView(
+  Future<void> _navigateToUpdateOrganizationView(
       organizationId,
       organizationNummer,
       organizationName,
@@ -65,26 +67,37 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
       organizationAddress1,
       organizationAddress2,
       organizationAddress3,
-      organizationAddress4) async {
+      organizationAddress4,
+      ownerName,
+      isMasonry,
+      isWaterproofing,
+      isFlooring) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UpdateOrganizationView(
-              userNummer: widget.userNummer,
-              loggedUserNummer: widget.loggedUserNummer,
-              username: widget.username,
-              isTeamMemberUi: widget.isTeamMemberUi,
-              organizationId: organizationId,
-              organizationNummer: organizationNummer,
-              organizationName: organizationName,
-              organizationTypeId: organizationTypeId,
-              organizationMail: organizationMail,
-              organizationPhone1: organizationPhone1,
-              organizationPhone2: organizationPhone2,
-              organizationAddress1: organizationAddress1,
-              organizationAddress2: organizationAddress2,
-              organizationAddress3: organizationAddress3,
-              organizationAddress4: organizationAddress4)),
+                userNummer: widget.userNummer,
+                loggedUserNummer: widget.loggedUserNummer,
+                username: widget.username,
+                isTeamMemberUi: widget.isTeamMemberUi,
+                organizationId: organizationId,
+                organizationNummer: organizationNummer,
+                organizationName: organizationName,
+                organizationTypeId: organizationTypeId,
+                organizationMail: organizationMail,
+                organizationPhone1: organizationPhone1,
+                organizationPhone2: organizationPhone2,
+                organizationAddress1: organizationAddress1,
+                organizationAddress2: organizationAddress2,
+                organizationAddress3: organizationAddress3,
+                organizationAddress4: organizationAddress4,
+                ownerName: ownerName,
+                isMasonry: isMasonry,
+                isWaterproofing: isWaterproofing,
+                isFlooring: isFlooring,
+                userOrganizationNummer: widget.userOrganizationNummer,
+                designationNummer: widget.designationNummer,
+              )),
     );
 
     if (result == true) {
@@ -166,42 +179,52 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                     final organizationDistance = organizations.distance?.toString() ?? 'Unnamed Route';
                                     final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
                                     final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
-                                    final ysuporgNamebspr = organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-    final organizationTypeNamebspr = organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+                                    final ysuporgNamebspr =
+                                        organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+                                    final organizationTypeNamebspr =
+                                        organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+                                    final ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
+                                    final isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
+                                    final isWaterproofing = organizations.ywaterpr?.toString() ?? 'Unnamed Route';
+                                    final isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
 
                                     return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: Slidable(
-                                           key: const ValueKey(0),
+                                          key: const ValueKey(0),
 
-                                              // The end action pane is the one at the right or the bottom side.
-                                              endActionPane: ActionPane(
-                                                extentRatio: 0.2,
-                                                motion: const ScrollMotion(),
-                                                children: [
-                                                  SlidableAction(
-                                                    onPressed: (context) {
-                                                      print("Pressed");
+                                          // The end action pane is the one at the right or the bottom side.
+                                          endActionPane: ActionPane(
+                                            extentRatio: 0.2,
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  print("Pressed");
 
-                                                      _navigateToUpdateOrganizationView(
-                                                          organizationId,
-                                                          organizationNummer,
-                                                          organizationName,
-                                                          organizationTypeId,
-                                                          organizationMail,
-                                                          organizationPhone1,
-                                                          organizationPhone2,
-                                                          organizationAddress1,
-                                                          organizationAddress2,
-                                                          organizationAddress3,
-                                                          organizationAddress4);
-                                                    },
-                                                    backgroundColor: CustomColors.buttonColor,
-                                                    foregroundColor: CustomColors.buttonTextColor,
-                                                    icon: Icons.edit,
-                                                  ),
-                                                ],
+                                                  _navigateToUpdateOrganizationView(
+                                                      organizationId,
+                                                      organizationNummer,
+                                                      organizationName,
+                                                      organizationTypeId,
+                                                      organizationMail,
+                                                      organizationPhone1,
+                                                      organizationPhone2,
+                                                      organizationAddress1,
+                                                      organizationAddress2,
+                                                      organizationAddress3,
+                                                      organizationAddress4,
+                                                      ownerName,
+                                                      isMasonry,
+                                                      isWaterproofing,
+                                                      isFlooring);
+                                                },
+                                                backgroundColor: CustomColors.buttonColor,
+                                                foregroundColor: CustomColors.buttonTextColor,
+                                                icon: Icons.edit,
                                               ),
+                                            ],
+                                          ),
 
                                           child: ListButton(
                                             displayName: organizationName,
@@ -228,14 +251,14 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                         isTeamMemberUi: widget.isTeamMemberUi,
                                                         loggedUserNummer: widget.loggedUserNummer,
                                                         ysuporgNummer: ysuporgNummer,
-                                                        ysuporgNamebspr: ysuporgNamebspr, 
-                                                        designationNummer: widget.designationNummer, 
-                                                        organizationTypeNamebspr: organizationTypeNamebspr,
+                                                        ysuporgNamebspr: ysuporgNamebspr,
+                                                        designationNummer: widget.designationNummer,
+                                                        organizationTypeNamebspr: organizationTypeNamebspr, 
+                                                        userOrganizationNummer: widget.userOrganizationNummer,
                                                       )));
                                             },
                                           ),
-                                        )
-                                        );
+                                        ));
                                   },
                                 );
                               }

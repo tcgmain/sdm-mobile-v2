@@ -21,6 +21,7 @@ class RouteView extends StatefulWidget {
   final bool isTeamMemberUi;
   final String loggedUserNummer;
   final String designationNummer;
+  final String userOrganizationNummer;
 
   const RouteView(
       {Key? key,
@@ -29,6 +30,7 @@ class RouteView extends StatefulWidget {
       required this.isTeamMemberUi,
       required this.loggedUserNummer,
       required this.designationNummer,
+      required this.userOrganizationNummer,
       })
       : super(key: key);
 
@@ -175,7 +177,8 @@ class _RouteViewState extends State<RouteView> {
                                                       routeNummer: routeNumb,
                                                       isTeamMemberUi: widget.isTeamMemberUi,
                                                       loggedUserNummer: widget.loggedUserNummer, 
-                                                      designationNummer: widget.designationNummer,
+                                                      designationNummer: widget.designationNummer, 
+                                                      userOrganizationNummer: widget.userOrganizationNummer,
                                                     )));
                                           },
                                         ));

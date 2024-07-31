@@ -18,7 +18,6 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/success_alert.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -55,6 +54,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isAddGoodsManagementAPICall = false;
   bool _isAddOrganizationErrorMessageShown = false;
   bool _isNearbyOrganizationErrorMessageShown = false;
+  bool _isCustomerTypeErrorMessageShown = false;
   bool _isNearbyOrganizationPopupShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
@@ -62,11 +62,13 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isCustomerTypeLoading = false;
   bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
+  String organizationType = "";
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
   int? _selectedCustomerTypeIndex;
   final _nameController = TextEditingController();
+  final _ownerNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phone1Controller = TextEditingController();
   final _phone2Controller = TextEditingController();
@@ -76,6 +78,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final _address4Controller = TextEditingController();
 
   final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _ownerNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phone1FocusNode = FocusNode();
   final FocusNode _phone2FocusNode = FocusNode();
@@ -83,6 +86,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final FocusNode _address2FocusNode = FocusNode();
   final FocusNode _address3FocusNode = FocusNode();
   final FocusNode _address4FocusNode = FocusNode();
+
+  bool isMasonry = false;
+  bool isWaterproofing = false;
+  bool isFlooring = false;
 
   final Map<String, bool?> _validationStatus = {
     'name': null,
@@ -155,10 +162,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     double minLon = lon - lonRange;
     double maxLon = lon + lonRange;
 
-    print(minLat);
-    print(maxLat);
-    print(minLon);
-    print(maxLon);
     _organizationBloc.getOrganizationByLocation(
         minLon.toString(), maxLon.toString(), minLat.toString(), maxLat.toString());
   }
@@ -192,7 +195,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   });
                 }
               }
-
               break;
 
             case Status.ERROR:
@@ -205,7 +207,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
               }
-
               break;
           }
         }
@@ -224,6 +225,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   void clearFormFields() {
     _nameController.clear();
+    _ownerNameController.clear();
     _emailController.clear();
     _phone1Controller.clear();
     _phone2Controller.clear();
@@ -237,6 +239,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
     _validationStatus.updateAll((key, value) => null);
     _validationMessages.updateAll((key, value) => null);
+
+    organizationType = "";
   }
 
   @override
@@ -260,6 +264,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _addOrganizationBloc.dispose();
     _addGoodsManagementBloc.dispose();
     _nameController.dispose();
+    _ownerNameController.dispose();
     _emailController.dispose();
     _phone1Controller.dispose();
     _phone2Controller.dispose();
@@ -268,6 +273,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address3Controller.dispose();
     _address4Controller.dispose();
     _nameFocusNode.dispose();
+    _ownerNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _phone1FocusNode.dispose();
     _phone2FocusNode.dispose();
@@ -287,6 +293,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         case 'name':
           _validationMessages['name'] = _validateName(_nameController.text);
           _validationStatus['name'] = _validationMessages['name'] == null;
+          break;
+        case 'ownerName':
+          _validationMessages['ownerName'] = null;
+          _validationStatus['ownerName'] = true;
           break;
         case 'email':
           _validationMessages['email'] = _validateEmail(_emailController.text);
@@ -335,7 +345,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   String? _validateEmail(String? value) {
-    if (!value!.isValidEmail) {
+    if (value!.isNotEmpty && !value.isValidEmail) {
       return 'Please enter a valid email';
     }
     return null;
@@ -405,6 +415,31 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 ),
                               ),
                             ),
+                          if (organizationType == "Project") const SizedBox(height: 20),
+                          if (organizationType == "Project")
+                            const Align(
+                                alignment: Alignment.centerLeft,
+                                child:
+                                    Text('Contractor Details', style: TextStyle(color: CustomColors.cardTextColor1))),
+                          if (organizationType == "Project") const SizedBox(height: 8),
+                          if (organizationType == "Project")
+                            _buildToggleSwitch('Masonry', isMasonry, (value) {
+                              setState(() {
+                                isMasonry = value;
+                              });
+                            }),
+                          if (organizationType == "Project")
+                            _buildToggleSwitch('Waterproofing', isWaterproofing, (value) {
+                              setState(() {
+                                isWaterproofing = value;
+                              });
+                            }),
+                          if (organizationType == "Project")
+                            _buildToggleSwitch('Flooring', isFlooring, (value) {
+                              setState(() {
+                                isFlooring = value;
+                              });
+                            }),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _nameController,
@@ -412,6 +447,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             fieldName: 'name',
                             focusNode: _nameFocusNode,
                             validator: _validateName,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildValidatedTextFormField(
+                            controller: _ownerNameController,
+                            label: 'Owner Name',
+                            fieldName: 'ownerName',
+                            focusNode: _ownerNameFocusNode,
+                            validator: (value) => null,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -477,9 +520,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             child: CommonAppButton(
                               buttonText: 'Register',
                               onPressed: () {
-                                setState(() {
-                                  _isUpdateLoading = true;
-                                });
                                 _nameController.text = capitalizeWords(_nameController.text);
                                 _phone1Controller.text = capitalizeWords(_phone1Controller.text);
                                 _phone2Controller.text = capitalizeWords(_phone2Controller.text);
@@ -491,7 +531,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
                                   setState(() {
-                                    _isUpdateLoading = true;
                                     _isSuccessMessageShown = false;
                                     _isAddGoodsManagementAPICall = false;
                                     _isAddOrganizationErrorMessageShown = false;
@@ -506,9 +545,19 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   final address2 = _address2Controller.text.toString();
                                   final address3 = _address3Controller.text.toString();
                                   final address4 = _address4Controller.text.toString();
+                                  final ownerName = _ownerNameController.text.toString();
 
                                   if (!_isSubmitPressed) {
+                                    setState(() {
+                                      _isUpdateLoading = true;
+                                    });
                                     _isSubmitPressed = true;
+
+                                    if (organizationType != "Project" || organizationType != "(4147,12,0)") {
+                                      isMasonry = false;
+                                      isWaterproofing = false;
+                                      isFlooring = false;
+                                    }
                                     _addOrganizationBloc.addOrganization(
                                         getSearchWord(name),
                                         name,
@@ -523,7 +572,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         longitude,
                                         customerTypeId,
                                         widget.loggedUserNummer,
-                                        widget.userOrganizationNummer);
+                                        widget.userOrganizationNummer,
+                                        ownerName,
+                                        isMasonry.toString(),
+                                        isWaterproofing.toString(),
+                                        isFlooring.toString());
                                   }
                                 }
                               },
@@ -582,6 +635,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                         setState(() {
                           _selectedCustomerTypeIndex = index;
                           _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
+                          organizationType = _allCustomerTypes![index].aebez.toString();
                         });
                       },
                       children: _allCustomerTypes!.map((CustomerType type) {
@@ -595,12 +649,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 ],
               );
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isCustomerTypeLoading = false;
+              if (!_isCustomerTypeErrorMessageShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isCustomerTypeLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
+
               return Container();
           }
         }
@@ -747,75 +804,121 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
             side: const BorderSide(color: CustomColors.successAlertBorderColor),
           ),
-          backgroundColor: CustomColors.tableBackgroundColor1,
           elevation: 24.0,
-          titlePadding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
-          contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
-          actionsPadding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
-          title: Text(
-            "Nearby Locations Found",
-            style: TextStyle(
-              color: CustomColors.errorAlertTitleTextColor,
-              fontWeight: FontWeight.bold,
-              fontSize: getFontSizeLarge(),
-            ),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "This location has $organizationCount nearby organizations. Do you want to continue?",
-                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ...nearbyOrganizations
-                      .map((org) => Text(
-                            "  - ${org.namebspr}",
-                            style: TextStyle(fontSize: getFontSize()),
-                          ))
-                      .toList(),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.white,
                 ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
+                  child: Text(
+                    "Nearby Organizations Found",
+                    style: TextStyle(
+                      color: CustomColors.errorAlertTitleTextColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: getFontSizeLarge(),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "This location has $organizationCount nearby organizations. Do you want to continue?",
+                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
+                          ),
+                          const SizedBox(height: 10),
+                          ...nearbyOrganizations
+                              .map((org) => Text(
+                                    "  - ${org.namebspr}",
+                                    style: TextStyle(fontSize: getFontSize()),
+                                  ))
+                              .toList(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                            color: CustomColors.errorAlertTitleTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                            color: CustomColors.errorAlertTitleTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text("No",
-                  style: TextStyle(
-                    color: CustomColors.errorAlertTitleTextColor,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                //_customerTypeBloc.getCustomerType();
-              },
-              child: const Text("Yes",
-                  style: TextStyle(
-                    color: CustomColors.errorAlertTitleTextColor,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-          ],
         );
       },
+    );
+  }
+
+  Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: CustomColors.buttonColor,
+            inactiveThumbColor: CustomColors.textColorGrey,
+            inactiveTrackColor: CustomColors.textHighlightColor,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        const SizedBox(
+          width: 10,
+        ),
+        Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor)),
+      ],
     );
   }
 }

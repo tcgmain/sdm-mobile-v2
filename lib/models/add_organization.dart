@@ -15,7 +15,10 @@ class AddOrganization {
     required this.ygpslat,
     required this.table,
     required this.yemail,
-    required this.yvisdis
+    required this.yvisdis,
+    required this.ymasonry,
+    required this.ywaterpr,
+    required this.yflooring
   });
 
   String yphone1;
@@ -34,6 +37,9 @@ class AddOrganization {
   List<dynamic> table;
   String yemail;
   int yvisdis;
+  bool ymasonry;
+  bool ywaterpr;
+  bool yflooring;
 
   factory AddOrganization.fromJson(Map<String, dynamic> json) => AddOrganization(
         yphone1: json["yphone1"],
@@ -52,6 +58,9 @@ class AddOrganization {
         table: List<dynamic>.from(json["table"]),
         yemail: json["yemail"],
         yvisdis: json["yvisdis"],
+        ymasonry: json["ymasonry"],
+        ywaterpr: json["ywaterpr"],
+        yflooring: json["yflooring"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,5 +80,8 @@ class AddOrganization {
         "table": List<dynamic>.from(table.map((x) => x)),
         "yemail": yemail,
         "yvisdis": yvisdis,
+        "ymasonry": ymasonry,
+        "ywaterpr": ywaterpr,
+        "yflooring": yflooring,
       };
 }

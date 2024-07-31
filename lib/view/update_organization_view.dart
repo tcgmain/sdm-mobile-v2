@@ -6,6 +6,7 @@ import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
+import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -29,6 +30,12 @@ class UpdateOrganizationView extends StatefulWidget {
   final String organizationAddress2;
   final String organizationAddress3;
   final String organizationAddress4;
+  final String ownerName;
+  final bool isMasonry;
+  final bool isWaterproofing;
+  final bool isFlooring;
+  final String userOrganizationNummer;
+  final String designationNummer;
 
   const UpdateOrganizationView({
     Key? key,
@@ -47,6 +54,12 @@ class UpdateOrganizationView extends StatefulWidget {
     required this.organizationAddress2,
     required this.organizationAddress3,
     required this.organizationAddress4,
+    required this.ownerName,
+    required this.isMasonry,
+    required this.isWaterproofing,
+    required this.isFlooring,
+    required this.userOrganizationNummer,
+    required this.designationNummer,
   }) : super(key: key);
 
   @override
@@ -69,9 +82,11 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   late String organizationSearchWord;
   bool _isOrganizationTypeShown = false;
   late UpdateOrganizationBloc _updateOrganizationBloc;
+  String organizationType = "";
 
   String? _selectedCustomerType;
   int? _selectedCustomerTypeIndex;
+  late TextEditingController _ownerNameController;
   late TextEditingController _emailController;
   late TextEditingController _phone1Controller;
   late TextEditingController _phone2Controller;
@@ -80,6 +95,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   late TextEditingController _address3Controller;
   late TextEditingController _address4Controller;
 
+  final FocusNode _ownerNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phone1FocusNode = FocusNode();
   final FocusNode _phone2FocusNode = FocusNode();
@@ -87,6 +103,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   final FocusNode _address2FocusNode = FocusNode();
   final FocusNode _address3FocusNode = FocusNode();
   final FocusNode _address4FocusNode = FocusNode();
+
+  bool isMasonry = false;
+  bool isWaterproofing = false;
+  bool isFlooring = false;
 
   final Map<String, bool?> _validationStatus = {
     'email': null,
@@ -114,6 +134,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     setState(() {
       _isCustomerTypeLoading = true;
     });
+    _ownerNameController = TextEditingController(text: widget.ownerName.toString());
     _emailController = TextEditingController(text: widget.organizationMail.toString());
     _phone1Controller = TextEditingController(text: widget.organizationPhone1.toString());
     _phone2Controller = TextEditingController(text: widget.organizationPhone2.toString());
@@ -121,6 +142,11 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address2Controller = TextEditingController(text: widget.organizationAddress2.toString());
     _address3Controller = TextEditingController(text: widget.organizationAddress3.toString());
     _address4Controller = TextEditingController(text: widget.organizationAddress4.toString());
+    organizationType = widget.organizationTypeId;
+
+    isMasonry = widget.isMasonry;
+    isWaterproofing = widget.isWaterproofing;
+    isFlooring = widget.isFlooring;
 
     _customerTypeBloc = CustomerTypeBloc();
     _customerTypeBloc.getCustomerType();
@@ -133,6 +159,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _updateOrganizationBloc.dispose();
 
     _customerTypeBloc.dispose();
+    _ownerNameController.dispose();
     _emailController.dispose();
     _phone1Controller.dispose();
     _phone2Controller.dispose();
@@ -140,6 +167,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address2Controller.dispose();
     _address3Controller.dispose();
     _address4Controller.dispose();
+    _ownerNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _phone1FocusNode.dispose();
     _phone2FocusNode.dispose();
@@ -163,6 +191,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
       _isSuccessMessageShown = true;
       _isErrorMessageShown = true;
       switch (fieldName) {
+        case 'ownerName':
+          _validationMessages['ownerName'] = null;
+          _validationStatus['ownerName'] = true;
+          break;
         case 'email':
           _validationMessages['email'] = _validateEmail(_emailController.text);
           _validationStatus['email'] = _validationMessages['email'] == null;
@@ -208,7 +240,28 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         appBar: CommonAppBar(
           title: 'Update Organizations',
           onBackButtonPressed: () {
-            Navigator.pop(context, true);
+            //Navigator.pop(context, true);
+
+            //       OrganizationView(
+            //   username: widget.username,
+            //   userNummer: widget.userNummer,
+            //   userOrganizationNummer: widget.userOrganizationNummer,
+            //   loggedUserNummer: widget.loggedUserNummer,
+            //   isTeamMemberUi: widget.isTeamMemberUi,
+            //   designationNummer: widget.designationNummer,
+            // )
+
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => OrganizationView(
+                        username: widget.username,
+                        userNummer: widget.userNummer,
+                        userOrganizationNummer: widget.userOrganizationNummer,
+                        loggedUserNummer: widget.loggedUserNummer,
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                        designationNummer: widget.designationNummer,
+                      )),
+            );
           },
           isHomePage: false,
         ),
@@ -245,6 +298,41 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                             updateOrganizationResponse(),
                             const SizedBox(height: 16),
                             customerTypeToggleButtons(),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              const SizedBox(height: 20),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child:
+                                      Text('Contractor Details', style: TextStyle(color: CustomColors.cardTextColor1))),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              const SizedBox(height: 8),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              _buildToggleSwitch('Masonry', isMasonry, (value) {
+                                setState(() {
+                                  isMasonry = value;
+                                });
+                              }),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              _buildToggleSwitch('Waterproofing', isWaterproofing, (value) {
+                                setState(() {
+                                  isWaterproofing = value;
+                                });
+                              }),
+                            if (organizationType == "Project" || organizationType == "(4147,12,0)")
+                              _buildToggleSwitch('Flooring', isFlooring, (value) {
+                                setState(() {
+                                  isFlooring = value;
+                                });
+                              }),
+                            const SizedBox(height: 16),
+                            _buildValidatedTextFormField(
+                              controller: _ownerNameController,
+                              label: 'Owner Name',
+                              fieldName: 'ownerName',
+                              focusNode: _ownerNameFocusNode,
+                              validator: (value) => null,
+                            ),
                             const SizedBox(height: 16),
                             _buildValidatedTextFormField(
                               controller: _emailController,
@@ -315,6 +403,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                     _isSuccessMessageShown = false;
                                     _isErrorMessageShown = false;
 
+                                    _ownerNameController.text = capitalizeWords(_ownerNameController.text);
                                     _phone1Controller.text = capitalizeWords(_phone1Controller.text);
                                     _phone2Controller.text = capitalizeWords(_phone2Controller.text);
                                     _address1Controller.text = capitalizeWords(_address1Controller.text);
@@ -328,6 +417,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       });
 
                                       final customerTypeId = _selectedCustomerType.toString();
+                                      final ownerName = _ownerNameController.text.toString();
                                       final email = _emailController.text.toString();
                                       final phone1 = _phone1Controller.text.toString();
                                       final phone2 = _phone2Controller.text.toString();
@@ -336,8 +426,26 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       final address3 = _address3Controller.text.toString();
                                       final address4 = _address4Controller.text.toString();
 
-                                      _updateOrganizationBloc.updateOrganization(widget.organizationId, email, phone1,
-                                          phone2, address1, address2, address3, address4, customerTypeId);
+                                      if(organizationType != "Project" || organizationType != "(4147,12,0)") {
+                                        isMasonry = false;
+                                        isWaterproofing = false;
+                                        isFlooring = false;
+                                      }
+
+                                      _updateOrganizationBloc.updateOrganization(
+                                          widget.organizationId,
+                                          email,
+                                          ownerName,
+                                          phone1,
+                                          phone2,
+                                          address1,
+                                          address2,
+                                          address3,
+                                          address4,
+                                          customerTypeId,
+                                          isMasonry.toString(),
+                                          isWaterproofing.toString(),
+                                          isFlooring.toString());
                                     }
                                   }
                                 },
@@ -429,27 +537,31 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                 children: [
                   const Text('Organization Type', style: TextStyle(color: CustomColors.cardTextColor1)),
                   const SizedBox(height: 8),
-                  ToggleButtons(
-                    color: CustomColors.cardTextColor1,
-                    selectedColor: CustomColors.textColor,
-                    fillColor: CustomColors.buttonColor3,
-                    highlightColor: CustomColors.buttonColor2,
-                    isSelected: List.generate(
-                      _allCustomerTypes!.length,
-                      (index) => index == _selectedCustomerTypeIndex,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ToggleButtons(
+                      color: CustomColors.cardTextColor1,
+                      selectedColor: CustomColors.textColor,
+                      fillColor: CustomColors.buttonColor3,
+                      highlightColor: CustomColors.buttonColor2,
+                      isSelected: List.generate(
+                        _allCustomerTypes!.length,
+                        (index) => index == _selectedCustomerTypeIndex,
+                      ),
+                      onPressed: (index) {
+                        setState(() {
+                          _selectedCustomerTypeIndex = index;
+                          _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
+                          organizationType = _allCustomerTypes![index].aebez.toString();
+                        });
+                      },
+                      children: _allCustomerTypes!.map((CustomerType type) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(type.aebez.toString()),
+                        );
+                      }).toList(),
                     ),
-                    onPressed: (index) {
-                      setState(() {
-                        _selectedCustomerTypeIndex = index;
-                        _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
-                      });
-                    },
-                    children: _allCustomerTypes!.map((CustomerType type) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(type.aebez.toString()),
-                      );
-                    }).toList(),
                   ),
                 ],
               );
@@ -489,7 +601,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "${widget.organizationName} has been updated.");
+                  showSuccessAlertDialogWithBack(context, "${widget.organizationName} has been updated.");
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
@@ -516,6 +628,25 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         }
         return Container();
       },
+    );
+  }
+
+  Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: CustomColors.buttonColor,
+            inactiveThumbColor: CustomColors.textColorGrey,
+            inactiveTrackColor: CustomColors.textHighlightColor,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
+        const SizedBox(
+          width: 10,
+        ),
+        Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor)),
+      ],
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/all_visit_history_view.dart';
 import 'package:sdm/view/organization_view.dart';
-import 'package:sdm/view/route_view.dart';
 import 'package:sdm/view/team_view.dart';
 
 class HomeV2Page extends StatefulWidget {

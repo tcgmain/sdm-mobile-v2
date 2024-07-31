@@ -1,17 +1,21 @@
 class UpdateOrganization {
-  UpdateOrganization({
-    required this.id,
-    required this.yphone1,
-    required this.yphone2,
-    required this.ycustyp,
-    required this.nummer,
-    required this.yaddressl3,
-    required this.yaddressl4,
-    required this.yaddressl1,
-    required this.yaddressl2,
-    required this.table,
-    required this.yemail,
-  });
+  UpdateOrganization(
+      {required this.id,
+      required this.yphone1,
+      required this.yphone2,
+      required this.ycustyp,
+      required this.nummer,
+      required this.yaddressl3,
+      required this.yaddressl4,
+      required this.yaddressl1,
+      required this.yaddressl2,
+      required this.table,
+      required this.yemail,
+      required this.yowname,
+      required this.ymasonry,
+      required this.ywaterpr,
+      required this.yflooring
+      });
 
   String id;
   String yphone1;
@@ -24,6 +28,10 @@ class UpdateOrganization {
   String yaddressl2;
   List<dynamic> table;
   String yemail;
+  String yowname;
+  bool ymasonry;
+  bool ywaterpr;
+  bool yflooring;
 
   factory UpdateOrganization.fromJson(Map<String, dynamic> json) => UpdateOrganization(
         id: json["id"] ?? "",
@@ -37,6 +45,10 @@ class UpdateOrganization {
         yaddressl2: json["yaddressl2"] ?? "",
         table: json["table"] != null ? List<dynamic>.from(json["table"]) : [],
         yemail: json["yemail"] ?? "",
+        yowname: json["yowname"] ?? "",
+        ymasonry: json["ymasonry"] ?? "",
+        ywaterpr: json["ywaterpr"] ?? "",
+        yflooring: json["yflooring"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -51,5 +63,9 @@ class UpdateOrganization {
         "yaddressl2": yaddressl2,
         "table": List<dynamic>.from(table.map((x) => x)),
         "yemail": yemail,
+        "yowname": yowname,
+        "ymasonry": ymasonry,
+        "ywaterpr": ywaterpr,
+        "yflooring": yflooring,
       };
 }

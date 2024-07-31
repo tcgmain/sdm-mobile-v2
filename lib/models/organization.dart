@@ -24,7 +24,11 @@ class Organization {
       this.ysuporgNamebspr,
       this.ycustypSuch,
       this.ycustypId,
-      this.ycustypNamebspr
+      this.ycustypNamebspr,
+      this.yowname,
+      this.ymasonry,
+      this.ywaterpr,
+      this.yflooring
       });
 
   String? id;
@@ -52,6 +56,10 @@ class Organization {
   String? ycustypSuch;
   String? ycustypId;
   String? ycustypNamebspr;
+  String? yowname;
+  bool? ymasonry;
+  bool? ywaterpr;
+  bool? yflooring;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -80,6 +88,10 @@ class Organization {
         ycustypSuch: json["ycustyp^such"],
         ycustypId: json["ycustyp^id"],
         ycustypNamebspr: json["ycustyp^namebspr"],
+        yowname: json["yowname"],
+        ymasonry: json["ymasonry"],
+        ywaterpr: json["ywaterpr"],
+        yflooring: json["yflooring"],
         );
   }
 
@@ -109,5 +121,9 @@ class Organization {
         "ycustyp^such": ycustypSuch,
         "ycustyp^id": ycustypId,
         "ycustyp^namebspr": ycustypNamebspr,
+        "yowname": yowname,
+        "ymasonry": ymasonry,
+        "ywaterpr": ywaterpr,
+        "yflooring": yflooring,
       };
 }

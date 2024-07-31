@@ -19,12 +19,13 @@ class UpdateOrganizationBloc {
     _updateOrganizationRepository = UpdateOrganizationRepository();
   }
 
-  updateOrganization(id, email, phone1, phone2, address1, address2, address3, address4, customerTypeId) async {
+  updateOrganization(id, email, ownerName, phone1, phone2, address1, address2, address3, address4, customerTypeId,
+      isMasonry, isWaterproofing, isFlooring) async {
     if (_updateOrganizationController?.isClosed ?? true) return;
     updateOrganizationSink.add(Response.loading(''));
     try {
       UpdateOrganization res = await _updateOrganizationRepository.updateOrganization(
-          id, email, phone1, phone2, address1, address2, address3, address4, customerTypeId);
+          id, email, ownerName, phone1, phone2, address1, address2, address3, address4, customerTypeId, isMasonry, isWaterproofing, isFlooring);
       if (_updateOrganizationController?.isClosed ?? true) return;
       updateOrganizationSink.add(Response.completed(res));
       print("UPDATE ORGANIZATION SUCCESS");

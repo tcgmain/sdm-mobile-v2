@@ -20,12 +20,31 @@ class AddOrganizationBloc {
   }
 
   addOrganization(searchWord, name, email, phone1, phone2, address1, address2, address3, address4, latitude, longitude,
-      customerTypeId, assignToNummer, userOrganizationNummer) async {
+      customerTypeId, assignToNummer, userOrganizationNummer, ownerName, isMasonry, isWaterproofing, isFlooring) async {
+
+
     if (_addOrganizationController?.isClosed ?? true) return;
     addOrganizationSink.add(Response.loading(''));
     try {
-      AddOrganization res = await _addOrganizationRepository.addOrganization(searchWord, name, email, phone1, phone2,
-          address1, address2, address3, address4, latitude, longitude, customerTypeId, assignToNummer, userOrganizationNummer);
+      AddOrganization res = await _addOrganizationRepository.addOrganization(
+          searchWord,
+          name,
+          email,
+          phone1,
+          phone2,
+          address1,
+          address2,
+          address3,
+          address4,
+          latitude,
+          longitude,
+          customerTypeId,
+          assignToNummer,
+          userOrganizationNummer,
+          ownerName,
+          isMasonry,
+          isWaterproofing,
+          isFlooring);
       if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.completed(res));
       print("ADD ORGANIZATION SUCCESS");

@@ -33,6 +33,7 @@ class HomeOrganizationView extends StatefulWidget {
   final String ysuporgNamebspr;
   final String designationNummer;
   final String organizationTypeNamebspr;
+  final String userOrganizationNummer;
 
   const HomeOrganizationView({
     Key? key,
@@ -59,6 +60,7 @@ class HomeOrganizationView extends StatefulWidget {
     required this.ysuporgNamebspr,
     required this.designationNummer,
     required this.organizationTypeNamebspr,
+    required this.userOrganizationNummer,
   }) : super(key: key);
 
   @override
@@ -122,7 +124,8 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       loggedUserNummer: widget.loggedUserNummer,
       ysuporgNummer: widget.ysuporgNummer,
       ysuporgNamebspr: widget.ysuporgNamebspr,
-      designationNummer: widget.designationNummer,
+      designationNummer: widget.designationNummer, 
+      userOrganizationNummer: widget.userOrganizationNummer,
     ),
     SalesOrderListView(
       userNummer: widget.userNummer,

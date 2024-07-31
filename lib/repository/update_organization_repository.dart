@@ -8,12 +8,26 @@ class UpdateOrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<UpdateOrganization> updateOrganization(String id, String email, String phone1, String phone2, String address1, String address2, String address3, String address4, String customerTypeId) async {
+  Future<UpdateOrganization> updateOrganization(
+      String id,
+      String email,
+      String ownerName,
+      String phone1,
+      String phone2,
+      String address1,
+      String address2,
+      String address3,
+      String address4,
+      String customerTypeId,
+      String isMasonry,
+      String isWaterproofing,
+      String isFlooring) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
-      "id":id,
+      "id": id,
       "yemail": email,
+      "yowname": ownerName,
       "yphone1": phone1,
       "yphone2": phone2,
       "yaddressl1": address1,
@@ -21,6 +35,9 @@ class UpdateOrganizationRepository {
       "yaddressl3": address3,
       "yaddressl4": address4,
       "ycustyp": customerTypeId,
+      "ymasonry": isMasonry,
+      "ywaterpr": isWaterproofing,
+      "yflooring": isFlooring,
     };
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
