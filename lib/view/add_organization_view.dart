@@ -521,6 +521,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                               buttonText: 'Register',
                               onPressed: () {
                                 _nameController.text = capitalizeWords(_nameController.text);
+                                _ownerNameController.text = capitalizeWords(_ownerNameController.text);
                                 _phone1Controller.text = capitalizeWords(_phone1Controller.text);
                                 _phone2Controller.text = capitalizeWords(_phone2Controller.text);
                                 _address1Controller.text = capitalizeWords(_address1Controller.text);
@@ -553,11 +554,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     });
                                     _isSubmitPressed = true;
 
-                                    if (organizationType != "Project" || organizationType != "(4147,12,0)") {
-                                      isMasonry = false;
-                                      isWaterproofing = false;
-                                      isFlooring = false;
-                                    }
                                     _addOrganizationBloc.addOrganization(
                                         getSearchWord(name),
                                         name,
@@ -577,6 +573,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         isMasonry.toString(),
                                         isWaterproofing.toString(),
                                         isFlooring.toString());
+
+                                    if (organizationType != "Project" || organizationType != "(4147,12,0)") {
+                                      isMasonry = false;
+                                      isWaterproofing = false;
+                                      isFlooring = false;
+                                    }
                                   }
                                 }
                               },

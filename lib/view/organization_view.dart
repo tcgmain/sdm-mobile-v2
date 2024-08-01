@@ -40,17 +40,18 @@ class OrganizationView extends StatefulWidget {
 class _OrganizationViewState extends State<OrganizationView> {
   late OrganizationBloc _organizationBloc;
   final TextEditingController _searchController = TextEditingController();
-  List<Organization>? _filteredOrganizations;
+  List<Organization>? _filteredOrganizations = [];
   List<Organization>? _allOrganizations;
   bool _isLoading = false;
+  bool _onlyInactive = false;
 
   @override
   void initState() {
     super.initState();
     _organizationBloc = OrganizationBloc();
     isDataViewer(widget.designationNummer) == true
-        ? _organizationBloc.getOrganization("")
-        : _organizationBloc.getOrganization(widget.userNummer);
+        ? _organizationBloc.getOrganization("", _onlyInactive)
+        : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
     _searchController.addListener(_onSearchChanged);
     setState(() {
       _isLoading = true;
@@ -79,7 +80,7 @@ class _OrganizationViewState extends State<OrganizationView> {
 
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer);
+        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
         _isLoading = true;
       });
     }
@@ -128,11 +129,9 @@ class _OrganizationViewState extends State<OrganizationView> {
                 designationNummer: widget.designationNummer,
               )),
     );
-    print(result);
     if (result == true) {
-      print("YYYYYYYYYYYYYYYYYYYYYYYY");
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer);
+        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
         _isLoading = true;
       });
     }
@@ -140,9 +139,15 @@ class _OrganizationViewState extends State<OrganizationView> {
 
   void _onSearchChanged() {
     setState(() {
-      _filteredOrganizations = _allOrganizations
-          ?.where((organization) => organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
-          .toList();
+      if (_searchController.text.isNotEmpty) {
+        _filteredOrganizations = _allOrganizations
+                ?.where((organization) =>
+                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
+                .toList() ??
+            [];
+      } else {
+        _filteredOrganizations = _allOrganizations ?? [];
+      }
     });
   }
 
@@ -179,6 +184,27 @@ class _OrganizationViewState extends State<OrganizationView> {
               isTeamMemberUi: widget.isTeamMemberUi,
               child: Column(
                 children: [
+                  SwitchListTile(
+                    dense: true,
+                    contentPadding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8),
+                    title: Text(
+                      "Show only inactive organizations",
+                      style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                    ),
+                    value: _onlyInactive,
+                    activeColor: CustomColors.buttonColor,
+                    inactiveThumbColor: CustomColors.buttonColor,
+                    inactiveTrackColor: Colors.grey.shade300,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _onlyInactive = value;
+                        isDataViewer(widget.designationNummer) == true
+                            ? _organizationBloc.getOrganization("", _onlyInactive)
+                            : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
+                        _isLoading = true;
+                      });
+                    },
+                  ),
                   textField.TextField(
                       controller: _searchController,
                       obscureText: false,
@@ -208,9 +234,16 @@ class _OrganizationViewState extends State<OrganizationView> {
                                 });
                               });
                               _allOrganizations = snapshot.data!.data!;
-                              _filteredOrganizations ??= _allOrganizations;
-                              final totalOrganizations = _filteredOrganizations!.length;
+                              _filteredOrganizations = _searchController.text.isNotEmpty
+                                  ? _allOrganizations!
+                                      .where((organization) => organization.namebspr!
+                                          .toLowerCase()
+                                          .contains(_searchController.text.toLowerCase()))
+                                      .toList()
+                                  : _allOrganizations!;
 
+                              final totalOrganizations = _filteredOrganizations!.length;
+                              //print(_filteredOrganizations!.length.toString());
                               if (_filteredOrganizations!.isEmpty) {
                                 return Center(
                                   child: Text(
@@ -230,7 +263,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           'Total Organizations: $totalOrganizations',
-                                          style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                          style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                         ),
                                       ),
                                     ),
@@ -323,35 +356,43 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                     ? ListButton(
                                                         displayName: organizationName,
                                                         onPressed: () {
-                                                          print(organizationTypeNamebspr);
-                                                          Navigator.of(context).push(MaterialPageRoute(
-                                                              builder: (context) => HomeOrganizationView(
-                                                                    userNummer: widget.userNummer,
-                                                                    username: widget.username,
-                                                                    routeNummer: "",
-                                                                    organizationId: organizationId,
-                                                                    organizationNummer: organizationNummer,
-                                                                    organizationName: organizationName,
-                                                                    organizationPhone1: organizationPhone1,
-                                                                    organizationPhone2: organizationPhone2,
-                                                                    organizationAddress1: organizationAddress1,
-                                                                    organizationAddress2: organizationAddress2,
-                                                                    organizationAddress3: organizationAddress3,
-                                                                    organizationAddress4: organizationAddress4,
-                                                                    organizationColour: organizationColour,
-                                                                    organizationLongitude: organizationLongitude,
-                                                                    organizationLatitude: organizationLatitude,
-                                                                    organizationDistance: organizationDistance,
-                                                                    organizationMail: organizationMail,
-                                                                    isTeamMemberUi: widget.isTeamMemberUi,
-                                                                    loggedUserNummer: widget.loggedUserNummer,
-                                                                    ysuporgNummer: ysuporgNummer,
-                                                                    ysuporgNamebspr: ysuporgNamebspr,
-                                                                    designationNummer: widget.designationNummer,
-                                                                    organizationTypeNamebspr: organizationTypeNamebspr,
-                                                                    userOrganizationNummer:
-                                                                        widget.userOrganizationNummer,
-                                                                  )));
+                                                          if (_onlyInactive == false) {
+                                                            print(organizationTypeNamebspr);
+                                                            Navigator.of(context).push(MaterialPageRoute(
+                                                                builder: (context) => HomeOrganizationView(
+                                                                      userNummer: widget.userNummer,
+                                                                      username: widget.username,
+                                                                      routeNummer: "",
+                                                                      organizationId: organizationId,
+                                                                      organizationNummer: organizationNummer,
+                                                                      organizationName: organizationName,
+                                                                      organizationPhone1: organizationPhone1,
+                                                                      organizationPhone2: organizationPhone2,
+                                                                      organizationAddress1: organizationAddress1,
+                                                                      organizationAddress2: organizationAddress2,
+                                                                      organizationAddress3: organizationAddress3,
+                                                                      organizationAddress4: organizationAddress4,
+                                                                      organizationColour: organizationColour,
+                                                                      organizationLongitude: organizationLongitude,
+                                                                      organizationLatitude: organizationLatitude,
+                                                                      organizationDistance: organizationDistance,
+                                                                      organizationMail: organizationMail,
+                                                                      isTeamMemberUi: widget.isTeamMemberUi,
+                                                                      loggedUserNummer: widget.loggedUserNummer,
+                                                                      ysuporgNummer: ysuporgNummer,
+                                                                      ysuporgNamebspr: ysuporgNamebspr,
+                                                                      designationNummer: widget.designationNummer,
+                                                                      organizationTypeNamebspr:
+                                                                          organizationTypeNamebspr,
+                                                                      userOrganizationNummer:
+                                                                          widget.userOrganizationNummer,
+                                                                    )));
+                                                          } else {
+                                                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                              showErrorAlertDialog(context,
+                                                                  "You cannot mark visits for inactive organizations.");
+                                                            });
+                                                          }
                                                         },
                                                       )
                                                     : ClipRRect(

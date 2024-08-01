@@ -9,15 +9,15 @@ class OrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<List<Organization>> getOrganization(userNummer) async {
+  Future<List<Organization>> getOrganization(userNummer, onlyInactive) async {
     requestHeaders = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
 
-    inputBody = {
-      "yassigto": userNummer,
-    };
+    onlyInactive == false
+        ? inputBody = {"yassigto": userNummer, "yactiv": "true"}
+        : inputBody = {"yassigto": userNummer, "yactiv": "false"};
 
     final response = await _provider.post("/getorganization", jsonEncode(inputBody), requestHeaders);
 
@@ -38,11 +38,7 @@ class OrganizationRepository {
       'Content-Type': 'application/json',
     };
 
-    inputBody = 
-    {
-      "ygpslat": minLatitude+"!"+maxLatitude, 
-      "ygpslon": minLongitude+"!"+maxLongitude
-    };
+    inputBody = {"ygpslat": minLatitude + "!" + maxLatitude, "ygpslon": minLongitude + "!" + maxLongitude};
 
     final response = await _provider.post("/getorgbyloc", jsonEncode(inputBody), requestHeaders);
 

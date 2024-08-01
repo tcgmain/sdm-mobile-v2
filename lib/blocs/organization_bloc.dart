@@ -17,10 +17,10 @@ class OrganizationBloc {
     _organizationRepository = OrganizationRepository();
   }
 
-  getOrganization(String userNummer) async {
+  getOrganization(String userNummer, bool onlyInactive) async {
     organizationSink.add(ResponseList.loading(''));
     try {
-      List<Organization> res = await _organizationRepository.getOrganization(userNummer);
+      List<Organization> res = await _organizationRepository.getOrganization(userNummer, onlyInactive);
       organizationSink.add(ResponseList.completed(res));
       print("ORGANIZATION SUCCESS");
     } catch (e) {
