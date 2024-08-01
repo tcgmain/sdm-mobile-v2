@@ -134,7 +134,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                   userNummer: userNummer, 
                   username: username, 
                   loggedUserNummer: userNummer, 
-                  isTeamMemberUi: false
+                  isTeamMemberUi: false, userOrganizationNummer: userOrganizationNummer, designationNummer: userDesignationNummer,
                   )));
                 break;
               case 'logout':

@@ -261,10 +261,17 @@ class _OrganizationViewState extends State<OrganizationView> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          'Total Organizations: $totalOrganizations',
-                                          style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                                        ),
+                                        child: (_onlyInactive == false)
+                                            ? Text(
+                                                'Total Organizations: $totalOrganizations',
+                                                style:
+                                                    TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                              )
+                                            : Text(
+                                                'Total Inactive Organizations: $totalOrganizations',
+                                                style:
+                                                    TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                              ),
                                       ),
                                     ),
                                     Expanded(

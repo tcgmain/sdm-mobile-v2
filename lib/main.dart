@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sdm/view/splash_view.dart';
 
+
+
 void main() {
-
-WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-    .then((_) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: []);
-      runApp(const MyApp());
-    });
-
-
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: []);
+    runApp(const MyApp());
+  });
 
   //runApp(MyApp());
 }
