@@ -39,6 +39,9 @@ class UpdateOrganizationRepository {
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
     };
+    print("inputBodyTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+
+    print(inputBody);
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
     return UpdateOrganization.fromJson(response);

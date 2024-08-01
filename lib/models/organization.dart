@@ -28,7 +28,8 @@ class Organization {
       this.yowname,
       this.ymasonry,
       this.ywaterpr,
-      this.yflooring
+      this.yflooring,
+      this.ywhtapp
       });
 
   String? id;
@@ -60,6 +61,7 @@ class Organization {
   bool? ymasonry;
   bool? ywaterpr;
   bool? yflooring;
+  String? ywhtapp;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -92,6 +94,7 @@ class Organization {
         ymasonry: json["ymasonry"],
         ywaterpr: json["ywaterpr"],
         yflooring: json["yflooring"],
+        ywhtapp: json["ywhtapp"],
         );
   }
 
@@ -125,5 +128,6 @@ class Organization {
         "ymasonry": ymasonry,
         "ywaterpr": ywaterpr,
         "yflooring": yflooring,
+        "ywhtapp": ywhtapp,
       };
 }

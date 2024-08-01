@@ -905,8 +905,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        SizedBox(
+            width: 150,
+            child: Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor))),
         Switch(
             value: value,
             onChanged: onChanged,
@@ -914,10 +918,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
             inactiveThumbColor: CustomColors.textColorGrey,
             inactiveTrackColor: CustomColors.textHighlightColor,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        const SizedBox(
-          width: 10,
-        ),
-        Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor)),
       ],
     );
   }

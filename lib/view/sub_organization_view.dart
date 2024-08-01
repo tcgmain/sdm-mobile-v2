@@ -88,27 +88,28 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       context,
       MaterialPageRoute(
           builder: (context) => UpdateOrganizationView(
-              userNummer: widget.userNummer,
-              loggedUserNummer: widget.loggedUserNummer,
-              username: widget.username,
-              isTeamMemberUi: widget.isTeamMemberUi,
-              organizationId: organizationId,
-              organizationNummer: organizationNummer,
-              organizationName: organizationName,
-              organizationTypeId: organizationTypeId,
-              organizationMail: organizationMail,
-              organizationPhone1: organizationPhone1,
-              organizationPhone2: organizationPhone2,
-              organizationAddress1: organizationAddress1,
-              organizationAddress2: organizationAddress2,
-              organizationAddress3: organizationAddress3,
-              organizationAddress4: organizationAddress4,
-              ownerName: ownerName,
-              isMasonry: isMasonry,
-              isWaterproofing: isWaterproofing,
-              isFlooring: isFlooring, 
-              userOrganizationNummer: widget.userOrganizationNummer, 
-              designationNummer: widget.userOrganizationNummer,)),
+                userNummer: widget.userNummer,
+                loggedUserNummer: widget.loggedUserNummer,
+                username: widget.username,
+                isTeamMemberUi: widget.isTeamMemberUi,
+                organizationId: organizationId,
+                organizationNummer: organizationNummer,
+                organizationName: organizationName,
+                organizationTypeId: organizationTypeId,
+                organizationMail: organizationMail,
+                organizationPhone1: organizationPhone1,
+                organizationPhone2: organizationPhone2,
+                organizationAddress1: organizationAddress1,
+                organizationAddress2: organizationAddress2,
+                organizationAddress3: organizationAddress3,
+                organizationAddress4: organizationAddress4,
+                ownerName: ownerName,
+                isMasonry: isMasonry,
+                isWaterproofing: isWaterproofing,
+                isFlooring: isFlooring,
+                userOrganizationNummer: widget.userOrganizationNummer,
+                designationNummer: widget.userOrganizationNummer,
+              )),
     );
 
     if (result == true) {
@@ -188,122 +189,125 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                   ),
                                 );
                               } else {
-                                return ListView.builder(
-                                  itemCount: _filteredSubOrganizations!.length,
-                                  itemBuilder: (context, index) {
-                                    final subOrganizations = snapshot.data!.data![index];
-                                    final subOrganizationId = subOrganizations.id.toString();
-                                    final subOrganizationNummer = subOrganizations.orgnummer.toString();
-                                    final subOrganizationName =
-                                        subOrganizations.namebspr?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationPhone1 =
-                                        subOrganizations.yphone1?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationPhone2 =
-                                        subOrganizations.yphone2?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationAddress1 =
-                                        subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationAddress2 =
-                                        subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationAddress3 =
-                                        subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationAddress4 =
-                                        subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationColour =
-                                        subOrganizations.colour?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationLongitude =
-                                        subOrganizations.longitude?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationLatitude =
-                                        subOrganizations.latitude?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationDistance =
-                                        subOrganizations.distance?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationMail = subOrganizations.yemail?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationSuperiorOrgNummer =
-                                        subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationSuperiorOrgNamebspr =
-                                        subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationCustomerTypeId =
-                                        subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
-                                    final subOrganizationCustomerTypeNamebspr =
-                                        subOrganizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
-                                    final ownerName = subOrganizations.yowname?.toString() ?? 'Unnamed Route';
-                                    final isMasonry = subOrganizations.ymasonry?.toString() ?? 'Unnamed Route';
-                                    final isWaterproofing = subOrganizations.ywaterpr?.toString() ?? 'Unnamed Route';
-                                    final isFlooring = subOrganizations.yflooring?.toString() ?? 'Unnamed Route';
+                                return SlidableAutoCloseBehavior(
+                                  closeWhenOpened: true,
+                                  closeWhenTapped: false,
+                                  child: ListView.builder(
+                                    itemCount: _filteredSubOrganizations!.length,
+                                    itemBuilder: (context, index) {
+                                      final subOrganizations = snapshot.data!.data![index];
+                                      final subOrganizationId = subOrganizations.id.toString();
+                                      final subOrganizationNummer = subOrganizations.orgnummer.toString();
+                                      final subOrganizationName =
+                                          subOrganizations.namebspr?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationPhone1 =
+                                          subOrganizations.yphone1?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationPhone2 =
+                                          subOrganizations.yphone2?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationAddress1 =
+                                          subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationAddress2 =
+                                          subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationAddress3 =
+                                          subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationAddress4 =
+                                          subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationColour =
+                                          subOrganizations.colour?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationLongitude =
+                                          subOrganizations.longitude?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationLatitude =
+                                          subOrganizations.latitude?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationDistance =
+                                          subOrganizations.distance?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationMail =
+                                          subOrganizations.yemail?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationSuperiorOrgNummer =
+                                          subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationSuperiorOrgNamebspr =
+                                          subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationCustomerTypeId =
+                                          subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
+                                      final subOrganizationCustomerTypeNamebspr =
+                                          subOrganizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
+                                      final ownerName = subOrganizations.yowname?.toString() ?? 'Unnamed Route';
+                                      final isMasonry = subOrganizations.ymasonry?.toString() ?? 'Unnamed Route';
+                                      final isWaterproofing = subOrganizations.ywaterpr?.toString() ?? 'Unnamed Route';
+                                      final isFlooring = subOrganizations.yflooring?.toString() ?? 'Unnamed Route';
 
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                        child: Slidable(
+                                          key: const ValueKey(0),
 
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                      child: Slidable(
-                                        key: const ValueKey(0),
+                                          // The end action pane is the one at the right or the bottom side.
+                                          endActionPane: ActionPane(
+                                            extentRatio: 0.2,
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  print("Pressed");
 
-                                        // The end action pane is the one at the right or the bottom side.
-                                        endActionPane: ActionPane(
-                                          extentRatio: 0.2,
-                                          motion: const ScrollMotion(),
-                                          children: [
-                                            SlidableAction(
-                                              onPressed: (context) {
-                                                print("Pressed");
-
-                                                _navigateToUpdateOrganizationView(
-                                                    subOrganizationId,
-                                                    subOrganizationNummer,
-                                                    subOrganizationName,
-                                                    subOrganizationCustomerTypeId,
-                                                    subOrganizationMail,
-                                                    subOrganizationPhone1,
-                                                    subOrganizationPhone2,
-                                                    subOrganizationAddress1,
-                                                    subOrganizationAddress2,
-                                                    subOrganizationAddress3,
-                                                    subOrganizationAddress4,
-                                                    ownerName,
-                                                    isMasonry,
-                                                    isWaterproofing,
-                                                    isFlooring
-                                                    );
-                                              },
-                                              backgroundColor: CustomColors.buttonColor,
-                                              foregroundColor: CustomColors.buttonTextColor,
-                                              icon: Icons.edit,
-                                            ),
-                                          ],
+                                                  _navigateToUpdateOrganizationView(
+                                                      subOrganizationId,
+                                                      subOrganizationNummer,
+                                                      subOrganizationName,
+                                                      subOrganizationCustomerTypeId,
+                                                      subOrganizationMail,
+                                                      subOrganizationPhone1,
+                                                      subOrganizationPhone2,
+                                                      subOrganizationAddress1,
+                                                      subOrganizationAddress2,
+                                                      subOrganizationAddress3,
+                                                      subOrganizationAddress4,
+                                                      ownerName,
+                                                      isMasonry,
+                                                      isWaterproofing,
+                                                      isFlooring);
+                                                },
+                                                backgroundColor: CustomColors.buttonColor,
+                                                foregroundColor: CustomColors.buttonTextColor,
+                                                icon: Icons.edit,
+                                              ),
+                                            ],
+                                          ),
+                                          child: ListButton(
+                                            displayName: subOrganizationName,
+                                            onPressed: () {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) => HomeOrganizationView(
+                                                        userNummer: widget.userNummer,
+                                                        username: widget.username,
+                                                        routeNummer: "",
+                                                        organizationId: subOrganizationId,
+                                                        organizationNummer: subOrganizationNummer,
+                                                        organizationName: subOrganizationName,
+                                                        organizationPhone1: subOrganizationPhone1,
+                                                        organizationPhone2: subOrganizationPhone2,
+                                                        organizationAddress1: subOrganizationAddress1,
+                                                        organizationAddress2: subOrganizationAddress2,
+                                                        organizationAddress3: subOrganizationAddress3,
+                                                        organizationAddress4: subOrganizationAddress4,
+                                                        organizationColour: subOrganizationColour,
+                                                        organizationLongitude: subOrganizationLongitude,
+                                                        organizationLatitude: subOrganizationLatitude,
+                                                        organizationDistance: subOrganizationDistance,
+                                                        organizationMail: subOrganizationMail,
+                                                        isTeamMemberUi: widget.isTeamMemberUi,
+                                                        loggedUserNummer: widget.loggedUserNummer,
+                                                        ysuporgNummer: subOrganizationSuperiorOrgNummer,
+                                                        ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
+                                                        designationNummer: widget.designationNummer,
+                                                        organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr,
+                                                        userOrganizationNummer: widget.userOrganizationNummer,
+                                                      )));
+                                            },
+                                          ),
                                         ),
-                                        child: ListButton(
-                                          displayName: subOrganizationName,
-                                          onPressed: () {
-                                            Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) => HomeOrganizationView(
-                                                      userNummer: widget.userNummer,
-                                                      username: widget.username,
-                                                      routeNummer: "",
-                                                      organizationId: subOrganizationId,
-                                                      organizationNummer: subOrganizationNummer,
-                                                      organizationName: subOrganizationName,
-                                                      organizationPhone1: subOrganizationPhone1,
-                                                      organizationPhone2: subOrganizationPhone2,
-                                                      organizationAddress1: subOrganizationAddress1,
-                                                      organizationAddress2: subOrganizationAddress2,
-                                                      organizationAddress3: subOrganizationAddress3,
-                                                      organizationAddress4: subOrganizationAddress4,
-                                                      organizationColour: subOrganizationColour,
-                                                      organizationLongitude: subOrganizationLongitude,
-                                                      organizationLatitude: subOrganizationLatitude,
-                                                      organizationDistance: subOrganizationDistance,
-                                                      organizationMail: subOrganizationMail,
-                                                      isTeamMemberUi: widget.isTeamMemberUi,
-                                                      loggedUserNummer: widget.loggedUserNummer,
-                                                      ysuporgNummer: subOrganizationSuperiorOrgNummer,
-                                                      ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
-                                                      designationNummer: widget.designationNummer,
-                                                      organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr, 
-                                                      userOrganizationNummer: widget.userOrganizationNummer,
-                                                    )));
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 );
                               }
 

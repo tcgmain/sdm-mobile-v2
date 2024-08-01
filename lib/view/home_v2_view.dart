@@ -14,6 +14,7 @@ class HomeV2Page extends StatefulWidget {
   final String loggedUserNummer;
   final bool isTeamMemberUi;
   final String designationNummer;
+  final int initialTabIndex;
 
   const HomeV2Page({
     super.key,
@@ -23,6 +24,7 @@ class HomeV2Page extends StatefulWidget {
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
     required this.designationNummer,
+    this.initialTabIndex = 0,
   });
 
   @override
@@ -30,7 +32,7 @@ class HomeV2Page extends StatefulWidget {
 }
 
 class _HomeV2PageState extends State<HomeV2Page> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
   late final List<Widget> _pages;
 
   void _navigateBottomBar(int index) {
@@ -42,6 +44,7 @@ class _HomeV2PageState extends State<HomeV2Page> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialTabIndex;
 
     _pages = [
       AllVisitHistoryView(
@@ -88,6 +91,7 @@ class _HomeV2PageState extends State<HomeV2Page> {
               gap: 20,
               onTabChange: _navigateBottomBar,
               padding: const EdgeInsets.all(16),
+              selectedIndex: _selectedIndex,
               tabs: const [
                 GButton(
                   icon: Icons.history,

@@ -3,13 +3,13 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/loading.dart';
 
-class CameraView extends StatefulWidget {
+class ApprovalView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
 
-  const CameraView({
+  const ApprovalView({
     Key? key,
     required this.userNummer,
     required this.username,
@@ -18,21 +18,20 @@ class CameraView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CameraView> createState() => _CameraViewState();
+  State<ApprovalView> createState() => _ApprovalViewState();
 }
 
-class _CameraViewState extends State<CameraView> {
-  bool _isLoading = true; 
-
+class _ApprovalViewState extends State<ApprovalView> {
+  bool _isLoading = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
-        title: 'Camera',
+        title: 'Pending Approvals',
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
-        isHomePage: true,
+        isHomePage: false,
       ),
       body: SafeArea(
         child: Stack(
@@ -41,13 +40,14 @@ class _CameraViewState extends State<CameraView> {
               isTeamMemberUi: widget.isTeamMemberUi,
               child: ListView(
                 children: const [
-                  Text('6787878', style: TextStyle(fontSize: 20),),
-                 
+                  Text(
+                    '6787878',
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ],
               ),
             ),
-            if (_isLoading)
-              const Loading(), // Display loading indicator if _isLoading is true
+            if (_isLoading) const Loading(), // Display loading indicator if _isLoading is true
           ],
         ),
       ),

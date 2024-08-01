@@ -31,7 +31,7 @@ class ApiProvider {
     try {
       final response = await http.get(Uri.parse(baseUrl + url), headers: requestHeaders);
       String responseString = response.body.toString();
-      print(responseString);
+      //print(responseString);
       //print(inputBody);
       //print(baseUrl + url);
       responseJson = _response(jsonDecode(responseString), response.statusCode);

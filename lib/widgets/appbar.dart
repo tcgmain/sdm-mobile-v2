@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/approval_view.dart';
 import 'package:sdm/view/change_password_view.dart';
+import 'package:sdm/view/home_v2_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';
 import 'package:sdm/view/profile_view.dart';
@@ -84,21 +86,37 @@ class _CommonAppBarState extends State<CommonAppBar> {
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(
-                            username: username,
-                            userNummer: userNummer,
-                            userOrganizationNummer: userOrganizationNummer,
-                            loggedUserNummer: userNummer,
-                            isTeamMemberUi: false,
-                            designationNummer: userDesignationNummer,
-                          )),
-                  (Route<dynamic> route) => false,
-                );
-              });
+              (isDataViewer(userDesignationNummer))
+                  ? WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomeV2Page(
+                                  username: username,
+                                  userNummer: userNummer,
+                                  userOrganizationNummer: userOrganizationNummer,
+                                  loggedUserNummer: userNummer,
+                                  isTeamMemberUi: false,
+                                  designationNummer: userDesignationNummer,
+                                )),
+                        (Route<dynamic> route) => false,
+                      );
+                    })
+                  : WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  username: username,
+                                  userNummer: userNummer,
+                                  userOrganizationNummer: userOrganizationNummer,
+                                  loggedUserNummer: userNummer,
+                                  isTeamMemberUi: false,
+                                  designationNummer: userDesignationNummer,
+                                )),
+                        (Route<dynamic> route) => false,
+                      );
+                    });
             },
           ),
         if (widget.customActions != null) ...widget.customActions!,
@@ -110,6 +128,14 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 break;
               case 'changePassword':
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
+                break;
+                 case 'approval':
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ApprovalView(
+                  userNummer: userNummer, 
+                  username: username, 
+                  loggedUserNummer: userNummer, 
+                  isTeamMemberUi: false
+                  )));
                 break;
               case 'logout':
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -142,6 +168,13 @@ class _CommonAppBarState extends State<CommonAppBar> {
               child: ListTile(
                 leading: Icon(Icons.lock),
                 title: Text('Change Password'),
+              ),
+            ),
+             const PopupMenuItem<String>(
+              value: 'approval',
+              child: ListTile(
+                leading: Icon(Icons.check_circle),
+                title: Text('Pending Approvals'),
               ),
             ),
             const PopupMenuItem<String>(

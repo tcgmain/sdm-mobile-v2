@@ -25,7 +25,8 @@ class RouteOrganization {
       this.yowname,
       this.ymasonry,
       this.ywaterpr,
-      this.yflooring});
+      this.yflooring,
+      this.ywhtapp});
 
   String? nummer;
   String? namebsprRoute;
@@ -53,6 +54,7 @@ class RouteOrganization {
   bool? ymasonry;
   bool? ywaterpr;
   bool? yflooring;
+  String? ywhtapp;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -85,6 +87,7 @@ class RouteOrganization {
       ymasonry: json["ysdmorg^ymasonry"] ?? '',
       ywaterpr: json["ysdmorg^ywaterpr"] ?? '',
       yflooring: json["ysdmorg^yflooring"] ?? '',
+      ywhtapp: json["ysdmorg^ywhtapp"] ?? '',
     );
   }
 
@@ -114,5 +117,6 @@ class RouteOrganization {
         "ysdmorg^ymasonry": ymasonry ?? '',
         "ysdmorg^ywaterpr": ywaterpr ?? '',
         "ysdmorg^yflooring": yflooring ?? '',
+        "ysdmorg^ywhtapp": ywhtapp ?? '',
       };
 }

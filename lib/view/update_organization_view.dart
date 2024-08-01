@@ -6,6 +6,8 @@ import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
+import 'package:sdm/view/home_v2_view.dart';
+import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -104,9 +106,9 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   final FocusNode _address3FocusNode = FocusNode();
   final FocusNode _address4FocusNode = FocusNode();
 
-  bool isMasonry = false;
-  bool isWaterproofing = false;
-  bool isFlooring = false;
+  late bool isMasonry;
+  late bool isWaterproofing;
+  late bool isFlooring;
 
   final Map<String, bool?> _validationStatus = {
     'email': null,
@@ -242,26 +244,33 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
           onBackButtonPressed: () {
             //Navigator.pop(context, true);
 
-            //       OrganizationView(
-            //   username: widget.username,
-            //   userNummer: widget.userNummer,
-            //   userOrganizationNummer: widget.userOrganizationNummer,
-            //   loggedUserNummer: widget.loggedUserNummer,
-            //   isTeamMemberUi: widget.isTeamMemberUi,
-            //   designationNummer: widget.designationNummer,
-            // )
-
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => OrganizationView(
-                        username: widget.username,
-                        userNummer: widget.userNummer,
-                        userOrganizationNummer: widget.userOrganizationNummer,
-                        loggedUserNummer: widget.loggedUserNummer,
-                        isTeamMemberUi: widget.isTeamMemberUi,
-                        designationNummer: widget.designationNummer,
-                      )),
-            );
+            (isDataViewer(widget.designationNummer))
+                ? WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => HomeV2Page(
+                              username: widget.username,
+                              userNummer: widget.userNummer,
+                              userOrganizationNummer: widget.userOrganizationNummer,
+                              loggedUserNummer: widget.userNummer,
+                              isTeamMemberUi: false,
+                              designationNummer: widget.designationNummer,
+                              initialTabIndex: 1)),
+                    );
+                  })
+                : WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(
+                              username: widget.username,
+                              userNummer: widget.userNummer,
+                              userOrganizationNummer: widget.userOrganizationNummer,
+                              loggedUserNummer: widget.userNummer,
+                              isTeamMemberUi: false,
+                              designationNummer: widget.designationNummer,
+                              initialTabIndex: 1)),
+                    );
+                  });
           },
           isHomePage: false,
         ),
@@ -397,6 +406,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               child: CommonAppButton(
                                 buttonText: 'Update',
                                 onPressed: () {
+                                  print(isMasonry);
                                   if (!_isUpdatePressed) {
                                     _isUpdatePressed = true;
 
@@ -426,12 +436,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       final address3 = _address3Controller.text.toString();
                                       final address4 = _address4Controller.text.toString();
 
-                                      if(organizationType != "Project" || organizationType != "(4147,12,0)") {
-                                        isMasonry = false;
-                                        isWaterproofing = false;
-                                        isFlooring = false;
-                                      }
-
                                       _updateOrganizationBloc.updateOrganization(
                                           widget.organizationId,
                                           email,
@@ -446,6 +450,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                           isMasonry.toString(),
                                           isWaterproofing.toString(),
                                           isFlooring.toString());
+
+                                      if (organizationType != "Project" || organizationType != "(4147,12,0)") {
+                                        isMasonry = false;
+                                        isWaterproofing = false;
+                                        isFlooring = false;
+                                      }
                                     }
                                   }
                                 },
@@ -601,7 +611,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialogWithBack(context, "${widget.organizationName} has been updated.");
+                  showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
@@ -633,8 +643,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
 
   Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        SizedBox(
+            width: 150,
+            child: Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor))),
         Switch(
             value: value,
             onChanged: onChanged,
@@ -642,11 +656,117 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
             inactiveThumbColor: CustomColors.textColorGrey,
             inactiveTrackColor: CustomColors.textHighlightColor,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-        const SizedBox(
-          width: 10,
-        ),
-        Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor)),
       ],
+    );
+  }
+
+  Future<void> showSuccessAlertDialogUpdateOrganization(BuildContext context, String successMessage) {
+    Widget okButton = TextButton(
+      child: const Text(
+        "OK",
+        style: TextStyle(
+          color: CustomColors.successAlertTitleTextColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 16.0,
+        ),
+      ),
+      onPressed: () {
+        (isDataViewer(widget.designationNummer))
+            ? WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pop(context, true);
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => HomeV2Page(
+                          username: widget.username,
+                          userNummer: widget.userNummer,
+                          userOrganizationNummer: widget.userOrganizationNummer,
+                          loggedUserNummer: widget.userNummer,
+                          isTeamMemberUi: false,
+                          designationNummer: widget.designationNummer,
+                          initialTabIndex: 1)),
+                );
+              })
+            : WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pop(context, true);
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(
+                          username: widget.username,
+                          userNummer: widget.userNummer,
+                          userOrganizationNummer: widget.userOrganizationNummer,
+                          loggedUserNummer: widget.userNummer,
+                          isTeamMemberUi: false,
+                          designationNummer: widget.designationNummer,
+                          initialTabIndex: 1)),
+                );
+              });
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: const BorderSide(color: CustomColors.successAlertBorderColor),
+      ),
+      backgroundColor: CustomColors.successAlertBackgroundColor,
+      elevation: 24.0,
+      titlePadding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0),
+      contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
+      actionsPadding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
+      title: const Row(
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            color: CustomColors.successAlertTitleTextColor,
+            size: 30.0,
+          ),
+          SizedBox(width: 10.0),
+          Text(
+            "Success",
+            style: TextStyle(
+              color: CustomColors.successAlertTitleTextColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 24.0,
+            ),
+          ),
+        ],
+      ),
+      content: Text(
+        successMessage,
+        style: const TextStyle(
+          color: CustomColors.successAlertTextColor,
+          fontSize: 18.0,
+        ),
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    return showGeneralDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        return alert;
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOut,
+          ).drive(Tween<Offset>(
+            begin: const Offset(0, -1),
+            end: Offset.zero,
+          )),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
     );
   }
 }
