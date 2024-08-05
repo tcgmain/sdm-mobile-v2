@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
-import 'package:sdm/repository/approval_organization_repository.dart';
+import 'package:sdm/repository/pending_approval_organization_repository.dart';
 
 class ApprovalOrganizationBloc {
   late ApprovalOrganizationRepository _approvalOrganizationRepository;

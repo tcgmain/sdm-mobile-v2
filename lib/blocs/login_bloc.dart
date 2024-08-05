@@ -32,7 +32,7 @@ class LoginBloc {
       await prefsUserId.setString('userId', res.ypwdid.toString());
      
       print("LOGIN SUCCESS");
-    } 
+    }
     
     catch (e) {
       if (_loginController?.isClosed ?? true) return;

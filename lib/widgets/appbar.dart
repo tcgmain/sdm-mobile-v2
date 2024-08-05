@@ -15,6 +15,7 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onBackButtonPressed;
   final bool isHomePage;
   final List<Widget>? customActions;
+  final bool? isPendingApprovalDisabled;
 
   const CommonAppBar({
     Key? key,
@@ -22,6 +23,7 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
     required this.onBackButtonPressed,
     required this.isHomePage,
     this.customActions,
+    this.isPendingApprovalDisabled,
   }) : super(key: key);
 
   @override
@@ -129,13 +131,19 @@ class _CommonAppBarState extends State<CommonAppBar> {
               case 'changePassword':
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
                 break;
-                 case 'approval':
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ApprovalView(
-                  userNummer: userNummer, 
-                  username: username, 
-                  loggedUserNummer: userNummer, 
-                  isTeamMemberUi: false, userOrganizationNummer: userOrganizationNummer, designationNummer: userDesignationNummer,
-                  )));
+              case 'approval':
+                if (widget.isPendingApprovalDisabled != true) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ApprovalView(
+                            userNummer: userNummer,
+                            username: username,
+                            userId: userId,
+                            loggedUserNummer: userNummer,
+                            isTeamMemberUi: false,
+                            userOrganizationNummer: userOrganizationNummer,
+                            designationNummer: userDesignationNummer,
+                          )));
+                }
                 break;
               case 'logout':
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -170,11 +178,21 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 title: Text('Change Password'),
               ),
             ),
-             const PopupMenuItem<String>(
+            PopupMenuItem<String>(
               value: 'approval',
               child: ListTile(
-                leading: Icon(Icons.check_circle),
-                title: Text('Pending Approvals'),
+                leading: (widget.isPendingApprovalDisabled == true)
+                    ? const Icon(
+                        Icons.check_circle,
+                        color: CustomColors.textColor2,
+                      )
+                    : Icon(Icons.check_circle),
+                title: (widget.isPendingApprovalDisabled == true)
+                    ? const Text(
+                        'Pending Approvals',
+                        style: TextStyle(color: CustomColors.textColor2),
+                      )
+                    : Text('Pending Approvals'),
               ),
             ),
             const PopupMenuItem<String>(

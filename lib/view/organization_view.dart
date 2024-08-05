@@ -192,9 +192,10 @@ class _OrganizationViewState extends State<OrganizationView> {
                       style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                     ),
                     value: _onlyInactive,
-                    activeColor: CustomColors.buttonColor,
-                    inactiveThumbColor: CustomColors.buttonColor,
-                    inactiveTrackColor: Colors.grey.shade300,
+                    activeTrackColor: CustomColors.buttonColor,
+                    activeColor: Colors.white,
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: Colors.grey,
                     onChanged: (bool value) {
                       setState(() {
                         _onlyInactive = value;
@@ -263,7 +264,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                         alignment: Alignment.centerLeft,
                                         child: (_onlyInactive == false)
                                             ? Text(
-                                                'Total Organizations: $totalOrganizations',
+                                                'Total Active Organizations: $totalOrganizations',
                                                 style:
                                                     TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                               )

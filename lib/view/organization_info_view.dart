@@ -37,11 +37,11 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
   late double organizationDistance;
   bool _isLoading = false;
   late OrganizationInfoBloc _organizationInfoBloc;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
     super.initState();
-    //_getCurrentLocation();
     _organizationInfoBloc = OrganizationInfoBloc();
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
     setState(() {
@@ -134,6 +134,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         final ysuporgNummer = organization.ysuporgNummer.toString();
                         final ysuporgNamebspr = organization.ysuporgNamebspr.toString();
                         final ycustypSuch = organization.ycustypSuch.toString();
+                        final ycustypNamebspr = organization.ycustypNamebspr.toString();
 
                         String fullAddress = "";
                         if (yaddressl1.isNotEmpty) fullAddress += yaddressl1;
@@ -179,7 +180,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                         const SizedBox(width: 10),
                                         Expanded(
                                           child: Text(
-                                            "Type: $ycustypSuch",
+                                            "Type: $ycustypNamebspr",
                                             style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                           ),
                                         ),
@@ -286,12 +287,12 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                               style: TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
                                             ),
                                           ),
-                                             CustomIconButton(
-                          tooltip: 'Navigate to google map', 
-                          icon: const Icon(Icons.directions), 
-                          onPressed: () {
-                            openGoogleMaps(double.parse(latitude), double.parse(longitude));
-                          })
+                                          CustomIconButton(
+                                              tooltip: 'Navigate to google map',
+                                              icon: const Icon(Icons.directions),
+                                              onPressed: () {
+                                                openGoogleMaps(double.parse(latitude), double.parse(longitude));
+                                              })
                                         ],
                                       ),
                                     ),
@@ -372,12 +373,15 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         );
 
                       case Status.ERROR:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          setState(() {
-                            _isLoading = true;
+                        if (!_isErrorMessageShown) {
+                          _isErrorMessageShown = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            showErrorAlertDialog(context, snapshot.data!.message.toString());
                           });
-                          showErrorAlertDialog(context, snapshot.data!.message.toString());
-                        });
+                        }
                     }
                   }
                   return Container();

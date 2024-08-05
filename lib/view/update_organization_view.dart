@@ -652,9 +652,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: CustomColors.buttonColor,
-            inactiveThumbColor: CustomColors.textColorGrey,
-            inactiveTrackColor: CustomColors.textHighlightColor,
+            activeTrackColor: CustomColors.buttonColor,
+            activeColor: Colors.white,
+            inactiveThumbColor: Colors.white,
+            inactiveTrackColor: Colors.grey,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
       ],
     );
