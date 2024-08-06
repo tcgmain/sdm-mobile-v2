@@ -18,7 +18,8 @@ class AddOrganization {
     required this.yvisdis,
     required this.ymasonry,
     required this.ywaterpr,
-    required this.yflooring
+    required this.yflooring,
+    required this.yselcolour
   });
 
   String yphone1;
@@ -40,6 +41,7 @@ class AddOrganization {
   bool ymasonry;
   bool ywaterpr;
   bool yflooring;
+  String yselcolour;
 
   factory AddOrganization.fromJson(Map<String, dynamic> json) => AddOrganization(
         yphone1: json["yphone1"],
@@ -61,6 +63,7 @@ class AddOrganization {
         ymasonry: json["ymasonry"],
         ywaterpr: json["ywaterpr"],
         yflooring: json["yflooring"],
+        yselcolour: json["yselcolour"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,5 +86,6 @@ class AddOrganization {
         "ymasonry": ymasonry,
         "ywaterpr": ywaterpr,
         "yflooring": yflooring,
+        "yselcolour": yselcolour,
       };
 }

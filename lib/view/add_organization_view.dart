@@ -63,6 +63,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
   String organizationType = "";
+  String organizationColor = "";
+
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -75,7 +77,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final _address1Controller = TextEditingController();
   final _address2Controller = TextEditingController();
   final _address3Controller = TextEditingController();
-  final _address4Controller = TextEditingController();
+  final _cityController = TextEditingController();
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _ownerNameFocusNode = FocusNode();
@@ -85,7 +87,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final FocusNode _address1FocusNode = FocusNode();
   final FocusNode _address2FocusNode = FocusNode();
   final FocusNode _address3FocusNode = FocusNode();
-  final FocusNode _address4FocusNode = FocusNode();
+  final FocusNode _cityFocusNode = FocusNode();
 
   bool isMasonry = false;
   bool isWaterproofing = false;
@@ -232,7 +234,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address1Controller.clear();
     _address2Controller.clear();
     _address3Controller.clear();
-    _address4Controller.clear();
+    _cityController.clear();
 
     _selectedCustomerType = null;
     _selectedCustomerTypeIndex = null; // Reset the toggle buttons selection
@@ -241,6 +243,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _validationMessages.updateAll((key, value) => null);
 
     organizationType = "";
+    organizationColor = "";
   }
 
   @override
@@ -271,7 +274,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address1Controller.dispose();
     _address2Controller.dispose();
     _address3Controller.dispose();
-    _address4Controller.dispose();
+    _cityController.dispose();
     _nameFocusNode.dispose();
     _ownerNameFocusNode.dispose();
     _emailFocusNode.dispose();
@@ -280,7 +283,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address1FocusNode.dispose();
     _address2FocusNode.dispose();
     _address3FocusNode.dispose();
-    _address4FocusNode.dispose();
+    _cityFocusNode.dispose();
     _organizationBloc.dispose();
     super.dispose();
   }
@@ -323,7 +326,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           _validationStatus['address3'] = true;
           break;
         case 'address4':
-          _validationMessages['address4'] = _validateCity(_address4Controller.text);
+          _validationMessages['address4'] = _validateCity(_cityController.text);
           _validationStatus['address4'] = _validationMessages['address4'] == null;
           break;
       }
@@ -509,10 +512,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
-                            controller: _address4Controller,
+                            controller: _cityController,
                             label: 'City',
                             fieldName: 'address4',
-                            focusNode: _address4FocusNode,
+                            focusNode: _cityFocusNode,
                             validator: _validateCity,
                           ),
                           const SizedBox(height: 16),
@@ -527,7 +530,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 _address1Controller.text = capitalizeWords(_address1Controller.text);
                                 _address2Controller.text = capitalizeWords(_address2Controller.text);
                                 _address3Controller.text = capitalizeWords(_address3Controller.text);
-                                _address4Controller.text = capitalizeWords(_address4Controller.text);
+                                _cityController.text = capitalizeWords(_cityController.text);
 
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
@@ -538,14 +541,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   });
 
                                   final customerTypeId = _selectedCustomerType.toString();
-                                  final name = _nameController.text.toString();
+                                  final name = "${_nameController.text} - ${_cityController.text}";
                                   final email = _emailController.text.toString();
                                   final phone1 = _phone1Controller.text.toString();
                                   final phone2 = _phone2Controller.text.toString();
                                   final address1 = _address1Controller.text.toString();
                                   final address2 = _address2Controller.text.toString();
                                   final address3 = _address3Controller.text.toString();
-                                  final address4 = _address4Controller.text.toString();
+                                  final address4 = _cityController.text.toString();
                                   final ownerName = _ownerNameController.text.toString();
 
                                   if (!_isSubmitPressed) {
@@ -572,7 +575,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         ownerName,
                                         isMasonry.toString(),
                                         isWaterproofing.toString(),
-                                        isFlooring.toString());
+                                        isFlooring.toString(),organizationColor);
+                                        
 
                                     if (organizationType != "Project" || organizationType != "(4147,12,0)") {
                                       isMasonry = false;
@@ -634,10 +638,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                         (index) => index == _selectedCustomerTypeIndex,
                       ),
                       onPressed: (index) {
+                        print(_allCustomerTypes![index].aebez.toString());
                         setState(() {
+                          isMasonry = false;
+                          isWaterproofing = false;
+                          isFlooring = false;
                           _selectedCustomerTypeIndex = index;
                           _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
                           organizationType = _allCustomerTypes![index].aebez.toString();
+                          organizationColor = getOrganizationColor(organizationType);
                         });
                       },
                       children: _allCustomerTypes!.map((CustomerType type) {
@@ -924,4 +933,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       ],
     );
   }
+
+
 }

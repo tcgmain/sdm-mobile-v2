@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/approval_view.dart';
+import 'package:sdm/view/approve_view.dart';
 import 'package:sdm/view/change_password_view.dart';
 import 'package:sdm/view/home_v2_view.dart';
 import 'package:sdm/view/home_view.dart';

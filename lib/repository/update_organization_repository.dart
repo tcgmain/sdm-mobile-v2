@@ -21,7 +21,7 @@ class UpdateOrganizationRepository {
       String customerTypeId,
       String isMasonry,
       String isWaterproofing,
-      String isFlooring) async {
+      String isFlooring, String organizationColor) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -38,10 +38,8 @@ class UpdateOrganizationRepository {
       "ymasonry": isMasonry,
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
+      "yselcolour": organizationColor
     };
-    print("inputBodyTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
-
-    print(inputBody);
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
     return UpdateOrganization.fromJson(response);

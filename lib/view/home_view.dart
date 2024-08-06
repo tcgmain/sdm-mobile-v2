@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                   text: 'Routes',
                 ),
                 GButton(
-                  icon: Icons.location_on,
+                  icon: Icons.business,
                   text: isDataViewer(widget.designationNummer) == true ? 'All Organizations' : 'Region',
                 ),
                 const GButton(

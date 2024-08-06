@@ -38,6 +38,7 @@ class UpdateOrganizationView extends StatefulWidget {
   final bool isFlooring;
   final String userOrganizationNummer;
   final String designationNummer;
+  final String organizationColor;
 
   const UpdateOrganizationView({
     Key? key,
@@ -62,6 +63,7 @@ class UpdateOrganizationView extends StatefulWidget {
     required this.isFlooring,
     required this.userOrganizationNummer,
     required this.designationNummer,
+    required this.organizationColor,
   }) : super(key: key);
 
   @override
@@ -85,6 +87,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   bool _isOrganizationTypeShown = false;
   late UpdateOrganizationBloc _updateOrganizationBloc;
   String organizationType = "";
+  String organizationColor = "";
 
   String? _selectedCustomerType;
   int? _selectedCustomerTypeIndex;
@@ -145,6 +148,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address3Controller = TextEditingController(text: widget.organizationAddress3.toString());
     _address4Controller = TextEditingController(text: widget.organizationAddress4.toString());
     organizationType = widget.organizationTypeId;
+    organizationColor = widget.organizationColor;
 
     isMasonry = widget.isMasonry;
     isWaterproofing = widget.isWaterproofing;
@@ -242,8 +246,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         appBar: CommonAppBar(
           title: 'Update Organizations',
           onBackButtonPressed: () {
-            //Navigator.pop(context, true);
-
             (isDataViewer(widget.designationNummer))
                 ? WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.of(context).pushReplacement(
@@ -406,7 +408,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               child: CommonAppButton(
                                 buttonText: 'Update',
                                 onPressed: () {
-                                  print(isMasonry);
                                   if (!_isUpdatePressed) {
                                     _isUpdatePressed = true;
 
@@ -449,7 +450,9 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                           customerTypeId,
                                           isMasonry.toString(),
                                           isWaterproofing.toString(),
-                                          isFlooring.toString());
+                                          isFlooring.toString(),
+                                          organizationColor
+                                          );
 
                                       if (organizationType != "Project" || organizationType != "(4147,12,0)") {
                                         isMasonry = false;
@@ -560,9 +563,13 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                       ),
                       onPressed: (index) {
                         setState(() {
+                          isMasonry = false;
+                          isWaterproofing = false;
+                          isFlooring = false;
                           _selectedCustomerTypeIndex = index;
                           _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
                           organizationType = _allCustomerTypes![index].aebez.toString();
+                          organizationColor = getOrganizationColor(organizationType);
                         });
                       },
                       children: _allCustomerTypes!.map((CustomerType type) {

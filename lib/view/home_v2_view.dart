@@ -98,7 +98,7 @@ class _HomeV2PageState extends State<HomeV2Page> {
                   text: 'Visit History',
                 ),
                 GButton(
-                  icon: Icons.location_on,
+                  icon: Icons.business,
                   text: 'All Organizations',
                 ),
                 GButton(

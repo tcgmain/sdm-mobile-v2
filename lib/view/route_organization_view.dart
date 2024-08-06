@@ -71,7 +71,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
       ownerName,
       isMasonry,
       isWaterproofing,
-      isFlooring) async {
+      isFlooring,
+      organizationColor) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -97,6 +98,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                 isFlooring: isFlooring,
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
+                organizationColor: organizationColor,
               )),
     );
 
@@ -222,7 +224,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                         ownerName,
                                                         isMasonry,
                                                         isWaterproofing,
-                                                        isFlooring);
+                                                        isFlooring,
+                                                        organizationColour);
                                                   },
                                                   backgroundColor: CustomColors.buttonColor,
                                                   foregroundColor: CustomColors.buttonTextColor,

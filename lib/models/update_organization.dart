@@ -15,7 +15,8 @@ class UpdateOrganization {
       required this.ymasonry,
       required this.ywaterpr,
       required this.yflooring,
-      required this.yorgapp
+      required this.yorgapp,
+      required this.yselcolour
       });
 
   String id;
@@ -34,6 +35,7 @@ class UpdateOrganization {
   bool ywaterpr;
   bool yflooring;
   bool yorgapp;
+  String yselcolour;
 
   factory UpdateOrganization.fromJson(Map<String, dynamic> json) => UpdateOrganization(
         id: json["id"] ?? "",
@@ -52,6 +54,7 @@ class UpdateOrganization {
         ywaterpr: json["ywaterpr"] ?? false,
         yflooring: json["yflooring"] ?? false,
         yorgapp: json["yorgapp"] ?? false,
+        yselcolour: json["yselcolour"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,5 +74,6 @@ class UpdateOrganization {
         "ywaterpr": ywaterpr,
         "yflooring": yflooring,
         "yorgapp": yorgapp,
+        "yselcolour": yselcolour,
       };
 }

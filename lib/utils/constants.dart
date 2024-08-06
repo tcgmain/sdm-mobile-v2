@@ -140,6 +140,21 @@ Color getColor(String colorText) {
   }
 }
 
+getOrganizationColor(organizationType) {
+  switch (organizationType) {
+    case 'Dealer':
+      return "YELLOW";
+    case 'Direct Dealer':
+      return "ORANGE";
+    case 'Distributor':
+      return "BLUE";
+    case 'Project':
+      return "GREEN";
+    default:
+      return "GREY";
+  }
+}
+
 getBottomNavigationBarMargin() {
   double bottomNavigationBarMargin = 37.0;
   return bottomNavigationBarMargin;

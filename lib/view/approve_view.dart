@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sdm/blocs/permission_bloc.dart';
 import 'package:sdm/models/permission.dart';
 import 'package:sdm/networking/response.dart';
-import 'package:sdm/view/approval_organization_view.dart';
+import 'package:sdm/view/approve_organization_list_view.dart';
 import 'package:sdm/view/camera_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
@@ -108,70 +108,40 @@ class _ApprovalViewState extends State<ApprovalView> {
               });
 
             case Status.COMPLETED:
-            if(!_isDataLoaded){
-              _isDataLoaded=true;
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
+              if (!_isDataLoaded) {
+                _isDataLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = false;
+                  });
                 });
-              });
-              if (snapshot.data!.data!.isNotEmpty) {
-                String such = snapshot.data!.data![0].such.toString();
+                if (snapshot.data!.data!.isNotEmpty) {
+                  String such = snapshot.data!.data![0].such.toString();
 
-                if (such == "SDMOA") {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ApprovalOrganizationView(
-                              userNummer: widget.userNummer,
-                              isTeamMemberUi: widget.isTeamMemberUi,
-                              username: widget.username,
-                              userId: widget.userId,
-                              loggedUserNummer: widget.loggedUserNummer,
-                              userOrganizationNummer: widget.userOrganizationNummer,
-                              designationNummer: widget.designationNummer,
-                            )));
-                  });
-                }
-
-                // switch (such) {
-                //   case "SDMOA":
-                //     // Navigator.of(context).push(MaterialPageRoute(
-                //     //     builder: (context) => ApprovalOrganizationView(
-                //     //           userNummer: widget.userNummer,
-                //     //           isTeamMemberUi: widget.isTeamMemberUi,
-                //     //           username: widget.username,
-                //     //           userId: widget.userId,
-                //     //           loggedUserNummer: widget.loggedUserNummer,
-                //     //           userOrganizationNummer: widget.userOrganizationNummer,
-                //     //           designationNummer: widget.designationNummer,
-                //     //         )));
-
-                //     WidgetsBinding.instance.addPostFrameCallback((_) {
-                //       Navigator.of(context).push(MaterialPageRoute(
-                //           builder: (context) => ApprovalOrganizationView(
-                //                 userNummer: widget.userNummer,
-                //                 isTeamMemberUi: widget.isTeamMemberUi,
-                //                 username: widget.username,
-                //                 userId: widget.userId,
-                //                 loggedUserNummer: widget.loggedUserNummer,
-                //                 userOrganizationNummer: widget.userOrganizationNummer,
-                //                 designationNummer: widget.designationNummer,
-                //               )));
-                //     });
-
-                //   default:
-                // }
-              } else {
-                if (!_isErrorMessageShown) {
-                  _isErrorMessageShown = true;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showErrorAlertDialog(context,
-                        "You have no permission to approve $approvalName. Please contact system administrator.");
-                  });
+                  if (such == "SDMOA") {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ApproveOrganizationListView(
+                                userNummer: widget.userNummer,
+                                isTeamMemberUi: widget.isTeamMemberUi,
+                                username: widget.username,
+                                userId: widget.userId,
+                                loggedUserNummer: widget.loggedUserNummer,
+                                userOrganizationNummer: widget.userOrganizationNummer,
+                                designationNummer: widget.designationNummer,
+                              )));
+                    });
+                  }
+                } else {
+                  if (!_isErrorMessageShown) {
+                    _isErrorMessageShown = true;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      showErrorAlertDialog(context,
+                          "You have no permission to approve $approvalName. Please contact system administrator.");
+                    });
+                  }
                 }
               }
-            }
-            
 
               break;
             case Status.ERROR:

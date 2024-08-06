@@ -101,7 +101,8 @@ class _OrganizationViewState extends State<OrganizationView> {
       ownerName,
       ymasonry,
       ywaterpr,
-      yflooring) async {
+      yflooring,
+      organizationColor) async {
     final result = await Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -127,6 +128,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                 isFlooring: bool.parse(yflooring),
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
+                organizationColor: '',
               )),
     );
     if (result == true) {
@@ -351,7 +353,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                             ownerName,
                                                             isMasonry,
                                                             isWaterproofing,
-                                                            isFlooring);
+                                                            isFlooring, organizationColour);
                                                       },
                                                       backgroundColor: CustomColors.buttonColor,
                                                       foregroundColor: CustomColors.buttonTextColor,

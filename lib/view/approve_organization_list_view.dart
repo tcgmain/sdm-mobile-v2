@@ -6,7 +6,7 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/organization_info_view.dart';
+import 'package:sdm/view/approve_organization_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -15,7 +15,7 @@ import 'package:sdm/widgets/success_alert.dart';
 import 'package:sdm/widgets/text_field.dart' as textField;
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ApprovalOrganizationView extends StatefulWidget {
+class ApproveOrganizationListView extends StatefulWidget {
   final String userNummer;
   final String username;
   final String userId;
@@ -24,7 +24,7 @@ class ApprovalOrganizationView extends StatefulWidget {
   final bool isTeamMemberUi;
   final String designationNummer;
 
-  const ApprovalOrganizationView({
+  const ApproveOrganizationListView({
     Key? key,
     required this.userNummer,
     required this.username,
@@ -36,10 +36,10 @@ class ApprovalOrganizationView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ApprovalOrganizationView> createState() => _ApprovalOrganizationViewState();
+  State<ApproveOrganizationListView> createState() => _ApproveOrganizationListViewState();
 }
 
-class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
+class _ApproveOrganizationListViewState extends State<ApproveOrganizationListView> {
   final TextEditingController _searchController = TextEditingController();
   List<Organization>? _filteredOrganizations = [];
   List<Organization>? _allOrganizations;
@@ -104,7 +104,6 @@ class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
               isTeamMemberUi: widget.isTeamMemberUi,
               child: Column(
                 children: [
-                  approveOrganizationResponse(),
                   textField.TextField(
                       controller: _searchController,
                       obscureText: false,
@@ -185,31 +184,19 @@ class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
 
                                             return Padding(
                                               padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                              child: Slidable(
-                                                key: const ValueKey(0),
-                                                endActionPane: ActionPane(
-                                                  extentRatio: 0.2,
-                                                  motion: const ScrollMotion(),
-                                                  children: [
-                                                    SlidableAction(
-                                                      onPressed: (context) {
-                                                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                          Navigator.of(context).push(MaterialPageRoute(
-                                                              builder: (context) => OrganizationInfoView(
-                                                                    username: widget.username,
-                                                                    userNummer: widget.userNummer,
-                                                                    organizationNummer: organizationNummer,
-                                                                    isTeamMemberUi: widget.isTeamMemberUi,
-                                                                    loggedUserNummer: widget.loggedUserNummer,
-                                                                  )));
-                                                        });
-                                                      },
-                                                      backgroundColor: CustomColors.buttonColor,
-                                                      foregroundColor: CustomColors.buttonTextColor,
-                                                      icon: Icons.open_in_new,
-                                                    ),
-                                                  ],
-                                                ),
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                    Navigator.of(context).push(MaterialPageRoute(
+                                                        builder: (context) => ApproveOrganizationView(
+                                                              username: widget.username,
+                                                              userNummer: widget.userNummer,
+                                                              organizationNummer: organizationNummer,
+                                                              isTeamMemberUi: widget.isTeamMemberUi,
+                                                              loggedUserNummer: widget.loggedUserNummer,
+                                                            )));
+                                                  });
+                                                },
                                                 child: ClipRRect(
                                                   borderRadius: BorderRadius.circular(5),
                                                   child: Container(
@@ -224,32 +211,32 @@ class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
                                                         ),
                                                       ),
                                                       child: ListTile(
-                                                          leading: CircleAvatar(
-                                                            backgroundColor: getColor(organizationColour),
-                                                            radius: 20,
-                                                            child: const Icon(
-                                                              Icons.business,
-                                                              size: 20,
-                                                            ),
+                                                        leading: CircleAvatar(
+                                                          backgroundColor: getColor(organizationColour),
+                                                          radius: 20,
+                                                          child: const Icon(
+                                                            Icons.business,
+                                                            size: 20,
                                                           ),
-                                                          title: Text(organizationName,
-                                                              style:
-                                                                  const TextStyle(color: CustomColors.cardTextColor)),
-                                                          subtitle: Text(
-                                                            organizationAssignTo,
-                                                            style: const TextStyle(color: CustomColors.textColorGrey),
-                                                          ),
-                                                          trailing: _buildToggleSwitch(
-                                                              _approvalStatus[organizationId] ?? false, (value) {
-                                                            organizationNameMessage = organizationName;
-                                                            setState(() {
-                                                              _approvalStatus[organizationId] = value;
-                                                              if (value == true) {
-                                                                showConfirmationPopup(context, organizationId,
-                                                                    organizationName, organizationAssignTo);
-                                                              }
-                                                            });
-                                                          }))),
+                                                        ),
+                                                        title: Text(organizationName,
+                                                            style: const TextStyle(color: CustomColors.cardTextColor)),
+                                                        subtitle: Text(
+                                                          organizationAssignTo,
+                                                          style: const TextStyle(color: CustomColors.textColorGrey),
+                                                        ),
+                                                        // trailing: _buildToggleSwitch(
+                                                        //     _approvalStatus[organizationId] ?? false, (value) {
+                                                        //   organizationNameMessage = organizationName;
+                                                        //   setState(() {
+                                                        //     _approvalStatus[organizationId] = value;
+                                                        //     if (value == true) {
+                                                        //       showConfirmationPopup(context, organizationId,
+                                                        //           organizationName, organizationAssignTo);
+                                                        //     }
+                                                        //   });
+                                                        // })
+                                                      )),
                                                 ),
                                               ),
                                             );
@@ -292,21 +279,21 @@ class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
     });
   }
 
-  Widget _buildToggleSwitch(bool value, ValueChanged<bool> onChanged) {
-    return Switch(
-        value: value,
-        onChanged: onChanged,
-        activeTrackColor: CustomColors.buttonColor,
-        activeColor: Colors.white,
-        inactiveThumbColor: Colors.white,
-        inactiveTrackColor: Colors.grey,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
-  }
+  // Widget _buildToggleSwitch(bool value, ValueChanged<bool> onChanged) {
+  //   return Switch(
+  //       value: value,
+  //       onChanged: onChanged,
+  //       activeTrackColor: CustomColors.buttonColor,
+  //       activeColor: Colors.white,
+  //       inactiveThumbColor: Colors.white,
+  //       inactiveTrackColor: Colors.grey,
+  //       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap);
+  // }
 
   showConfirmationPopup(
       BuildContext context, String organizationId, String organizationName, String organizationAssignTo) {
     return showDialog<bool>(
-      barrierDismissible : false,
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -396,56 +383,6 @@ class _ApprovalOrganizationViewState extends State<ApprovalOrganizationView> {
             ),
           ),
         );
-      },
-    );
-  }
-
-  Widget approveOrganizationResponse() {
-    return StreamBuilder<Response<UpdateOrganization>>(
-      stream: _approveOrganizationBloc.approveOrganizationStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = true;
-                });
-              });
-
-            case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
-              });
-              if (!_isSuccessMessageShown) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "$organizationNameMessage has been approved.");
-                  setState(() {
-                    _isSuccessMessageShown = true;
-                    _approvalOrganizationBloc.getApprovalOrganization(widget.userNummer);
-                  });
-                });
-              }
-              break;
-            case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
-                });
-              });
-              if (!_isErrorMessageShown) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  setState(() {
-                    _isErrorMessageShown = true;
-                  });
-                });
-              }
-          }
-        }
-        return Container();
       },
     );
   }

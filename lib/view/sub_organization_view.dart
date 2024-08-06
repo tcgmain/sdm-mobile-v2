@@ -83,7 +83,8 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       ownerName,
       isMasonry,
       isWaterproofing,
-      isFlooring) async {
+      isFlooring,
+      organizationColor) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -109,6 +110,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 isFlooring: isFlooring,
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.userOrganizationNummer,
+                organizationColor: organizationColor,
               )),
     );
 
@@ -264,7 +266,8 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                       ownerName,
                                                       isMasonry,
                                                       isWaterproofing,
-                                                      isFlooring);
+                                                      isFlooring,
+                                                      subOrganizationColour);
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,
                                                 foregroundColor: CustomColors.buttonTextColor,
