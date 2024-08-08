@@ -49,6 +49,22 @@ class UpdateOrganizationBloc {
     }
   }
 
+  updateSuperiorOrganization(organizationId, superiorOrganizationNummer) async {
+    if (_updateOrganizationController?.isClosed ?? true) return;
+    updateOrganizationSink.add(Response.loading(''));
+    try {
+      UpdateOrganization res =
+          await _updateOrganizationRepository.updateSuperiorOrganization(organizationId, superiorOrganizationNummer);
+      if (_updateOrganizationController?.isClosed ?? true) return;
+      updateOrganizationSink.add(Response.completed(res));
+      print("UPDATE SUPERIOR ORGANIZATION SUCCESS");
+    } catch (e) {
+      if (_updateOrganizationController?.isClosed ?? true) return;
+      updateOrganizationSink.add(Response.error(e.toString()));
+      print("UPDATE SUPERIOR ORGANIZATION ERROR");
+    }
+  }
+
   dispose() {
     _updateOrganizationController?.close();
   }

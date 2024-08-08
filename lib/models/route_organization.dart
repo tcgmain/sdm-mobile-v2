@@ -1,6 +1,8 @@
 class RouteOrganization {
   RouteOrganization(
-      {this.nummer,
+      {
+      this.id,
+      this.nummer,
       this.namebsprRoute,
       this.namebspr,
       this.ysdmorg,
@@ -28,6 +30,7 @@ class RouteOrganization {
       this.yflooring,
       this.ywhtapp});
 
+  String? id;
   String? nummer;
   String? namebsprRoute;
   String? namebspr;
@@ -61,6 +64,7 @@ class RouteOrganization {
       return RouteOrganization();
     }
     return RouteOrganization(
+      id: json["id"] ?? '',
       nummer: json["nummer"] ?? '',
       namebsprRoute: json["namebspr"] ?? '',
       ysdmorg: json["ysdmorg^such"] ?? '',
@@ -92,6 +96,7 @@ class RouteOrganization {
   }
 
   Map<String, dynamic> toJson() => {
+        "id": id ?? '',
         "nummer": nummer ?? '',
         "namebspr": namebsprRoute ?? '',
         "ysdmorg^such": ysdmorg ?? '',

@@ -129,7 +129,7 @@ class _StockViewState extends State<StockView> {
                                   children: [
                                     Text(
                                       'Total products of ${widget.organizationName}: ${_allProducts?.length}',
-                                      style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
+                                      style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                     ),
                                     const SizedBox(
                                       height: 5,

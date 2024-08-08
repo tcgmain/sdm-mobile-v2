@@ -44,14 +44,15 @@ class _OrganizationViewState extends State<OrganizationView> {
   List<Organization>? _allOrganizations;
   bool _isLoading = false;
   bool _onlyInactive = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
     super.initState();
     _organizationBloc = OrganizationBloc();
     isDataViewer(widget.designationNummer) == true
-        ? _organizationBloc.getOrganization("", _onlyInactive)
-        : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
+        ? _organizationBloc.getOrganization("", _onlyInactive ? "false" : "true", "")
+        : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
     _searchController.addListener(_onSearchChanged);
     setState(() {
       _isLoading = true;
@@ -80,7 +81,7 @@ class _OrganizationViewState extends State<OrganizationView> {
 
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
+        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
         _isLoading = true;
       });
     }
@@ -133,7 +134,7 @@ class _OrganizationViewState extends State<OrganizationView> {
     );
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
+        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
         _isLoading = true;
       });
     }
@@ -202,8 +203,9 @@ class _OrganizationViewState extends State<OrganizationView> {
                       setState(() {
                         _onlyInactive = value;
                         isDataViewer(widget.designationNummer) == true
-                            ? _organizationBloc.getOrganization("", _onlyInactive)
-                            : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive);
+                            ? _organizationBloc.getOrganization("", _onlyInactive ? "false" : "true", "")
+                            : _organizationBloc.getOrganization(
+                                widget.userNummer, _onlyInactive ? "false" : "true", "");
                         _isLoading = true;
                       });
                     },
@@ -353,7 +355,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                             ownerName,
                                                             isMasonry,
                                                             isWaterproofing,
-                                                            isFlooring, organizationColour);
+                                                            isFlooring,
+                                                            organizationColour);
                                                       },
                                                       backgroundColor: CustomColors.buttonColor,
                                                       foregroundColor: CustomColors.buttonTextColor,
@@ -447,12 +450,15 @@ class _OrganizationViewState extends State<OrganizationView> {
                               }
 
                             case Status.ERROR:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
+                              if (!_isErrorMessageShown) {
+                                _isErrorMessageShown = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 });
-                                showErrorAlertDialog(context, snapshot.data!.message.toString());
-                              });
+                              }
                           }
                         }
                         return Container();

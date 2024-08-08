@@ -9,15 +9,17 @@ class OrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<List<Organization>> getOrganization(userNummer, onlyInactive) async {
+  Future<List<Organization>> getOrganization(userNummer, isActive, isApproved) async {
     requestHeaders = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
 
-    onlyInactive == false
-        ? inputBody = {"yassigto": userNummer, "yactiv": "true"}
-        : inputBody = {"yassigto": userNummer, "yactiv": "false"};
+   inputBody = {
+      "yassigto": userNummer, 
+      "yactiv": isActive,
+      "yorgapp": isApproved
+    };
 
     final response = await _provider.post("/getorganization", jsonEncode(inputBody), requestHeaders);
 

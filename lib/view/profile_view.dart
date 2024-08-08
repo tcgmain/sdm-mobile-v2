@@ -22,6 +22,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   late UserDetailsBloc _userDetailsBloc;
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
@@ -147,12 +148,15 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                         );
                       case Status.ERROR:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          setState(() {
-                            _isLoading = false;
+                        if (!_isErrorMessageShown) {
+                          _isErrorMessageShown = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            showErrorAlertDialog(context, snapshot.data!.message.toString());
                           });
-                          showErrorAlertDialog(context, snapshot.data!.message.toString());
-                        });
+                        }
                     }
                   }
                   return Container();

@@ -435,7 +435,7 @@ Widget markVisitResponse() {
             if (!_isSuccessMessageShown) {
               String visitNummer = snapshot.data!.data!.nummer.toString();
               SchedulerBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "Visit Successfully Marked").then((_) {
+                showSuccessAlertDialog(context, "Visit Successfully Marked", (){}).then((_) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) => HomeStockView(

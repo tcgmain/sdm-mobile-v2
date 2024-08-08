@@ -6,6 +6,7 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/add_route_assign_view.dart';
 import 'package:sdm/view/organization_info_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -17,18 +18,24 @@ import 'package:sdm/widgets/success_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ApproveOrganizationView extends StatefulWidget {
+  final String userId;
   final String username;
   final String userNummer;
   final String organizationNummer;
+  final String userOrganizationNummer;
   final bool isTeamMemberUi;
+  final String designationNummer;
   final String loggedUserNummer;
 
   const ApproveOrganizationView({
     Key? key,
+    required this.userId,
     required this.username,
     required this.userNummer,
     required this.organizationNummer,
+    required this.userOrganizationNummer,
     required this.isTeamMemberUi,
+    required this.designationNummer,
     required this.loggedUserNummer,
   }) : super(key: key);
 
@@ -47,6 +54,12 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   late ApproveOrganizationBloc _approveOrganizationBloc;
   bool _isErrorMessageShown = false;
   late String organizationNameMessage;
+  late String superiorOrganizationNummer;
+  late String organizationNummer;
+  late String organizationName;
+  late String organizationId;
+  
+  
 
   @override
   void initState() {
@@ -130,7 +143,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                         //final yassigtoNummer = organization.yassigtoNummer.toString();
                         final yassigtoNamebspr = organization.yassigtoNamebspr.toString();
                         final namebspr = organization.namebspr.toString();
-                        //final orgnummer = organization.orgnummer.toString();
+                        final orgnummer = organization.orgnummer.toString();
                         final yphone1 = organization.yphone1.toString();
                         final yphone2 = organization.yphone2.toString();
                         final yaddressl1 = organization.yaddressl1.toString();
@@ -150,6 +163,10 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                         final ycustypNamebspr = organization.ycustypNamebspr.toString();
 
                         organizationNameMessage = namebspr;
+                        superiorOrganizationNummer = ysuporgNummer;
+                        organizationNummer = orgnummer;
+                        organizationName = namebspr;
+                        organizationId = id;
 
                         String fullAddress = "";
                         if (yaddressl1.isNotEmpty) fullAddress += yaddressl1;
@@ -576,10 +593,26 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "$organizationNameMessage has been approved.");
-                  setState(() {
-                    _isSuccessMessageShown = true;
+                  showSuccessAlertDialog(context, "$organizationNameMessage has been approved.", () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => RouteAssignView(
+                        username: widget.username,
+                        userNummer: widget.userNummer,
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                        loggedUserNummer: widget.loggedUserNummer, 
+                        superiorOrganizationNummer: superiorOrganizationNummer, 
+                        organizationNummer: organizationNummer, 
+                        organizationName: organizationName, 
+                        organizationId: organizationId, 
+                        userId: widget.userId, 
+                        userOrganizationNummer: widget.userOrganizationNummer, 
+                        designationNummer: widget.designationNummer,
+                      ),
+                    ));
                   });
+                   setState(() {
+                      _isSuccessMessageShown = true;
+                    });
                 });
               }
               break;

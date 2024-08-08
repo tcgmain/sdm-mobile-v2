@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sdm/blocs/create_so_bloc.dart';
@@ -44,7 +43,7 @@ class CreateOrderView extends StatefulWidget {
 
 class _CreateOrderViewState extends State<CreateOrderView> {
   bool _isLoading = false;
-  bool _isErrorMessageShown = false;
+  bool _isCreateSoErrorShown = false;
   bool _isSuccessMessageShown = false;
   late StockBloc _stockBloc;
   late CreateSoBloc _createSoBloc;
@@ -53,6 +52,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
   List<Product> _availableProducts = [];
   Map<String, String> _productQuantities = {};
   List<FocusNode> _focusNodes = [];
+  bool _isProductErrorShown = false;
 
   @override
   void initState() {
@@ -111,7 +111,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                       buttonText: "Create Order",
                       onPressed: () {
                         setState(() {
-                          _isErrorMessageShown = false;
+                          _isCreateSoErrorShown = false;
                           _isSuccessMessageShown = false;
                         });
                         print("pressed");
@@ -124,7 +124,8 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                             orderedList.any((product) => product['yqty'] == '' || product['yqty'] == '0');
                         if (orderedList.isEmpty) {
                           showErrorAlertDialog(context, "Please add product/s to create order");
-                        } else if (orderedList.every((product) => product['yqty'] == '') || orderedList.every((product) => product['yqty'] == '0')) {
+                        } else if (orderedList.every((product) => product['yqty'] == '') ||
+                            orderedList.every((product) => product['yqty'] == '0')) {
                           showErrorAlertDialog(context, "Please enter quantities");
                         } else if (hasEmptyQuantity) {
                           showConfirmationDialog(context, () {
@@ -201,12 +202,16 @@ class _CreateOrderViewState extends State<CreateOrderView> {
               });
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
+              if (!_isProductErrorShown) {
+                _isProductErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
+
               break;
           }
         }
@@ -410,7 +415,7 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                 if (!_isSuccessMessageShown) {
                   String orderNummer = snapshot.data!.data!.nummer.toString();
                   String orderSearchWord = snapshot.data!.data!.such.toString();
-                  showSuccessAlertDialog(context, "Order no: $orderSearchWord($orderNummer) has been created.");
+                  showSuccessAlertDialog(context, "Order no: $orderSearchWord($orderNummer) has been created.", () {});
                   setState(() {
                     _isLoading = false;
                     _isSuccessMessageShown = true;
@@ -423,15 +428,15 @@ class _CreateOrderViewState extends State<CreateOrderView> {
 
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!_isErrorMessageShown) {
+              _isCreateSoErrorShown = true;
+              if (!_isCreateSoErrorShown) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {
                     _isLoading = false;
-                    _isErrorMessageShown = true;
                   });
-                }
-              });
+                });
+              }
               break;
           }
         }

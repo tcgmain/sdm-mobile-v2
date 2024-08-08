@@ -3,6 +3,7 @@ import 'package:sdm/blocs/permission_bloc.dart';
 import 'package:sdm/models/permission.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/view/approve_organization_list_view.dart';
+import 'package:sdm/view/pendingapproval_organization_list_view.dart';
 import 'package:sdm/view/camera_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';

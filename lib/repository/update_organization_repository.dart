@@ -21,7 +21,8 @@ class UpdateOrganizationRepository {
       String customerTypeId,
       String isMasonry,
       String isWaterproofing,
-      String isFlooring, String organizationColor) async {
+      String isFlooring,
+      String organizationColor) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -39,6 +40,19 @@ class UpdateOrganizationRepository {
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
       "yselcolour": organizationColor
+    };
+
+    final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
+    return UpdateOrganization.fromJson(response);
+  }
+
+  Future<UpdateOrganization> updateSuperiorOrganization(
+      String organizationId, String superiorOrganizationNummer) async {
+    requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
+
+    inputBody = <String, String>{
+      "id": organizationId,
+      "ysuporg": superiorOrganizationNummer,
     };
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);

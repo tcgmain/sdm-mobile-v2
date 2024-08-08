@@ -97,16 +97,6 @@ class _RouteViewState extends State<RouteView> {
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     _getRoutesForSelectedDate();
-      //   },
-      //   backgroundColor: CustomColors.buttonColor,
-      //   child: const Icon(
-      //     Icons.refresh,
-      //     color: CustomColors.buttonTextColor,
-      //   ),
-      // ),
       body: SafeArea(
         child: Stack(
           children: [

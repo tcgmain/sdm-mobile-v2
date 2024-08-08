@@ -33,6 +33,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
   bool _showPassword = true;
   bool _showConfirmPassword = true;
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
@@ -174,7 +175,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "Password changed successfully");
+                  showSuccessAlertDialog(context, "Password changed successfully", () {});
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
@@ -189,12 +190,15 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
               break;
 
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
+              if (!_isErrorMessageShown) {
+                _isErrorMessageShown= true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
           }
         }
         return Container();
@@ -215,6 +219,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
           setState(() {
             _isLoading = true;
           });
+          _isErrorMessageShown = false;
           _isSuccessMessageShown = false;
           _changePasswordBloc.changePassword(newPassword, widget.userId);
         } else {

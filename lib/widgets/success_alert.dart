@@ -1,7 +1,7 @@
 import 'package:sdm/utils/constants.dart';
 import 'package:flutter/material.dart';
 
-Future<void> showSuccessAlertDialog(BuildContext context, String successMessage) {
+Future<void> showSuccessAlertDialog(BuildContext context, String successMessage, VoidCallback onClose) {
   Widget okButton = TextButton(
     child: const Text(
       "OK",
@@ -14,6 +14,7 @@ Future<void> showSuccessAlertDialog(BuildContext context, String successMessage)
     onPressed: () {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pop(false);
+        onClose();
       });
     },
   );

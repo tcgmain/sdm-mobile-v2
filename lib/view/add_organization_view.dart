@@ -777,7 +777,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               if (!_isSuccessMessageShown) {
                 final name = _nameController.text.toString();
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "$name has been added successfully.");
+                  showSuccessAlertDialog(context, "$name has been added successfully.", (){});
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
@@ -863,7 +863,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           const SizedBox(height: 10),
                           ...nearbyOrganizations
                               .map((org) => Text(
-                                    "  - ${org.namebspr}",
+                                    "_${org.namebspr}",
                                     style: TextStyle(fontSize: getFontSize()),
                                   ))
                               .toList(),

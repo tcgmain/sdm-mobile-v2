@@ -39,6 +39,7 @@ class RouteOrganizationView extends StatefulWidget {
 class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
@@ -273,12 +274,15 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                               }
 
                             case Status.ERROR:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
+                              if (!_isErrorMessageShown) {
+                                _isErrorMessageShown = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 });
-                                showErrorAlertDialog(context, snapshot.data!.message.toString());
-                              });
+                              }
                           }
                         }
                         return Container();

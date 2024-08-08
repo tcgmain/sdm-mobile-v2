@@ -30,6 +30,7 @@ class VisitHistoryView extends StatefulWidget {
 class _VisitHistoryViewState extends State<VisitHistoryView> {
   late VisitBloc _visitBloc;
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
@@ -85,7 +86,7 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
                               });
                               if (snapshot.data!.data!.isNotEmpty) {
                                 var visits = snapshot.data!.data!;
-                                
+
                                 final dateFormat = DateFormat("dd/MM/yyyy");
                                 final timeFormat = DateFormat("HH:mm");
 
@@ -163,12 +164,15 @@ class _VisitHistoryViewState extends State<VisitHistoryView> {
                               }
 
                             case Status.ERROR:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
+                              if (!_isErrorMessageShown) {
+                                _isErrorMessageShown = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 });
-                                showErrorAlertDialog(context, snapshot.data!.message.toString());
-                              });
+                              }
                           }
                         }
                         return Container();

@@ -29,8 +29,10 @@ class Organization {
       this.ymasonry,
       this.ywaterpr,
       this.yflooring,
-      this.ywhtapp
-      });
+      this.ywhtapp,
+      this.erfass,
+      this.yorgappu,
+      this.yorgappdt});
 
   String? id;
   String? such;
@@ -62,40 +64,46 @@ class Organization {
   bool? ywaterpr;
   bool? yflooring;
   String? ywhtapp;
+  String? erfass;
+  String? yorgappu;
+  String? yorgappdt;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
-        id: json["id"],
-        such: json["such"],
-        yassigto: json["yassigto^such"],
-        yassigtoNummer: json["yassigto^nummer"],
-        yassigtoNamebspr: json["yassigto^namebspr"],
-        namebspr: json["namebspr"],
-        orgnummer: json["nummer"], 
-        yphone1: json["yphone1"],
-        yphone2: json["yphone2"],
-        yaddressl1: json["yaddressl1"],
-        yaddressl2: json["yaddressl2"],
-        yaddressl3: json["yaddressl3"],
-        yaddressl4: json["yaddressl4"],
-        colour: json["yselcolour^such"],
-        longitude: json["ygpslon"],
-        latitude: json["ygpslat"],
-        distance: json["yvisdis"],
-        yemail: json["yemail"],
-        yactiv: json["yactiv"],
-        ylev: json["ylev"],
-        ysuporgNummer: json["ysuporg^nummer"],
-        ysuporgNamebspr: json["ysuporg^namebspr"],
-        ycustypSuch: json["ycustyp^such"],
-        ycustypId: json["ycustyp^id"],
-        ycustypNamebspr: json["ycustyp^namebspr"],
-        yowname: json["yowname"],
-        ymasonry: json["ymasonry"],
-        ywaterpr: json["ywaterpr"],
-        yflooring: json["yflooring"],
-        ywhtapp: json["ywhtapp"],
-        );
+      id: json["id"],
+      such: json["such"],
+      yassigto: json["yassigto^such"],
+      yassigtoNummer: json["yassigto^nummer"],
+      yassigtoNamebspr: json["yassigto^namebspr"],
+      namebspr: json["namebspr"],
+      orgnummer: json["nummer"],
+      yphone1: json["yphone1"],
+      yphone2: json["yphone2"],
+      yaddressl1: json["yaddressl1"],
+      yaddressl2: json["yaddressl2"],
+      yaddressl3: json["yaddressl3"],
+      yaddressl4: json["yaddressl4"],
+      colour: json["yselcolour^such"],
+      longitude: json["ygpslon"],
+      latitude: json["ygpslat"],
+      distance: json["yvisdis"],
+      yemail: json["yemail"],
+      yactiv: json["yactiv"],
+      ylev: json["ylev"],
+      ysuporgNummer: json["ysuporg^nummer"],
+      ysuporgNamebspr: json["ysuporg^namebspr"],
+      ycustypSuch: json["ycustyp^such"],
+      ycustypId: json["ycustyp^id"],
+      ycustypNamebspr: json["ycustyp^namebspr"],
+      yowname: json["yowname"],
+      ymasonry: json["ymasonry"],
+      ywaterpr: json["ywaterpr"],
+      yflooring: json["yflooring"],
+      ywhtapp: json["ywhtapp"],
+      erfass: json["erfass"],
+      yorgappu: json["yorgappu"],
+      yorgappdt: json["yorgappdt"],
+    );
   }
 
   Map<String, dynamic> toJson() => {
@@ -129,5 +137,8 @@ class Organization {
         "ywaterpr": ywaterpr,
         "yflooring": yflooring,
         "ywhtapp": ywhtapp,
+        "erfass": erfass,
+        "yorgappu": yorgappu,
+        "yorgappdt": yorgappdt,
       };
 }
