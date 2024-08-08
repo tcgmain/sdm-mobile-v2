@@ -245,11 +245,11 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                                         style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSize()),
                                                       ),
                                                       Text(
-                                                        "Created on: $creationDate",
+                                                        "Created: $creationDate",
                                                         style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSizeSmall()),
                                                       ),
                                                       Text(
-                                                        "Approved by: $approvedBy on $approvedDate",
+                                                        "Approved: $approvedBy, $approvedDate",
                                                         style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSizeSmall()),
                                                       ),
                                                     ],

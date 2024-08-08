@@ -541,7 +541,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   });
 
                                   final customerTypeId = _selectedCustomerType.toString();
-                                  final name = "${_nameController.text} - ${_cityController.text}";
+                                  final name = "${_nameController.text}_${_cityController.text}";
                                   final email = _emailController.text.toString();
                                   final phone1 = _phone1Controller.text.toString();
                                   final phone2 = _phone2Controller.text.toString();

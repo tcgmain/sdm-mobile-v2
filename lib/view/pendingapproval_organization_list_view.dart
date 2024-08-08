@@ -216,7 +216,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                                         style: const TextStyle(color: CustomColors.textColorGrey),
                                                       ),
                                                       Text(
-                                                        "Created on: $organizationCreationDate",
+                                                        "Created: $organizationCreationDate",
                                                         style: const TextStyle(color: CustomColors.textColorGrey),
                                                       ),
                                                     ],
