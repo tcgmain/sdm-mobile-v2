@@ -18,6 +18,7 @@ import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
 import 'package:sdm/widgets/success_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MarkVisitView extends StatefulWidget {
   final String username;
@@ -29,6 +30,7 @@ class MarkVisitView extends StatefulWidget {
   final String organizationTypeNamebspr;
   final String organizationPhone1;
   final String organizationPhone2;
+  final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
   final String organizationAddress3;
@@ -43,31 +45,31 @@ class MarkVisitView extends StatefulWidget {
   final String ysuporgNummer;
   final String ysuporgNamebspr;
 
-  const MarkVisitView({
-    super.key,
-    required this.username,
-    required this.userNummer,
-    required this.routeNummer,
-    required this.organizationId,
-    required this.organizationNummer,
-    required this.organizationName,
-    required this.organizationPhone1,
-    required this.organizationPhone2,
-    required this.organizationAddress1,
-    required this.organizationAddress2,
-    required this.organizationAddress3,
-    required this.organizationTown,
-    required this.organizationColour,
-    required this.organizationLongitude,
-    required this.organizationLatitude,
-    required this.organizationDistance,
-    required this.organizationMail,
-    required this.isTeamMemberUi,
-    required this.loggedUserNummer,
-    required this.ysuporgNummer,
-    required this.ysuporgNamebspr,
-    required this.organizationTypeNamebspr
-  });
+  const MarkVisitView(
+      {super.key,
+      required this.username,
+      required this.userNummer,
+      required this.routeNummer,
+      required this.organizationId,
+      required this.organizationNummer,
+      required this.organizationName,
+      required this.organizationPhone1,
+      required this.organizationPhone2,
+      required this.organizationWhatsapp,
+      required this.organizationAddress1,
+      required this.organizationAddress2,
+      required this.organizationAddress3,
+      required this.organizationTown,
+      required this.organizationColour,
+      required this.organizationLongitude,
+      required this.organizationLatitude,
+      required this.organizationDistance,
+      required this.organizationMail,
+      required this.isTeamMemberUi,
+      required this.loggedUserNummer,
+      required this.ysuporgNummer,
+      required this.ysuporgNamebspr,
+      required this.organizationTypeNamebspr});
 
   @override
   State<MarkVisitView> createState() => _MarkVisitViewState();
@@ -174,6 +176,20 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     }
   }
 
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    final Uri whatsappUri = Uri(
+      scheme: 'https',
+      host: 'wa.me',
+      path: phoneNumber,
+    );
+
+    if (await canLaunch(whatsappUri.toString())) {
+      await launch(whatsappUri.toString());
+    } else {
+      throw 'Could not launch $whatsappUri';
+    }
+  }
+
   Future<void> _launchDialer(String phoneNumber) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
@@ -232,10 +248,11 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: CustomColors.textColor),
                   ),
-                     Text(
+                  Text(
                     widget.organizationTypeNamebspr,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: getFontSize(), fontWeight: FontWeight.normal, color: CustomColors.textColor2),
+                    style: TextStyle(
+                        fontSize: getFontSize(), fontWeight: FontWeight.normal, color: CustomColors.textColor2),
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -258,10 +275,11 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                         ),
                       ),
                       CustomIconButton(
-                          tooltip: 'Navigate to google map', 
-                          icon: const Icon(Icons.directions), 
+                          tooltip: 'Navigate to google map',
+                          icon: const Icon(Icons.directions),
                           onPressed: () {
-                            openGoogleMaps(double.parse(widget.organizationLatitude), double.parse(widget.organizationLongitude));
+                            openGoogleMaps(
+                                double.parse(widget.organizationLatitude), double.parse(widget.organizationLongitude));
                           })
                     ],
                   ),
@@ -298,7 +316,8 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                                 tooltip: 'Call',
                                 icon: const Icon(Icons.call),
                                 onPressed: () {
-                                  _showCallOptions(context);
+                                  _showCallOptions(context, widget.organizationPhone1, widget.organizationPhone2,
+                                      widget.organizationWhatsapp);
                                 })
                           ],
                         )
@@ -366,7 +385,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     );
   }
 
-  void _showCallOptions(BuildContext context) {
+  void _showCallOptions(BuildContext context, String phone1, String phone2, String whatsapp) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -375,29 +394,43 @@ class _MarkVisitViewState extends State<MarkVisitView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              if (widget.organizationPhone1.isNotEmpty)
+              if (phone1.isNotEmpty)
                 Ink(
                   child: ListTile(
                     leading: const Icon(Icons.call),
-                    title: Text(widget.organizationPhone1),
+                    title: Text(phone1),
                     onTap: () {
-                      _launchDialer(widget.organizationPhone1);
+                      _launchDialer(phone1);
+
                       Navigator.pop(context);
                     },
                   ),
                 ),
-              if (widget.organizationPhone2.isNotEmpty)
+              if (phone2.isNotEmpty)
                 Ink(
                   child: ListTile(
                     leading: const Icon(Icons.call),
-                    title: Text(widget.organizationPhone2),
+                    title: Text(phone2),
                     onTap: () {
-                      _launchDialer(widget.organizationPhone2);
+                      _launchDialer(phone2);
+
                       Navigator.pop(context);
                     },
                   ),
                 ),
-              if (widget.organizationPhone1.isEmpty && widget.organizationPhone2.isEmpty)
+              if (whatsapp.isNotEmpty)
+                ListTile(
+                  leading: const FaIcon(FontAwesomeIcons.whatsapp),
+                  title: Text(whatsapp),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    _launchWhatsApp(whatsapp);
+                  },
+                ),
+              if (widget.organizationPhone1.isEmpty &&
+                  widget.organizationPhone2.isEmpty &&
+                  widget.organizationWhatsapp.isEmpty)
                 const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Text(
@@ -413,70 +446,69 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   }
 
 //Mark Visit response
-Widget markVisitResponse() {
-  return StreamBuilder<Response<MarkVisit>>(
-    stream: _markVisitBloc.markVisitStream,
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        switch (snapshot.data!.status!) {
-          case Status.LOADING:
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading = true;
-              });
-            });
-            break;
-          case Status.COMPLETED:
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading = false;
-              });
-            });
-            if (!_isSuccessMessageShown) {
-              String visitNummer = snapshot.data!.data!.nummer.toString();
+  Widget markVisitResponse() {
+    return StreamBuilder<Response<MarkVisit>>(
+      stream: _markVisitBloc.markVisitStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
               SchedulerBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "Visit Successfully Marked", (){}).then((_) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => HomeStockView(
-                              userNummer: widget.userNummer,
-                              username: widget.username,
-                              organizationId: widget.organizationId,
-                              organizationNummer: widget.organizationNummer,
-                              routeNummer: widget.routeNummer,
-                              visitNummer: visitNummer,
-                              loggedUserNummer: widget.loggedUserNummer,
-                              isTeamMemberUi: widget.isTeamMemberUi,
-                              organizationName: widget.organizationName,
-                              ysuporgNummer: widget.ysuporgNummer,
-                              ysuporgNamebspr: widget.ysuporgNamebspr,
-                            )),
-                  );
+                setState(() {
+                  _isLoading = true;
                 });
               });
-              _isSuccessMessageShown = true;
-            }
-            break;
-          case Status.ERROR:
-            SchedulerBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading = false;
-              });
-            });
-            if (!_isErrorMessageShown) {
+              break;
+            case Status.COMPLETED:
               SchedulerBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                setState(() {
+                  _isLoading = false;
+                });
               });
-              _isErrorMessageShown = true;
-            }
-            break;
+              if (!_isSuccessMessageShown) {
+                String visitNummer = snapshot.data!.data!.nummer.toString();
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  showSuccessAlertDialog(context, "Visit Successfully Marked", () {}).then((_) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => HomeStockView(
+                                userNummer: widget.userNummer,
+                                username: widget.username,
+                                organizationId: widget.organizationId,
+                                organizationNummer: widget.organizationNummer,
+                                routeNummer: widget.routeNummer,
+                                visitNummer: visitNummer,
+                                loggedUserNummer: widget.loggedUserNummer,
+                                isTeamMemberUi: widget.isTeamMemberUi,
+                                organizationName: widget.organizationName,
+                                ysuporgNummer: widget.ysuporgNummer,
+                                ysuporgNamebspr: widget.ysuporgNamebspr,
+                              )),
+                    );
+                  });
+                });
+                _isSuccessMessageShown = true;
+              }
+              break;
+            case Status.ERROR:
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+              if (!_isErrorMessageShown) {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+                _isErrorMessageShown = true;
+              }
+              break;
+          }
         }
-      }
-      return Container();
-    },
-  );
-}
-
+        return Container();
+      },
+    );
+  }
 
 //   Widget customIconButton(BuildContext context, String tooltip){
 // return CircleAvatar(

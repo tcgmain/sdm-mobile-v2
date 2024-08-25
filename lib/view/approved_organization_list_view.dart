@@ -61,7 +61,8 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
       if (_searchController.text.isNotEmpty) {
         _filteredOrganizations = _allOrganizations
                 ?.where((organization) =>
-                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
+                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase()))
                 .toList() ??
             [];
       } else {
@@ -109,7 +110,9 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                         _filteredOrganizations = _searchController.text.isNotEmpty
                             ? _allOrganizations!
                                 .where((organization) =>
-                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
+                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase())
+                                    )
                                 .toList()
                             : _allOrganizations!;
 
@@ -235,15 +238,20 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                                     children: [
                                                       Text(
                                                         "Assigned to: $organizationAssignTo",
-                                                        style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSize()),
+                                                        style: TextStyle(
+                                                            color: CustomColors.textColorGrey, fontSize: getFontSize()),
                                                       ),
                                                       Text(
                                                         "Created: $creationDate",
-                                                        style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSizeSmall()),
+                                                        style: TextStyle(
+                                                            color: CustomColors.textColorGrey,
+                                                            fontSize: getFontSizeSmall()),
                                                       ),
                                                       Text(
                                                         "Approved: $approvedBy, $approvedDate",
-                                                        style: TextStyle(color: CustomColors.textColorGrey, fontSize: getFontSizeSmall()),
+                                                        style: TextStyle(
+                                                            color: CustomColors.textColorGrey,
+                                                            fontSize: getFontSizeSmall()),
                                                       ),
                                                     ],
                                                   ),
@@ -260,16 +268,15 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                         }
 
                       case Status.ERROR:
-                      if(!_isErrorMessageShown){
-                        _isErrorMessageShown = true;
-                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          setState(() {
-                            _isLoading = false;
+                        if (!_isErrorMessageShown) {
+                          _isErrorMessageShown = true;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            showErrorAlertDialog(context, snapshot.data!.message.toString());
                           });
-                          showErrorAlertDialog(context, snapshot.data!.message.toString());
-                        });
-                      }
-                       
+                        }
                     }
                   }
                   return Container();

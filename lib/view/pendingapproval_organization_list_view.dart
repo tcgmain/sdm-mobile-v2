@@ -68,17 +68,21 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
   }
 
   void _onSearchChanged() {
-    setState(() {
-      if (_searchController.text.isNotEmpty) {
-        _filteredOrganizations = _allOrganizations
-                ?.where((organization) =>
-                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
-                .toList() ??
-            [];
-      } else {
-        _filteredOrganizations = _allOrganizations ?? [];
-      }
-    });
+   print('Search Text: ${_searchController.text}');
+  setState(() {
+    if (_searchController.text.isNotEmpty) {
+      _filteredOrganizations = _allOrganizations
+          ?.where((organization) {
+              return organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+                     organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase());
+          })
+          .toList() ??
+          [];
+    } else {
+      _filteredOrganizations = _allOrganizations ?? [];
+    }
+
+  });
   }
 
   @override
@@ -120,7 +124,10 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                         _filteredOrganizations = _searchController.text.isNotEmpty
                             ? _allOrganizations!
                                 .where((organization) =>
-                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()))
+                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) || 
+                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase())
+                                    
+                                    )
                                 .toList()
                             : _allOrganizations!;
 
@@ -346,7 +353,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                               _isLoading = true;
                             });
                           });
-                          _approveOrganizationBloc.approveOrganization(organizationId);
+                          _approveOrganizationBloc.approveOrganization(organizationId, widget.username);
                         },
                         child: const Text(
                           "Yes",

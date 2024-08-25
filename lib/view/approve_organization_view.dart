@@ -6,7 +6,7 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/view/add_route_assign_view.dart';
+import 'package:sdm/view/approve_organization_list_view.dart';
 import 'package:sdm/view/organization_info_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -58,8 +58,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   late String organizationNummer;
   late String organizationName;
   late String organizationId;
-  
-  
 
   @override
   void initState() {
@@ -551,7 +549,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                           });
                           Navigator.of(context).pop();
 
-                          _approveOrganizationBloc.approveOrganization(organizationId);
+                          _approveOrganizationBloc.approveOrganization(organizationId, widget.username);
                         },
                         child: const Text(
                           "Yes",
@@ -595,24 +593,19 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showSuccessAlertDialog(context, "$organizationNameMessage has been approved.", () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => RouteAssignView(
-                        username: widget.username,
-                        userNummer: widget.userNummer,
-                        isTeamMemberUi: widget.isTeamMemberUi,
-                        loggedUserNummer: widget.loggedUserNummer, 
-                        superiorOrganizationNummer: superiorOrganizationNummer, 
-                        organizationNummer: organizationNummer, 
-                        organizationName: organizationName, 
-                        organizationId: organizationId, 
-                        userId: widget.userId, 
-                        userOrganizationNummer: widget.userOrganizationNummer, 
-                        designationNummer: widget.designationNummer,
-                      ),
-                    ));
+                        builder: (context) => ApproveOrganizationListView(
+                              userNummer: widget.userNummer,
+                              isTeamMemberUi: widget.isTeamMemberUi,
+                              username: widget.username,
+                              userId: widget.userId,
+                              loggedUserNummer: widget.loggedUserNummer,
+                              userOrganizationNummer: widget.userOrganizationNummer,
+                              designationNummer: widget.designationNummer,
+                            )));
                   });
-                   setState(() {
-                      _isSuccessMessageShown = true;
-                    });
+                  setState(() {
+                    _isSuccessMessageShown = true;
+                  });
                 });
               }
               break;

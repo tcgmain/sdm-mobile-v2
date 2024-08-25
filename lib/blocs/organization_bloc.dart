@@ -42,6 +42,18 @@ class OrganizationBloc {
     }
   }
 
+    getOrganizationByType(String organizationTypeNummer) async {
+    organizationSink.add(ResponseList.loading(''));
+    try {
+      List<Organization> res = await _organizationRepository.getOrganizationByType(organizationTypeNummer);
+      organizationSink.add(ResponseList.completed(res));
+      print("ORGANIZATION SUCCESS");
+    } catch (e) {
+      organizationSink.add(ResponseList.error(e.toString()));
+      print("ORGANIZATION ERROR $e");
+    }
+  }
+
   dispose() {
     _organizationController?.close();
   }

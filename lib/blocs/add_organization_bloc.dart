@@ -39,7 +39,8 @@ class AddOrganizationBloc {
       isMasonry,
       isWaterproofing,
       isFlooring,
-      organizationColor) async {
+      organizationColor,
+      superiorOrganization) async {
     if (_addOrganizationController?.isClosed ?? true) return;
     addOrganizationSink.add(Response.loading(''));
     try {
@@ -63,7 +64,8 @@ class AddOrganizationBloc {
           isMasonry,
           isWaterproofing,
           isFlooring,
-          organizationColor);
+          organizationColor,
+          superiorOrganization);
       if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.completed(res));
       print("ADD ORGANIZATION SUCCESS");

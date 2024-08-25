@@ -29,7 +29,8 @@ class AddOrganizationRepository {
       String isMasonry,
       String isWaterproofing,
       String isFlooring,
-      String organizationColor) async {
+      String organizationColor,
+      String superiorOrganization) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -49,7 +50,7 @@ class AddOrganizationRepository {
       "ycustyp": customerTypeId,
       "yassigto": assignToNummer,
       "yvisdis": "300",
-      "ysuporg": userOrganizationNummer,
+      "ysuporg": superiorOrganization,
       "yowname": ownerName,
       "ymasonry": isMasonry,
       "ywaterpr": isWaterproofing,

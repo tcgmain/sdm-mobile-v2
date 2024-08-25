@@ -3,15 +3,21 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
 import 'package:sdm/blocs/organization_bloc.dart';
+import 'package:sdm/blocs/route_list_bloc.dart';
+import 'package:sdm/blocs/update_route_bloc.dart';
 import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/route_list.dart';
+//import 'package:sdm/models/route_organization.dart';
+import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
@@ -46,13 +52,17 @@ class AddOrganizationView extends StatefulWidget {
 class _AddOrganizationViewState extends State<AddOrganizationView> {
   late CustomerTypeBloc _customerTypeBloc;
   late OrganizationBloc _organizationBloc;
+  late OrganizationBloc _superiorOrganizationBloc;
   late AddOrganizationBloc _addOrganizationBloc;
   late AddGoodsManagementBloc _addGoodsManagementBloc;
+  late RouteListBloc _routeListBloc;
+  late UpdateRouteBloc _updateRouteBloc;
   List<CustomerType>? _allCustomerTypes;
   //List<Organization>? _allNearbyOrganizations;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
+  bool _isFinalSuccessMessageShown = false;
   bool _isAddGoodsManagementAPICall = false;
   bool _isAddOrganizationErrorMessageShown = false;
   bool _isNearbyOrganizationErrorMessageShown = false;
@@ -61,11 +71,25 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String organizationNummer;
   late String organizationSearchWord;
   bool _isUpdateLoading = false;
+  bool _isSuperiorOrganizationLoading = false;
   bool _isCustomerTypeLoading = false;
+  bool _isRouteLoading = false;
+  bool _isUpdateRouteLoading = false;
+  bool _isUpdateRouteErrorShown = false;
   bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
   String organizationType = "";
   String organizationColor = "";
+
+  List<Organization> _superiorOrganizations = [];
+  List<RouteList> _routeList = [];
+  bool _isRouteErrorShown = false;
+  Organization? _selectedSuperiorOrganization;
+  bool _isOrganizationsLoaded = false;
+  bool _isRoutesLoaded = false;
+  bool _isUpdateRouteCompleted = false;
+  bool _isUpdateOrganizationCompleted = false;
+  RouteList? _selectedRoute;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -250,16 +274,22 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
     organizationType = "";
     organizationColor = "";
+
+    _selectedSuperiorOrganization = null;
   }
 
   @override
   void initState() {
     super.initState();
+    _superiorOrganizationBloc = OrganizationBloc();
     _customerTypeBloc = CustomerTypeBloc();
-    _customerTypeBloc.getCustomerType();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
     _organizationBloc = OrganizationBloc();
+    _routeListBloc = RouteListBloc();
+    _updateRouteBloc = UpdateRouteBloc();
+
+    _customerTypeBloc.getCustomerType();
     _getCurrentLocation();
 
     setState(() {
@@ -293,6 +323,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address3FocusNode.dispose();
     _townFocusNode.dispose();
     _organizationBloc.dispose();
+    _superiorOrganizationBloc.dispose();
+    _routeListBloc.dispose();
+    _updateRouteBloc.dispose();
     super.dispose();
   }
 
@@ -314,24 +347,24 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           _validationStatus['email'] = _validationMessages['email'] == null;
           break;
         case 'phone1':
-          _validationMessages['phone1'] = _validatePhone(_phone1Controller.text);
+          _validationMessages['phone1'] = _validatePhone1(_phone1Controller.text);
           _validationStatus['phone1'] = _validationMessages['phone1'] == null;
           break;
         case 'phone2':
-          _validationMessages['phone2'] = _validatePhone(_phone2Controller.text);
+          _validationMessages['phone2'] = _validatePhone2(_phone2Controller.text);
           _validationStatus['phone2'] = _validationMessages['phone2'] == null;
           break;
         case 'whatsapp':
-          _validationMessages['whatsapp'] = _validatePhone(_whatsappController.text);
+          _validationMessages['whatsapp'] = _validateWhatsapp(_whatsappController.text);
           _validationStatus['whatsapp'] = _validationMessages['whatsapp'] == null;
           break;
         case 'address1':
-          _validationMessages['address1'] = null;
-          _validationStatus['address1'] = true;
+          _validationMessages['address1'] = _validateAddress1(_address1Controller.text);
+          _validationStatus['address1'] = _validationMessages['address1'] == null;
           break;
         case 'address2':
-          _validationMessages['address2'] = null;
-          _validationStatus['address2'] = true;
+          _validationMessages['address2'] = _validateAddress2(_address2Controller.text);
+          _validationStatus['address2'] = _validationMessages['address2'] == null;
           break;
         case 'address3':
           _validationMessages['address3'] = null;
@@ -352,6 +385,20 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return null;
   }
 
+  String? _validateAddress1(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter address line 1';
+    }
+    return null;
+  }
+
+  String? _validateAddress2(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter address line 2';
+    }
+    return null;
+  }
+
   String? _validateTown(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter town';
@@ -366,14 +413,34 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return null;
   }
 
-  String? _validatePhone(String? value) {
-  final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
+  String? _validatePhone1(String? value) {
+    final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
 
-if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
-    return 'Please enter a valid number';
+    if (value == null || value.isEmpty) {
+      return 'Please enter phone 1';
+    } else if (value.isNotEmpty && !phoneRegExp.hasMatch(value)) {
+      return 'Please enter a valid number';
+    }
+    return null;
   }
-  return null;
-}
+
+  String? _validatePhone2(String? value) {
+    final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
+
+    if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
+      return 'Please enter a valid number';
+    }
+    return null;
+  }
+
+  String? _validateWhatsapp(String? value) {
+    final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
+
+    if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
+      return 'Please enter a valid whatsapp number';
+    }
+    return null;
+  }
 
   //Validate Customer Type
   String? _validateCustomerType() {
@@ -425,7 +492,10 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                       child: Column(
                         children: [
                           getNearlyOrganizationsResponse(),
+                          getSuperiorOrganizationResponse(),
+                          getRouteResponse(),
                           addOrganizationResponse(),
+                          updateRouteResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
                           if (_validateCustomerType() != null)
@@ -496,7 +566,7 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             fieldName: 'phone1',
                             keyboardType: TextInputType.phone,
                             focusNode: _phone1FocusNode,
-                            validator: _validatePhone,
+                            validator: _validatePhone1,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -505,7 +575,7 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             fieldName: 'phone2',
                             keyboardType: TextInputType.phone,
                             focusNode: _phone2FocusNode,
-                            validator: _validatePhone,
+                            validator: _validatePhone2,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -514,7 +584,7 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             fieldName: 'whatsapp',
                             keyboardType: TextInputType.phone,
                             focusNode: _whatsappFocusNode,
-                            validator: _validatePhone,
+                            validator: _validateWhatsapp,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -522,7 +592,7 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             label: 'Address Line 1',
                             fieldName: 'address1',
                             focusNode: _address1FocusNode,
-                            validator: (value) => null,
+                            validator: _validateAddress1,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -530,7 +600,7 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             label: 'Address Line 2',
                             fieldName: 'address2',
                             focusNode: _address2FocusNode,
-                            validator: (value) => null,
+                            validator: _validateAddress2,
                           ),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
@@ -548,6 +618,10 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                             focusNode: _townFocusNode,
                             validator: _validateTown,
                           ),
+                          const SizedBox(height: 16),
+                          buildSuperiorOrganizationDropdown(),
+                          const SizedBox(height: 16),
+                          buildRouteDropdown(),
                           const SizedBox(height: 16),
                           Center(
                             child: CommonAppButton(
@@ -582,10 +656,12 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                                   final address3 = _address3Controller.text.toString();
                                   final town = _townController.text.toString();
                                   final ownerName = _ownerNameController.text.toString();
+                                  final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
 
                                   if (!_isSubmitPressed) {
                                     setState(() {
                                       _isUpdateLoading = true;
+                                      _isUpdateRouteErrorShown = false;
                                     });
                                     _isSubmitPressed = true;
 
@@ -609,7 +685,8 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                                         isMasonry.toString(),
                                         isWaterproofing.toString(),
                                         isFlooring.toString(),
-                                        organizationColor);
+                                        organizationColor,
+                                        superiorOrganization);
 
                                     if (organizationType != "Project" || organizationType != "(4147,12,0)") {
                                       isMasonry = false;
@@ -628,7 +705,13 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                 ),
               ),
             ),
-            if (_isUpdateLoading || _isCustomerTypeLoading || _isLoadingNearlyOrganizations) const Loading(),
+            if (_isUpdateLoading ||
+                _isCustomerTypeLoading ||
+                _isLoadingNearlyOrganizations ||
+                _isSuperiorOrganizationLoading ||
+                _isRouteLoading ||
+                _isUpdateRouteLoading)
+              const Loading(),
           ],
         ),
       ),
@@ -757,10 +840,18 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
               });
 
             case Status.COMPLETED:
-              organizationNummer = snapshot.data!.data!.nummer.toString();
-              organizationSearchWord = snapshot.data!.data!.such.toString();
-
               if (!_isAddGoodsManagementAPICall) {
+                organizationNummer = snapshot.data!.data!.nummer.toString();
+                organizationSearchWord = snapshot.data!.data!.such.toString();
+
+                if (_selectedRoute != null) {
+                  String selectedRouteId = _selectedRoute!.id.toString();
+                  _updateRouteBloc.updateRoute(selectedRouteId, organizationNummer);
+                  setState(() {
+                    _isUpdateRouteLoading = true;
+                  });
+                }
+
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
                 _isAddGoodsManagementAPICall = true;
               }
@@ -813,12 +904,15 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                   showSuccessAlertDialog(context, "$name has been added successfully.", () {});
                   setState(() {
                     _isSuccessMessageShown = true;
+                    _isUpdateOrganizationCompleted = true;
                   });
                   Future.delayed(const Duration(milliseconds: 500), () {
                     setState(() {
                       clearFormFields();
                     });
                   });
+
+                  //_checkForSuccess();
                 });
               }
               break;
@@ -834,6 +928,138 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                   setState(() {
                     _isAddOrganizationErrorMessageShown = true;
                   });
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  getSuperiorOrganizationResponse() {
+    return StreamBuilder<ResponseList<Organization>>(
+      stream: _superiorOrganizationBloc.organizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isSuperiorOrganizationLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isOrganizationsLoaded) {
+                _isOrganizationsLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isSuperiorOrganizationLoading = false;
+                    _superiorOrganizations = snapshot.data!.data!;
+                   // Find the matching organization or set a default value
+                  Organization matchingOrg = _superiorOrganizations.firstWhere(
+                    (org) => org.orgnummer == widget.userOrganizationNummer,
+                    orElse: () => _superiorOrganizations.first, // Use a fallback, like the first item in the list
+                  );
+
+                    _selectedSuperiorOrganization = matchingOrg;
+                 
+                  });
+                });
+
+                
+              }
+
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isSuperiorOrganizationLoading = false;
+                });
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget getRouteResponse() {
+    return StreamBuilder<ResponseList<RouteList>>(
+      stream: _routeListBloc.routeListStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isRoutesLoaded) {
+                _isRoutesLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isRouteLoading = false;
+                    _routeList = snapshot.data!.data!;
+                  });
+                });
+              }
+
+            case Status.ERROR:
+              if (!_isRouteErrorShown) {
+                _isRouteErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isRouteLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget updateRouteResponse() {
+    return StreamBuilder<Response<UpdateRoute>>(
+      stream: _updateRouteBloc.updateRouteStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isUpdateRouteLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isUpdateRouteLoading = false;
+                  _isUpdateRouteCompleted = true;
+                });
+                if (!_isSuccessMessageShown) {
+                  _isSuccessMessageShown = true;
+                }
+                //_checkForSuccess();
+              });
+              break;
+            case Status.ERROR:
+              if (!_isUpdateRouteErrorShown) {
+                _isUpdateRouteErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isUpdateRouteLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
               }
           }
@@ -924,6 +1150,12 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
                       ),
                       TextButton(
                         onPressed: () {
+                          _superiorOrganizationBloc.getOrganizationByType("Distributor");
+                          _routeListBloc.getRouteList("");
+                          setState(() {
+                            _isSuperiorOrganizationLoading = true;
+                            _isRouteLoading = true;
+                          });
                           Navigator.of(context).pop();
                         },
                         child: const Text(
@@ -963,5 +1195,157 @@ if (value!.isNotEmpty && !phoneRegExp.hasMatch(value)) {
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
       ],
     );
+  }
+
+  Widget buildSuperiorOrganizationDropdown() {
+
+    return DropdownSearch<Organization>(
+      items: _superiorOrganizations,
+      itemAsString: (Organization u) => u.namebspr.toString(),
+      onChanged: (Organization? organization) {
+        setState(() {
+          _selectedSuperiorOrganization = organization;
+        });
+      },
+      selectedItem: _selectedSuperiorOrganization,
+      clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Superior Organization",
+          hintText: "Select Superior Organization",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Superior Organization',
+            hintText: 'Type to Search Superior Organization...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              "${item.namebspr} | ${item.yassigto} | ${item.orgnummer}",
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildRouteDropdown() {
+    // // Use a Set to store unique route names
+    // final Set<String> uniqueRouteNames = _routeList.map((e) => e.namebsprRoute.toString()).toSet();
+
+    // // Filter the _routeOrganization list to include only unique route names
+    // final List<RouteList> uniqueRoutes = _routeList.where((route) {
+    //   if (uniqueRouteNames.contains(route.namebsprRoute)) {
+    //     uniqueRouteNames.remove(route.namebsprRoute);
+    //     return true;
+    //   }
+    //   return false;
+    // }).toList();
+
+    return DropdownSearch<RouteList>(
+      items: _routeList,
+      itemAsString: (RouteList u) => u.namebsprRoute.toString(),
+      onChanged: (RouteList? routeOrganization) {
+        setState(() {
+          _selectedRoute = routeOrganization;
+        });
+      },
+      selectedItem: _selectedRoute,
+      clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Route",
+          hintText: "Select Route",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Route',
+            hintText: 'Type to Search Route...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              item.namebsprRoute.toString(),
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _checkForSuccess() {
+    print("RRRRR");
+    if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
+      setState(() {
+        _isFinalSuccessMessageShown = true;
+      });
+      final name = _nameController.text.toString();
+      showSuccessAlertDialog(context, "$name has been updated.", () {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          setState(() {
+            clearFormFields();
+          });
+        });
+      });
+    }
   }
 }

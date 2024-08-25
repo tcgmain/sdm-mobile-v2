@@ -16,9 +16,9 @@ class ApiProvider {
     try {
       final response = await http.post(Uri.parse(baseUrl + url), headers: requestHeaders, body: inputBody);
       String responseString = response.body.toString();
-      //print(responseString);
-      //print(inputBody);
-      //print(baseUrl + url);
+      print(responseString);
+      print(inputBody);
+      print(baseUrl + url);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
       throw FetchDataException("No Internet Connection");

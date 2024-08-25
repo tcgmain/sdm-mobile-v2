@@ -215,7 +215,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'Total out-orders: $totalOrganizations',
+                                    'Total in-orders: $totalOrganizations',
                                     style: TextStyle(fontSize: getFontSizeSmall(), color: CustomColors.textColor),
                                   ),
                                 ),

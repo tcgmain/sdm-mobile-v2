@@ -8,15 +8,10 @@ class ApproveOrganizationRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<UpdateOrganization> approveOrganization(
-    String id,
-  ) async {
+  Future<UpdateOrganization> approveOrganization(String id, String username) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
-    inputBody = <String, String>{
-      "id": id, 
-      "yorgapp": "true"
-    };
+    inputBody = <String, String>{"id": id, "yorgapp": "true", "yorgappu": username};
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
     return UpdateOrganization.fromJson(response);

@@ -35,7 +35,7 @@ class SalesOrderListBloc {
     if (_salesOrderListController?.isClosed ?? true) return;
     salesOrderListSink.add(ResponseList.loading(''));
     try {
-      List<SalesOrder> res = await _salesOrderListRepository.getSalesOrderInList(organizationNummer);
+      List<SalesOrder> res = await _salesOrderListRepository.getSalesOrderOutList(organizationNummer);
       print("SALES ORDER IN LIST SUCCESS");
       if (_salesOrderListController?.isClosed ?? true) return;
       salesOrderListSink.add(ResponseList.completed(res));

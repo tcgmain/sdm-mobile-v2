@@ -19,11 +19,11 @@ class ApproveOrganizationBloc {
     _approveOrganizationRepository = ApproveOrganizationRepository();
   }
 
-  approveOrganization(String id) async {
+  approveOrganization(String id, String username) async {
     if (_approveOrganizationController?.isClosed ?? true) return;
     approveOrganizationSink.add(Response.loading(''));
     try {
-      UpdateOrganization res = await _approveOrganizationRepository.approveOrganization(id);
+      UpdateOrganization res = await _approveOrganizationRepository.approveOrganization(id, username);
       if (_approveOrganizationController?.isClosed ?? true) return;
       approveOrganizationSink.add(Response.completed(res));
       print("APPROVE ORGANIZATION SUCCESS");

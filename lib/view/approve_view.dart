@@ -115,6 +115,7 @@ class _ApprovalViewState extends State<ApprovalView> {
                 });
                 if (snapshot.data!.data!.isNotEmpty) {
                   String such = snapshot.data!.data![0].such.toString();
+                  print(such);
 
                   if (such == "SDMOA") {
                     WidgetsBinding.instance.addPostFrameCallback((_) {

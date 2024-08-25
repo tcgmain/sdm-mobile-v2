@@ -1,7 +1,6 @@
 class RouteOrganization {
   RouteOrganization(
-      {
-      this.id,
+      {this.id,
       this.nummer,
       this.namebsprRoute,
       this.namebspr,
@@ -29,8 +28,7 @@ class RouteOrganization {
       this.ywaterpr,
       this.yflooring,
       this.ywhtapp,
-      this.yassigtoSuch
-      });
+      this.yassigtoSuch});
 
   String? id;
   String? nummer;
