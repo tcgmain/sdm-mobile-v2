@@ -90,6 +90,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isUpdateRouteCompleted = false;
   bool _isUpdateOrganizationCompleted = false;
   RouteList? _selectedRoute;
+  bool _isUpdateRouteLoaded = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -225,6 +226,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     showNearbyOrganizationsPopup(context, nearByOrganizations);
                   });
                 }
+              } else {
+                // _superiorOrganizationBloc.getOrganizationByType("Distributor");
+                // _routeListBloc.getRouteList("");
+                // WidgetsBinding.instance.addPostFrameCallback((_) {
+                //   setState(() {
+                //     _isSuperiorOrganizationLoading = true;
+                //     _isRouteLoading = true;
+                //   });
+                // });
               }
               break;
 
@@ -276,6 +286,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     organizationColor = "";
 
     _selectedSuperiorOrganization = null;
+    _selectedRoute = null;
+
+    _isSubmitPressed = false;
   }
 
   @override
@@ -295,6 +308,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     setState(() {
       _isLoadingNearlyOrganizations = true;
     });
+
+
+
+       _superiorOrganizationBloc.getOrganizationByType("Distributor");
+                _routeListBloc.getRouteList("");
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isSuperiorOrganizationLoading = true;
+                    _isRouteLoading = true;
+                  });
+                });
   }
 
   @override
@@ -639,11 +663,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
-                                  setState(() {
-                                    _isSuccessMessageShown = false;
-                                    _isAddGoodsManagementAPICall = false;
-                                    _isAddOrganizationErrorMessageShown = false;
-                                  });
+                                  //setState(() {
+                                  _isSuccessMessageShown = false;
+                                  _isAddGoodsManagementAPICall = false;
+                                  _isAddOrganizationErrorMessageShown = false;
+                                  _isUpdateRouteLoaded = false;
+                                  //});
 
                                   final customerTypeId = _selectedCustomerType.toString();
                                   final name = "${_nameController.text}_${_townController.text}";
@@ -661,8 +686,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   if (!_isSubmitPressed) {
                                     setState(() {
                                       _isUpdateLoading = true;
-                                      _isUpdateRouteErrorShown = false;
                                     });
+                                    _isUpdateRouteErrorShown = false;
                                     _isSubmitPressed = true;
 
                                     _addOrganizationBloc.addOrganization(
@@ -840,20 +865,28 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               });
 
             case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isUpdateLoading = false;
+                });
+              });
+
               if (!_isAddGoodsManagementAPICall) {
+                _isAddGoodsManagementAPICall = true;
                 organizationNummer = snapshot.data!.data!.nummer.toString();
                 organizationSearchWord = snapshot.data!.data!.such.toString();
 
                 if (_selectedRoute != null) {
                   String selectedRouteId = _selectedRoute!.id.toString();
                   _updateRouteBloc.updateRoute(selectedRouteId, organizationNummer);
-                  setState(() {
-                    _isUpdateRouteLoading = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _isUpdateRouteLoading = true;
+                    });
                   });
                 }
 
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
-                _isAddGoodsManagementAPICall = true;
               }
               _isSubmitPressed = false;
               break;
@@ -901,18 +934,18 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               if (!_isSuccessMessageShown) {
                 final name = _nameController.text.toString();
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialog(context, "$name has been added successfully.", () {});
+                  //showSuccessAlertDialog(context, "$name has been added successfully.", () {});
                   setState(() {
                     _isSuccessMessageShown = true;
                     _isUpdateOrganizationCompleted = true;
                   });
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    setState(() {
-                      clearFormFields();
-                    });
-                  });
+                  // Future.delayed(const Duration(milliseconds: 500), () {
+                  //   setState(() {
+                  //     clearFormFields();
+                  //   });
+                  // });
 
-                  //_checkForSuccess();
+                  _checkForSuccess();
                 });
               }
               break;
@@ -957,18 +990,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   setState(() {
                     _isSuperiorOrganizationLoading = false;
                     _superiorOrganizations = snapshot.data!.data!;
-                   // Find the matching organization or set a default value
-                  Organization matchingOrg = _superiorOrganizations.firstWhere(
-                    (org) => org.orgnummer == widget.userOrganizationNummer,
-                    orElse: () => _superiorOrganizations.first, // Use a fallback, like the first item in the list
-                  );
+                    // Find the matching organization or set a default value
+                    Organization matchingOrg = _superiorOrganizations.firstWhere(
+                      (org) => org.orgnummer == widget.userOrganizationNummer,
+                      orElse: () => _superiorOrganizations.first, // Use a fallback, like the first item in the list
+                    );
 
                     _selectedSuperiorOrganization = matchingOrg;
-                 
                   });
                 });
-
-                
               }
 
               break;
@@ -1041,16 +1071,20 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               });
 
             case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isUpdateRouteLoading = false;
-                  _isUpdateRouteCompleted = true;
+              if (!_isUpdateRouteLoaded) {
+                _isUpdateRouteLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isUpdateRouteLoading = false;
+                    _isUpdateRouteCompleted = true;
+                  });
+                  if (!_isSuccessMessageShown) {
+                    _isSuccessMessageShown = true;
+                  }
+                  _checkForSuccess();
                 });
-                if (!_isSuccessMessageShown) {
-                  _isSuccessMessageShown = true;
-                }
-                //_checkForSuccess();
-              });
+              }
+
               break;
             case Status.ERROR:
               if (!_isUpdateRouteErrorShown) {
@@ -1150,12 +1184,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                       ),
                       TextButton(
                         onPressed: () {
-                          _superiorOrganizationBloc.getOrganizationByType("Distributor");
-                          _routeListBloc.getRouteList("");
-                          setState(() {
-                            _isSuperiorOrganizationLoading = true;
-                            _isRouteLoading = true;
-                          });
+                          // _superiorOrganizationBloc.getOrganizationByType("Distributor");
+                          // _routeListBloc.getRouteList("");
+                          // setState(() {
+                          //   _isSuperiorOrganizationLoading = true;
+                          //   _isRouteLoading = true;
+                          // });
                           Navigator.of(context).pop();
                         },
                         child: const Text(
@@ -1198,7 +1232,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   Widget buildSuperiorOrganizationDropdown() {
-
     return DropdownSearch<Organization>(
       items: _superiorOrganizations,
       itemAsString: (Organization u) => u.namebspr.toString(),
