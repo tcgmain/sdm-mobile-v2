@@ -5,6 +5,7 @@ import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/approve_organization_view.dart';
+import 'package:sdm/view/update_organization_view.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/text_field.dart' as text_field;
@@ -68,21 +69,18 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
   }
 
   void _onSearchChanged() {
-   print('Search Text: ${_searchController.text}');
-  setState(() {
-    if (_searchController.text.isNotEmpty) {
-      _filteredOrganizations = _allOrganizations
-          ?.where((organization) {
+    print('Search Text: ${_searchController.text}');
+    setState(() {
+      if (_searchController.text.isNotEmpty) {
+        _filteredOrganizations = _allOrganizations?.where((organization) {
               return organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-                     organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase());
-          })
-          .toList() ??
-          [];
-    } else {
-      _filteredOrganizations = _allOrganizations ?? [];
-    }
-
-  });
+                  organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase());
+            }).toList() ??
+            [];
+      } else {
+        _filteredOrganizations = _allOrganizations ?? [];
+      }
+    });
   }
 
   @override
@@ -124,10 +122,10 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                         _filteredOrganizations = _searchController.text.isNotEmpty
                             ? _allOrganizations!
                                 .where((organization) =>
-                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) || 
-                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase())
-                                    
-                                    )
+                                    organization.namebspr!
+                                        .toLowerCase()
+                                        .contains(_searchController.text.toLowerCase()) ||
+                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase()))
                                 .toList()
                             : _allOrganizations!;
 
@@ -172,60 +170,78 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                       String organizationCreationDate = organizations.erfass.toString();
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                                              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                                  builder: (context) => ApproveOrganizationView(
-                                                        username: widget.username,
-                                                        userNummer: widget.userNummer,
-                                                        organizationNummer: organizationNummer,
-                                                        isTeamMemberUi: widget.isTeamMemberUi,
-                                                        loggedUserNummer: widget.loggedUserNummer,
-                                                        userId: widget.userId,
-                                                        userOrganizationNummer: widget.userOrganizationNummer,
-                                                        designationNummer: widget.designationNummer,
-                                                      )));
-                                            });
-                                          },
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(5),
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: <Color>[
-                                                      Colors.grey.shade400,
-                                                      Colors.white,
-                                                    ],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                  ),
+                                        child: Slidable(
+                                                     key: const ValueKey(0),
+                                                // The end action pane is the one at the right or the bottom side.
+                                                endActionPane: ActionPane(
+                                                  extentRatio: 0.2,
+                                                  motion: const ScrollMotion(),
+                                                  children: [
+                                                    SlidableAction(
+                                                      onPressed: (context) {
+                                         
+                                                      },
+                                                      backgroundColor: CustomColors.buttonColor,
+                                                      foregroundColor: CustomColors.buttonTextColor,
+                                                      icon: Icons.edit,
+                                                    ),
+                                                  ],
                                                 ),
-                                                child: ListTile(
-                                                  leading: CircleAvatar(
-                                                    backgroundColor: getColor(organizationColour),
-                                                    radius: 20,
-                                                    child: const Icon(
-                                                      Icons.business,
-                                                      size: 20,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (context) => ApproveOrganizationView(
+                                                          username: widget.username,
+                                                          userNummer: widget.userNummer,
+                                                          organizationNummer: organizationNummer,
+                                                          isTeamMemberUi: widget.isTeamMemberUi,
+                                                          loggedUserNummer: widget.loggedUserNummer,
+                                                          userId: widget.userId,
+                                                          userOrganizationNummer: widget.userOrganizationNummer,
+                                                          designationNummer: widget.designationNummer,
+                                                        )));
+                                              });
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: <Color>[
+                                                        Colors.grey.shade400,
+                                                        Colors.white,
+                                                      ],
+                                                      begin: Alignment.topCenter,
+                                                      end: Alignment.bottomCenter,
                                                     ),
                                                   ),
-                                                  title: Text(organizationName,
-                                                      style: const TextStyle(color: CustomColors.cardTextColor)),
-                                                  subtitle: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        "Assigned to: $organizationAssignTo",
-                                                        style: const TextStyle(color: CustomColors.textColorGrey),
+                                                  child: ListTile(
+                                                    leading: CircleAvatar(
+                                                      backgroundColor: getColor(organizationColour),
+                                                      radius: 20,
+                                                      child: const Icon(
+                                                        Icons.business,
+                                                        size: 20,
                                                       ),
-                                                      Text(
-                                                        "Created: $organizationCreationDate",
-                                                        style: const TextStyle(color: CustomColors.textColorGrey),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )),
+                                                    ),
+                                                    title: Text(organizationName,
+                                                        style: const TextStyle(color: CustomColors.cardTextColor)),
+                                                    subtitle: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          "Assigned to: $organizationAssignTo",
+                                                          style: const TextStyle(color: CustomColors.textColorGrey),
+                                                        ),
+                                                        Text(
+                                                          "Created: $organizationCreationDate",
+                                                          style: const TextStyle(color: CustomColors.textColorGrey),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )),
+                                            ),
                                           ),
                                         ),
                                       );

@@ -6,8 +6,7 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 
 class ApproveOrganizationListView extends StatefulWidget {
- 
-    final String userNummer;
+  final String userNummer;
   final String username;
   final String userId;
   final String userOrganizationNummer;
@@ -72,6 +71,7 @@ class _ApproveOrganizationListViewState extends State<ApproveOrganizationListVie
                 ),
                 Expanded(
                   child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
                       PendingApproveOrganizationListView(
                         userNummer: widget.userNummer,
@@ -86,8 +86,8 @@ class _ApproveOrganizationListViewState extends State<ApproveOrganizationListVie
                         userNummer: widget.userNummer,
                         username: widget.username,
                         loggedUserNummer: widget.loggedUserNummer,
-                        isTeamMemberUi: widget.isTeamMemberUi, 
-                        userOrganizationNummer: widget.userOrganizationNummer, 
+                        isTeamMemberUi: widget.isTeamMemberUi,
+                        userOrganizationNummer: widget.userOrganizationNummer,
                         designationNummer: widget.designationNummer,
                       ),
                     ],

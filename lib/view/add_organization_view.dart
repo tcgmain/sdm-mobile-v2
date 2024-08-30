@@ -309,16 +309,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       _isLoadingNearlyOrganizations = true;
     });
 
-
-
-       _superiorOrganizationBloc.getOrganizationByType("Distributor");
-                _routeListBloc.getRouteList("");
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isSuperiorOrganizationLoading = true;
-                    _isRouteLoading = true;
-                  });
-                });
+    _superiorOrganizationBloc.getOrganizationByType("Distributor");
+    _routeListBloc.getRouteList("");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _isSuperiorOrganizationLoading = true;
+        _isRouteLoading = true;
+      });
+    });
   }
 
   @override

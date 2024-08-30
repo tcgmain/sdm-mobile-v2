@@ -85,6 +85,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       isMasonry,
       isWaterproofing,
       isFlooring,
+      superiorOrganizationNummer,
       organizationColor) async {
     final result = await Navigator.push(
       context,
@@ -101,7 +102,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 organizationMail: organizationMail,
                 organizationPhone1: organizationPhone1,
                 organizationPhone2: organizationPhone2,
-                
+                organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
                 organizationAddress3: organizationAddress3,
@@ -113,6 +114,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.userOrganizationNummer,
                 organizationColor: organizationColor,
+                superiorOrganizationNummer: superiorOrganizationNummer,
               )),
     );
 
@@ -272,6 +274,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                       isMasonry,
                                                       isWaterproofing,
                                                       isFlooring,
+                                                      subOrganizationSuperiorOrgNummer,
                                                       subOrganizationColour);
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,

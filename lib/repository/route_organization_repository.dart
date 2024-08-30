@@ -28,4 +28,21 @@ class RouteOrganizationRepository {
     return routeOrganization;
   }
 
+  Future<List<RouteOrganization>> getRouteOrganizationByOrg(String organizationNummer) async {
+    requestHeaders = <String, String>{'Accept': 'application/json', 'Content-Type': 'application/json'};
+
+    inputBody = {"ysdmorg^nummer": organizationNummer};
+
+    final response = await _provider.post("/getroutebyorg", jsonEncode(inputBody), requestHeaders);
+
+    var itemArray = [];
+    var resultLength = jsonDecode(jsonEncode(response)).length;
+    for (var i = 0; i < resultLength; i++) {
+      itemArray.add(jsonDecode(jsonEncode(response))[i]);
+    }
+
+    var list = itemArray;
+    List<RouteOrganization> routeOrganization = list.map((obj) => RouteOrganization.fromJson(obj)).toList();
+    return routeOrganization;
+  }
 }

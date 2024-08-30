@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/approve_organization_bloc.dart';
 import 'package:sdm/blocs/organization_info_bloc.dart';
+import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -47,12 +49,17 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   late double organizationLatitude;
   late double organizationLongitude;
   late double organizationDistance;
+  String routeName = "Not Assigned";
+  String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
+  bool _isRouteLoading = false;
   bool _isApproveLoading = false;
   bool _isSuccessMessageShown = false;
   late OrganizationInfoBloc _organizationInfoBloc;
   late ApproveOrganizationBloc _approveOrganizationBloc;
+  late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isErrorMessageShown = false;
+  bool _isRouteErrorMessageShown = false;
   late String organizationNameMessage;
   late String superiorOrganizationNummer;
   late String organizationNummer;
@@ -64,9 +71,12 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     super.initState();
     _organizationInfoBloc = OrganizationInfoBloc();
     _approveOrganizationBloc = ApproveOrganizationBloc();
+    _routeOrganizationBloc = RouteOrganizationBloc();
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
+    _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
     setState(() {
       _isLoading = true;
+      _isRouteLoading = true;
     });
   }
 
@@ -75,6 +85,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     super.dispose();
     _approveOrganizationBloc.dispose();
     _organizationInfoBloc.dispose();
+    _routeOrganizationBloc.dispose();
   }
 
   void _launchEmail(String email) async {
@@ -114,6 +125,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
         child: Stack(
           children: [
             approveOrganizationResponse(),
+            routeResponse(),
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
               child: StreamBuilder<ResponseList<Organization>>(
@@ -151,14 +163,14 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                         final colour = organization.colour.toString();
                         final longitude = organization.longitude.toString();
                         final latitude = organization.latitude.toString();
-                        //final distance = organization.distance.toString();
                         final yemail = organization.yemail.toString();
                         final yactiv = organization.yactiv.toString();
                         final ylev = organization.ylev.toString();
                         final ysuporgNummer = organization.ysuporgNummer.toString();
                         final ysuporgNamebspr = organization.ysuporgNamebspr.toString();
-                        //final ycustypSuch = organization.ycustypSuch.toString();
                         final ycustypNamebspr = organization.ycustypNamebspr.toString();
+
+                        if (ysuporgNamebspr != "" || ysuporgNamebspr.isNotEmpty) superiorOrganization = ysuporgNamebspr;
 
                         organizationNameMessage = namebspr;
                         superiorOrganizationNummer = ysuporgNummer;
@@ -234,37 +246,37 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                                     const Divider(
                                       color: CustomColors.textColorGrey,
                                     ),
-                                    if (ysuporgNamebspr.isNotEmpty)
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.supervised_user_circle, color: CustomColors.textColor),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              "Superior: $ysuporgNamebspr",
-                                              style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                                            ),
+
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.supervised_user_circle, color: CustomColors.textColor),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            "Superior: $superiorOrganization",
+                                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                           ),
-                                          IconButton(
-                                              focusColor: CustomColors.buttonColor2,
-                                              color: CustomColors.textColor,
-                                              onPressed: () {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                    builder: (context) => OrganizationInfoView(
-                                                          username: widget.username,
-                                                          userNummer: widget.userNummer,
-                                                          organizationNummer: ysuporgNummer,
-                                                          isTeamMemberUi: widget.isTeamMemberUi,
-                                                          loggedUserNummer: widget.loggedUserNummer,
-                                                        )));
-                                              },
-                                              icon: const Icon(Icons.open_in_new))
-                                        ],
-                                      ),
-                                    if (ysuporgNamebspr.isNotEmpty)
-                                      const Divider(
-                                        color: CustomColors.textColorGrey,
-                                      ),
+                                        ),
+                                        IconButton(
+                                            focusColor: CustomColors.buttonColor2,
+                                            color: CustomColors.textColor,
+                                            onPressed: () {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) => OrganizationInfoView(
+                                                        username: widget.username,
+                                                        userNummer: widget.userNummer,
+                                                        organizationNummer: ysuporgNummer,
+                                                        isTeamMemberUi: widget.isTeamMemberUi,
+                                                        loggedUserNummer: widget.loggedUserNummer,
+                                                      )));
+                                            },
+                                            icon: const Icon(Icons.open_in_new))
+                                      ],
+                                    ),
+
+                                    const Divider(
+                                      color: CustomColors.textColorGrey,
+                                    ),
                                     Row(
                                       children: [
                                         const Icon(Icons.group, color: CustomColors.textColor),
@@ -277,7 +289,21 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                                         ),
                                       ],
                                     ),
-                                    //const SizedBox(height: 10),
+                                    const Divider(
+                                      color: CustomColors.textColorGrey,
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.route, color: CustomColors.textColor),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            "Assigned Route: $routeName",
+                                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     const Divider(
                                       color: CustomColors.textColorGrey,
                                     ),
@@ -392,6 +418,35 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                                     ),
                                   )
                                 : Container(),
+                            const SizedBox(height: 10),
+                            yemail.isNotEmpty
+                                ? Card(
+                                    color: CustomColors.cardBackgroundColor1,
+                                    elevation: 4,
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          const Icon(Icons.route, color: CustomColors.textColor),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              yemail,
+                                              style: TextStyle(color: CustomColors.textColor, fontSize: getFontSize()),
+                                            ),
+                                          ),
+                                          // CustomIconButton(
+                                          //     tooltip: 'Assigned Route',
+                                          //     icon: const Icon(Icons.send),
+                                          //     onPressed: () {
+                                          //       _launchEmail(yemail);
+                                          //     })
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
                             const SizedBox(height: 20),
                             Center(
                               child: CommonAppButton(
@@ -423,7 +478,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                 },
               ),
             ),
-            if (_isLoading || _isApproveLoading) const Loading(),
+            if (_isLoading || _isApproveLoading || _isRouteLoading) const Loading(),
           ],
         ),
       ),
@@ -592,7 +647,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showSuccessAlertDialog(context, "$organizationNameMessage has been approved.", () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ApproveOrganizationListView(
                               userNummer: widget.userNummer,
                               isTeamMemberUi: widget.isTeamMemberUi,
@@ -623,6 +678,46 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                   });
                 });
               }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget routeResponse() {
+    return StreamBuilder<ResponseList<RouteOrganization>>(
+      stream: _routeOrganizationBloc.routeOrganizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = true;
+                });
+              });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = false;
+                });
+              });
+              if (snapshot.data!.data!.isNotEmpty) {
+                routeName = snapshot.data!.data![0].namebsprRoute.toString();
+              }
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isRouteErrorMessageShown) {
+                  _isRouteErrorMessageShown = true;
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isRouteLoading = false;
+                  });
+                }
+              });
+              break;
           }
         }
         return Container();

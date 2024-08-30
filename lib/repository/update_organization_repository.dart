@@ -14,6 +14,7 @@ class UpdateOrganizationRepository {
       String ownerName,
       String phone1,
       String phone2,
+      String whatsapp,
       String address1,
       String address2,
       String address3,
@@ -22,7 +23,9 @@ class UpdateOrganizationRepository {
       String isMasonry,
       String isWaterproofing,
       String isFlooring,
-      String organizationColor) async {
+      String organizationColor,
+      String superiorOrganization
+      ) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -31,6 +34,7 @@ class UpdateOrganizationRepository {
       "yowname": ownerName,
       "yphone1": phone1,
       "yphone2": phone2,
+      "ywhtapp": whatsapp,
       "yaddressl1": address1,
       "yaddressl2": address2,
       "yaddressl3": address3,
@@ -39,7 +43,8 @@ class UpdateOrganizationRepository {
       "ymasonry": isMasonry,
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
-      "yselcolour": organizationColor
+      "yselcolour": organizationColor,
+      "ysuporg": superiorOrganization
     };
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);

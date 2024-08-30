@@ -93,10 +93,12 @@ class _OrganizationViewState extends State<OrganizationView> {
       organizationMail,
       organizationPhone1,
       organizationPhone2,
+      organizationWhatsapp,
       organizationAddress1,
       organizationAddress2,
       organizationAddress3,
       organizationTown,
+      superiorOrganizationNummer,
       ownerName,
       ymasonry,
       ywaterpr,
@@ -117,17 +119,19 @@ class _OrganizationViewState extends State<OrganizationView> {
                 organizationMail: organizationMail,
                 organizationPhone1: organizationPhone1,
                 organizationPhone2: organizationPhone2,
+                organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
                 organizationAddress3: organizationAddress3,
                 organizationTown: organizationTown,
+                superiorOrganizationNummer: superiorOrganizationNummer,
                 ownerName: ownerName,
                 isMasonry: bool.parse(ymasonry),
                 isWaterproofing: bool.parse(ywaterpr),
                 isFlooring: bool.parse(yflooring),
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
-                organizationColor: '',
+                organizationColor: organizationColor,
               )),
     );
     if (result == true) {
@@ -348,10 +352,12 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                             organizationMail,
                                                             organizationPhone1,
                                                             organizationPhone2,
+                                                            organizationWhatsapp,
                                                             organizationAddress1,
                                                             organizationAddress2,
                                                             organizationAddress3,
                                                             organizationTown,
+                                                            ysuporgNummer,
                                                             ownerName,
                                                             isMasonry,
                                                             isWaterproofing,
@@ -370,7 +376,6 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                         splashColor: CustomColors.buttonColor,
                                                         onTap: () {
                                                           if (_onlyInactive == false) {
-                                                            print(organizationTypeNamebspr);
                                                             Navigator.of(context).push(MaterialPageRoute(
                                                                 builder: (context) => HomeOrganizationView(
                                                                       userNummer: widget.userNummer,

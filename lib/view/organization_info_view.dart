@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/organization_info_bloc.dart';
+import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -35,17 +37,25 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
   late double organizationLatitude;
   late double organizationLongitude;
   late double organizationDistance;
+    String routeName = "Not Assigned";
+  String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
+  bool _isRouteLoading = false;
   late OrganizationInfoBloc _organizationInfoBloc;
+  late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isErrorMessageShown = false;
+  bool _isRouteErrorMessageShown = false;
 
   @override
   void initState() {
     super.initState();
     _organizationInfoBloc = OrganizationInfoBloc();
+    _routeOrganizationBloc = RouteOrganizationBloc();
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
+    _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
     setState(() {
       _isLoading = true;
+      _isRouteLoading = true;
     });
   }
 
@@ -90,6 +100,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
       body: SafeArea(
         child: Stack(
           children: [
+            routeResponse(),
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
               child: StreamBuilder<ResponseList<Organization>>(
@@ -247,7 +258,21 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                         ),
                                       ],
                                     ),
-                                    //const SizedBox(height: 10),
+                                    const Divider(
+                                      color: CustomColors.textColorGrey,
+                                    ),
+                                          Row(
+                                      children: [
+                                        const Icon(Icons.route, color: CustomColors.textColor),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            "Assigned Route: $routeName",
+                                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     const Divider(
                                       color: CustomColors.textColorGrey,
                                     ),
@@ -388,7 +413,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                 },
               ),
             ),
-            if (_isLoading) const Loading(),
+            if (_isLoading || _isRouteLoading) const Loading(),
           ],
         ),
       ),
@@ -437,6 +462,46 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
             ],
           ),
         );
+      },
+    );
+  }
+
+    Widget routeResponse() {
+    return StreamBuilder<ResponseList<RouteOrganization>>(
+      stream: _routeOrganizationBloc.routeOrganizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = true;
+                });
+              });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = false;
+                });
+              });
+              if (snapshot.data!.data!.isNotEmpty) {
+                routeName = snapshot.data!.data![0].namebsprRoute.toString();
+              }
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isRouteErrorMessageShown) {
+                  _isRouteErrorMessageShown = true;
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isRouteLoading = false;
+                  });
+                }
+              });
+              break;
+          }
+        }
+        return Container();
       },
     );
   }

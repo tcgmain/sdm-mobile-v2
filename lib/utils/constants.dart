@@ -151,7 +151,7 @@ getOrganizationColor(organizationType) {
     case 'Project':
       return "GREEN";
     default:
-      return "GREY";
+      return "";
   }
 }
 
