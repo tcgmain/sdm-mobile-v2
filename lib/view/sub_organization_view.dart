@@ -81,11 +81,12 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       organizationAddress2,
       organizationAddress3,
       organizationTown,
-      ownerName,
-      isMasonry,
-      isWaterproofing,
-      isFlooring,
       superiorOrganizationNummer,
+      ownerName,
+      ownerBirthday,
+      ymasonry,
+      ywaterpr,
+      yflooring,
       organizationColor) async {
     final result = await Navigator.push(
       context,
@@ -107,20 +108,20 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 organizationAddress2: organizationAddress2,
                 organizationAddress3: organizationAddress3,
                 organizationTown: organizationTown,
-                ownerName: ownerName,
-                isMasonry: isMasonry,
-                isWaterproofing: isWaterproofing,
-                isFlooring: isFlooring,
-                userOrganizationNummer: widget.userOrganizationNummer,
-                designationNummer: widget.userOrganizationNummer,
-                organizationColor: organizationColor,
                 superiorOrganizationNummer: superiorOrganizationNummer,
+                ownerName: ownerName,
+                ownerBirthday: ownerBirthday,
+                isMasonry: bool.parse(ymasonry),
+                isWaterproofing: bool.parse(ywaterpr),
+                isFlooring: bool.parse(yflooring),
+                userOrganizationNummer: widget.userOrganizationNummer,
+                designationNummer: widget.designationNummer,
+                organizationColor: organizationColor,
               )),
     );
-
     if (result == true) {
       setState(() {
-        _subOrganizationBloc.getSubOrganization(widget.organizationNummer);
+        _subOrganizationBloc.getSubOrganization(widget.userNummer);
         _isLoading = true;
       });
     }
@@ -202,46 +203,48 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                     itemCount: _filteredSubOrganizations!.length,
                                     itemBuilder: (context, index) {
                                       final subOrganizations = snapshot.data!.data![index];
-                                      final subOrganizationId = subOrganizations.id.toString();
-                                      final subOrganizationNummer = subOrganizations.orgnummer.toString();
-                                      final subOrganizationName =
+                                      String subOrganizationId = subOrganizations.id.toString();
+                                      String subOrganizationNummer = subOrganizations.orgnummer.toString();
+                                      String subOrganizationName =
                                           subOrganizations.namebspr?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationPhone1 =
+                                      String subOrganizationPhone1 =
                                           subOrganizations.yphone1?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationPhone2 =
+                                      String subOrganizationPhone2 =
                                           subOrganizations.yphone2?.toString() ?? 'Unnamed Route';
-                                          final subOrganizationWhatsapp =
+                                      String subOrganizationWhatsapp =
                                           subOrganizations.ywhtapp?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationAddress1 =
+                                      String subOrganizationAddress1 =
                                           subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationAddress2 =
+                                      String subOrganizationAddress2 =
                                           subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationAddress3 =
+                                      String subOrganizationAddress3 =
                                           subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationTown =
+                                      String subOrganizationTown =
                                           subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationColour =
-                                          subOrganizations.colour?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationLongitude =
-                                          subOrganizations.longitude?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationLatitude =
-                                          subOrganizations.latitude?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationDistance =
-                                          subOrganizations.distance?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationMail =
-                                          subOrganizations.yemail?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationSuperiorOrgNummer =
-                                          subOrganizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationSuperiorOrgNamebspr =
-                                          subOrganizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationCustomerTypeId =
-                                          subOrganizations.ycustypId?.toString() ?? 'Unnamed Route';
-                                      final subOrganizationCustomerTypeNamebspr =
-                                          subOrganizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
-                                      final ownerName = subOrganizations.yowname?.toString() ?? 'Unnamed Route';
-                                      final isMasonry = subOrganizations.ymasonry?.toString() ?? 'Unnamed Route';
-                                      final isWaterproofing = subOrganizations.ywaterpr?.toString() ?? 'Unnamed Route';
-                                      final isFlooring = subOrganizations.yflooring?.toString() ?? 'Unnamed Route';
+                                      String subOrganizationColour =
+                                          subOrganizations.colour?.toString() ?? '';
+                                      String subOrganizationLongitude =
+                                          subOrganizations.longitude?.toString() ?? '';
+                                      String subOrganizationLatitude =
+                                          subOrganizations.latitude?.toString() ?? '';
+                                      String subOrganizationDistance =
+                                          subOrganizations.distance?.toString() ?? '';
+                                      String subOrganizationMail =
+                                          subOrganizations.yemail?.toString() ?? '';
+                                      String subOrganizationSuperiorOrgNummer =
+                                          subOrganizations.ysuporgNummer?.toString() ?? '';
+                                      String subOrganizationSuperiorOrgNamebspr =
+                                          subOrganizations.ysuporgNamebspr?.toString() ?? '';
+                                      String subOrganizationCustomerTypeId =
+                                          subOrganizations.ycustypId?.toString() ?? '';
+                                      String subOrganizationCustomerTypeNamebspr =
+                                          subOrganizations.ycustypNamebspr?.toString() ?? '';
+                                      String ownerName = subOrganizations.yowname?.toString() ?? '';
+                                      String ownerBirthday = subOrganizations.yorgowndob?.toString() ?? '';
+                                      String isMasonry = subOrganizations.ymasonry?.toString() ?? '';
+                                      String isWaterproofing = subOrganizations.ywaterpr?.toString() ?? '';
+                                      String isFlooring = subOrganizations.yflooring?.toString() ?? '';
+
 
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -256,26 +259,50 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                               SlidableAction(
                                                 onPressed: (context) {
                                                   print("Pressed");
+                                                  print(ownerBirthday);
+                                                  print("ownerBirthday");
 
-                                                  _navigateToUpdateOrganizationView(
-                                                      subOrganizationId,
-                                                      subOrganizationNummer,
-                                                      subOrganizationName,
-                                                      subOrganizationCustomerTypeId,
-                                                      subOrganizationMail,
-                                                      subOrganizationPhone1,
-                                                      subOrganizationPhone2,
-                                                      subOrganizationWhatsapp,
-                                                      subOrganizationAddress1,
-                                                      subOrganizationAddress2,
-                                                      subOrganizationAddress3,
-                                                      subOrganizationTown,
-                                                      ownerName,
-                                                      isMasonry,
-                                                      isWaterproofing,
-                                                      isFlooring,
-                                                      subOrganizationSuperiorOrgNummer,
-                                                      subOrganizationColour);
+                                                  // _navigateToUpdateOrganizationView(
+                                                  //     subOrganizationId,
+                                                  //     subOrganizationNummer,
+                                                  //     subOrganizationName,
+                                                  //     subOrganizationCustomerTypeId,
+                                                  //     subOrganizationMail,
+                                                  //     subOrganizationPhone1,
+                                                  //     subOrganizationPhone2,
+                                                  //     subOrganizationWhatsapp,
+                                                  //     subOrganizationAddress1,
+                                                  //     subOrganizationAddress2,
+                                                  //     subOrganizationAddress3,
+                                                  //     subOrganizationTown,
+                                                  //     ownerName,
+                                                  //     ownerBirthday,
+                                                  //     isMasonry,
+                                                  //     isWaterproofing,
+                                                  //     isFlooring,
+                                                  //     subOrganizationSuperiorOrgNummer,
+                                                  //     subOrganizationColour);
+
+                                                    _navigateToUpdateOrganizationView(
+                                                            subOrganizationId,
+                                                            subOrganizationNummer,
+                                                            subOrganizationName,
+                                                            subOrganizationCustomerTypeId,
+                                                            subOrganizationMail,
+                                                            subOrganizationPhone1,
+                                                            subOrganizationPhone2,
+                                                            subOrganizationWhatsapp,
+                                                            subOrganizationAddress1,
+                                                            subOrganizationAddress2,
+                                                            subOrganizationAddress3,
+                                                            subOrganizationTown,
+                                                            subOrganizationSuperiorOrgNummer,
+                                                            ownerName,
+                                                            ownerBirthday,
+                                                            isMasonry,
+                                                            isWaterproofing,
+                                                            isFlooring,
+                                                            subOrganizationColour);
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,
                                                 foregroundColor: CustomColors.buttonTextColor,

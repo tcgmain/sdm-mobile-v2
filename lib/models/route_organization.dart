@@ -24,11 +24,16 @@ class RouteOrganization {
       this.ycustypSuch,
       this.ycustypNamebspr,
       this.yowname,
+      this.yorgowndob,
       this.ymasonry,
       this.ywaterpr,
       this.yflooring,
       this.ywhtapp,
-      this.yassigtoSuch});
+      this.yassigtoSuch,
+      this.ysequno,
+      this.ynxtvisitdat
+      
+      });
 
   String? id;
   String? nummer;
@@ -54,11 +59,14 @@ class RouteOrganization {
   String? ycustypSuch;
   String? ycustypNamebspr;
   String? yowname;
+  String? yorgowndob;
   bool? ymasonry;
   bool? ywaterpr;
   bool? yflooring;
   String? ywhtapp;
   String? yassigtoSuch;
+  String? ysequno;
+  String? ynxtvisitdat;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -89,11 +97,14 @@ class RouteOrganization {
       ycustypSuch: json["ysdmorg^ycustyp^such"] ?? '',
       ycustypNamebspr: json["ysdmorg^ycustyp^namebspr"] ?? '',
       yowname: json["ysdmorg^yowname"] ?? '',
+      yorgowndob: json["ysdmorg^yorgowndob"] ?? '',
       ymasonry: json["ysdmorg^ymasonry"] ?? '',
       ywaterpr: json["ysdmorg^ywaterpr"] ?? '',
       yflooring: json["ysdmorg^yflooring"] ?? '',
       ywhtapp: json["ysdmorg^ywhtapp"] ?? '',
       yassigtoSuch: json["ysdmorg^yassigto^such"] ?? '',
+      ysequno: json["ysequno"] ?? '',
+      ynxtvisitdat: json["ysdmorg^ynxtvisitdat"] ?? '',
     );
   }
 
@@ -121,10 +132,13 @@ class RouteOrganization {
         "ysdmorg^ycustyp^such": ycustypSuch ?? '',
         "ysdmorg^ycustyp^namebspr": ycustypNamebspr ?? '',
         "ysdmorg^yowname": yowname ?? '',
+        "ysdmorg^yorgowndob": yorgowndob ?? '',
         "ysdmorg^ymasonry": ymasonry ?? '',
         "ysdmorg^ywaterpr": ywaterpr ?? '',
         "ysdmorg^yflooring": yflooring ?? '',
         "ysdmorg^ywhtapp": ywhtapp ?? '',
         "ysdmorg^yassigto^such": yassigtoSuch ?? '',
+        "ysequno": ysequno ?? '',
+        "ysdmorg^ynxtvisitdat": ynxtvisitdat ?? '',
       };
 }

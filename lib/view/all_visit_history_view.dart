@@ -31,6 +31,7 @@ class AllVisitHistoryView extends StatefulWidget {
 
 class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
   bool _isLoading = false;
+  bool _isErrorShown = false;
   bool _isFiltersVisible = false;
   late VisitBloc _visitBloc;
   final TextEditingController _searchController = TextEditingController();
@@ -135,7 +136,7 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
       initialDateRange: _selectedDateRange,
-        builder: (BuildContext context, Widget? child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.fromSwatch(
@@ -312,73 +313,70 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                                         ),
                                       ),
                                     ),
-                                    ...visits
-                                        .map(
-                                          (visit) => Container(
-                                            margin: const EdgeInsets.only(bottom: 10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.white),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.grey.shade400,
-                                                  Colors.white,
-                                                ],
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                              ),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: ListTile(
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                                              title: Text(
-                                                visit.yorgNamebspr.toString(),
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                              subtitle: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.access_time,
-                                                        color: Colors.red,
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                      Text(
-                                                        'Visited on: ${visit.yvdat} at ${visit.yvtim}',
-                                                        style: const TextStyle(fontSize: 16),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.person,
-                                                        color: Colors.red,
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                      Text(
-                                                        'Visitor: ${visit.ysdmempvSuch}',
-                                                        style: const TextStyle(fontSize: 16),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                    ...visits.map(
+                                      (visit) => Container(
+                                        margin: const EdgeInsets.only(bottom: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.white),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.grey.shade400,
+                                              Colors.white,
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: ListTile(
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                                          title: Text(
+                                            visit.yorgNamebspr.toString(),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
                                             ),
                                           ),
-                                        )
-                                        ,
+                                          subtitle: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.access_time,
+                                                    color: Colors.red,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    'Visited on: ${visit.yvdat} at ${visit.yvtim}',
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.person,
+                                                    color: Colors.red,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    'Visitor: ${visit.ysdmempvSuch}',
+                                                    style: const TextStyle(fontSize: 16),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 );
                               } else {
@@ -392,12 +390,16 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                               }
 
                             case Status.ERROR:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
+                              if (!_isErrorShown) {
+                                _isErrorShown = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 });
-                                showErrorAlertDialog(context, snapshot.data!.message.toString());
-                              });
+                              }
+
                               break;
                           }
                         }

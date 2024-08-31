@@ -100,11 +100,12 @@ class _OrganizationViewState extends State<OrganizationView> {
       organizationTown,
       superiorOrganizationNummer,
       ownerName,
+      ownerBirthday,
       ymasonry,
       ywaterpr,
       yflooring,
       organizationColor) async {
-    final result = await Navigator.pushReplacement(
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UpdateOrganizationView(
@@ -126,6 +127,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                 organizationTown: organizationTown,
                 superiorOrganizationNummer: superiorOrganizationNummer,
                 ownerName: ownerName,
+                ownerBirthday: ownerBirthday,
                 isMasonry: bool.parse(ymasonry),
                 isWaterproofing: bool.parse(ywaterpr),
                 isFlooring: bool.parse(yflooring),
@@ -328,6 +330,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                             String organizationAssignTo =
                                                 organizations.yassigto?.toString() ?? 'Unnamed Route';
                                             String ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
+                                            String ownerBirthday = organizations.yorgowndob?.toString() ?? 'Unnamed Route';
                                             String isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
                                             String isWaterproofing =
                                                 organizations.ywaterpr?.toString() ?? 'Unnamed Route';
@@ -359,6 +362,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                             organizationTown,
                                                             ysuporgNummer,
                                                             ownerName,
+                                                            ownerBirthday,
                                                             isMasonry,
                                                             isWaterproofing,
                                                             isFlooring,

@@ -73,6 +73,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
       organizationTown,
       superiorOrganizationNummer,
       ownerName,
+      ownerBirthday,
       isMasonry,
       isWaterproofing,
       isFlooring,
@@ -98,9 +99,10 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                 organizationAddress3: organizationAddress3,
                 organizationTown: organizationTown,
                 ownerName: ownerName,
-                isMasonry: isMasonry,
-                isWaterproofing: isWaterproofing,
-                isFlooring: isFlooring,
+                ownerBirthday: ownerBirthday,
+                isMasonry: bool.parse(isMasonry),
+                isWaterproofing: bool.parse(isWaterproofing),
+                isFlooring: bool.parse(isFlooring),
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
@@ -206,6 +208,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       final organizationTypeNamebspr =
                                           organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
                                       final ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
+                                      final ownerBirthday = organizations.yorgowndob?.toString() ?? 'Unnamed Route';
                                       final isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
                                       final isWaterproofing = organizations.ywaterpr?.toString() ?? 'Unnamed Route';
                                       final isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
@@ -222,7 +225,6 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                               children: [
                                                 SlidableAction(
                                                   onPressed: (context) {
-                                                    print("Pressed");
 
                                                     _navigateToUpdateOrganizationView(
                                                         organizationId,
@@ -239,6 +241,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                         organizationTown,
                                                         ysuporgNummer,
                                                         ownerName,
+                                                        ownerBirthday,
                                                         isMasonry,
                                                         isWaterproofing,
                                                         isFlooring,

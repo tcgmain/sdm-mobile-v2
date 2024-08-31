@@ -2,18 +2,23 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
 import 'package:sdm/blocs/organization_bloc.dart';
+import 'package:sdm/blocs/route_list_bloc.dart';
+import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/blocs/update_organization_bloc.dart';
+import 'package:sdm/blocs/update_route_bloc.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/route_list.dart';
+import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/models/update_organization.dart';
+import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
-import 'package:sdm/view/home_v2_view.dart';
-import 'package:sdm/view/home_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/date_picker_calender_2.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 
@@ -36,6 +41,7 @@ class UpdateOrganizationView extends StatefulWidget {
   final String organizationTown;
   final String superiorOrganizationNummer;
   final String ownerName;
+  final String ownerBirthday;
   final bool isMasonry;
   final bool isWaterproofing;
   final bool isFlooring;
@@ -63,6 +69,7 @@ class UpdateOrganizationView extends StatefulWidget {
     required this.organizationTown,
     required this.superiorOrganizationNummer,
     required this.ownerName,
+    required this.ownerBirthday,
     required this.isMasonry,
     required this.isWaterproofing,
     required this.isFlooring,
@@ -80,27 +87,48 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   bool _isCustomerTypeLoading = false;
   bool _isSuperiorOrganizationLoading = false;
   bool _isUpdateLoading = false;
+  bool _isRouteLoading = false;
+  bool _isRoutesLoaded = false;
   bool _isUpdatePressed = false;
   late CustomerTypeBloc _customerTypeBloc;
   List<CustomerType>? _allCustomerTypes;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
+  bool _isRouteErrorShown = false;
   bool _isErrorMessageShown = false;
   bool _isOrganizationsLoaded = false;
   bool _isOrganizationTypeToggleShown = false;
-  late String organizationNummer;
+  bool _isSelectedRouteErrorMessageShown = false;
+  bool _isUpdateRouteLoading = false;
+  bool _isUpdateRouteLoaded = false;
+  bool _isCustomerTypeErrorMessageShown = false;
+  bool _isUpdateOrganizationCompleted = false;
+  //bool _isUpdateRouteCompleted = false;
+  bool _isUpdateRouteErrorShown = false;
+  bool _isFinalSuccessMessageShown = false;
+  bool _isSelectRouteCompleted = false;
+  bool _isSuperiorOrganizationErrorShown = false;
+
+  //late String organizationNummer;
   late String organizationSearchWord;
   late UpdateOrganizationBloc _updateOrganizationBloc;
   late OrganizationBloc _superiorOrganizationBloc;
+  late RouteListBloc _routeListBloc;
+  late UpdateRouteBloc _updateRouteBloc;
+  late RouteOrganizationBloc _routeOrganizationBloc;
   Organization? _selectedSuperiorOrganization;
   String organizationType = "";
   String organizationColor = "";
+  String selectedRouteNummer = "";
   List<Organization> _superiorOrganizations = [];
+  List<RouteList> _routeList = [];
+  RouteList? _selectedRoute;
 
   String? _selectedCustomerType;
   int? _selectedCustomerTypeIndex;
   late TextEditingController _ownerNameController;
+  late TextEditingController _ownerBirthdayController;
   late TextEditingController _emailController;
   late TextEditingController _phone1Controller;
   late TextEditingController _phone2Controller;
@@ -111,6 +139,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   late TextEditingController _townController;
 
   final FocusNode _ownerNameFocusNode = FocusNode();
+  final FocusNode _ownerBirthdayFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phone1FocusNode = FocusNode();
   final FocusNode _phone2FocusNode = FocusNode();
@@ -152,8 +181,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     setState(() {
       _isCustomerTypeLoading = true;
       _isSuperiorOrganizationLoading = true;
+      _isRouteLoading = true;
     });
     _ownerNameController = TextEditingController(text: widget.ownerName.toString());
+    _ownerBirthdayController = TextEditingController(text: widget.ownerBirthday.toString());
     _emailController = TextEditingController(text: widget.organizationMail.toString());
     _phone1Controller = TextEditingController(text: widget.organizationPhone1.toString());
     _phone2Controller = TextEditingController(text: widget.organizationPhone2.toString());
@@ -174,15 +205,19 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _superiorOrganizationBloc = OrganizationBloc();
     _customerTypeBloc.getCustomerType();
     _superiorOrganizationBloc.getOrganizationByType("Distributor");
+    _routeListBloc = RouteListBloc();
+    _routeListBloc.getRouteList("");
+    _updateRouteBloc = UpdateRouteBloc();
+    _routeOrganizationBloc = RouteOrganizationBloc();
+    _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
   }
 
   @override
   void dispose() {
-    _customerTypeBloc.dispose();
     _updateOrganizationBloc.dispose();
-
     _customerTypeBloc.dispose();
     _ownerNameController.dispose();
+    _ownerBirthdayController.dispose();
     _emailController.dispose();
     _phone1Controller.dispose();
     _phone2Controller.dispose();
@@ -192,6 +227,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address3Controller.dispose();
     _townController.dispose();
     _ownerNameFocusNode.dispose();
+    _ownerBirthdayFocusNode.dispose();
     _emailFocusNode.dispose();
     _phone1FocusNode.dispose();
     _phone2FocusNode.dispose();
@@ -201,6 +237,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address3FocusNode.dispose();
     _townFocusNode.dispose();
     _superiorOrganizationBloc.dispose();
+    _routeListBloc.dispose();
+    _updateRouteBloc.dispose();
     super.dispose();
   }
 
@@ -220,6 +258,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         case 'ownerName':
           _validationMessages['ownerName'] = null;
           _validationStatus['ownerName'] = true;
+          break;
+        case 'ownerBirthday':
+          _validationMessages['ownerBirthday'] = null;
+          _validationStatus['ownerBirthday'] = true;
           break;
         case 'email':
           _validationMessages['email'] = _validateEmail(_emailController.text);
@@ -320,33 +362,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         appBar: CommonAppBar(
           title: 'Update Organizations',
           onBackButtonPressed: () {
-            (isDataViewer(widget.designationNummer))
-                ? WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => HomeV2Page(
-                              username: widget.username,
-                              userNummer: widget.userNummer,
-                              userOrganizationNummer: widget.userOrganizationNummer,
-                              loggedUserNummer: widget.userNummer,
-                              isTeamMemberUi: false,
-                              designationNummer: widget.designationNummer,
-                              initialTabIndex: 1)),
-                    );
-                  })
-                : WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(
-                              username: widget.username,
-                              userNummer: widget.userNummer,
-                              userOrganizationNummer: widget.userOrganizationNummer,
-                              loggedUserNummer: widget.userNummer,
-                              isTeamMemberUi: false,
-                              designationNummer: widget.designationNummer,
-                              initialTabIndex: 1)),
-                    );
-                  });
+            Navigator.pop(context, true);
           },
           isHomePage: false,
         ),
@@ -381,7 +397,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               style: TextStyle(fontSize: getFontSizeLarge(), color: CustomColors.cardTextColor),
                             ),
                             getSuperiorOrganizationResponse(),
+                            getRouteListResponse(),
                             updateOrganizationResponse(),
+                            updateRouteResponse(),
+                            getSelectedRouteResponse(),
                             const SizedBox(height: 16),
                             customerTypeToggleButtons(),
                             if (organizationType == "Project" || organizationType == "(4147,12,0)")
@@ -418,6 +437,17 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               fieldName: 'ownerName',
                               focusNode: _ownerNameFocusNode,
                               validator: (value) => null,
+                            ),
+                            const SizedBox(height: 16),
+                            CustomDatePicker.buildDateSelectionFormField(
+                              controller: _ownerBirthdayController,
+                              label: 'Owner Birthday',
+                              fieldName: 'ownerBirthday',
+                              focusNode: _ownerBirthdayFocusNode,
+                              context: context,
+                              validator: (value) => null,
+                              validateField: _validateField,
+                              validationStatus: _validationStatus,
                             ),
                             const SizedBox(height: 16),
                             _buildValidatedTextFormField(
@@ -490,6 +520,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                             const SizedBox(height: 16),
                             if (widget.organizationNummer != "5") buildSuperiorOrganizationDropdown(),
                             if (widget.organizationNummer != "5") const SizedBox(height: 16),
+                            buildRouteDropdown(),
+                            const SizedBox(height: 16),
                             Center(
                               child: CommonAppButton(
                                 buttonText: 'Update',
@@ -499,7 +531,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
 
                                     _isSuccessMessageShown = false;
                                     _isErrorMessageShown = false;
-                                    print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT" + organizationColor);
+                                    _isUpdateRouteErrorShown = false;
                                     _ownerNameController.text = capitalizeWords(_ownerNameController.text);
                                     _phone1Controller.text = capitalizeWords(_phone1Controller.text);
                                     _phone2Controller.text = capitalizeWords(_phone2Controller.text);
@@ -524,7 +556,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       final address2 = _address2Controller.text.toString();
                                       final address3 = _address3Controller.text.toString();
                                       final town = _townController.text.toString();
-                                      final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
+                                      String superiorOrganization;
+                                      if (widget.organizationNummer.toString() != "5") {
+                                        superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
+                                      } else {
+                                        superiorOrganization = "";
+                                      }
 
                                       _updateOrganizationBloc.updateOrganization(
                                           widget.organizationId,
@@ -549,6 +586,16 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                         isWaterproofing = false;
                                         isFlooring = false;
                                       }
+
+                                      if (_selectedRoute != null) {
+                                        String selectedRouteId = _selectedRoute!.id.toString();
+                                        _updateRouteBloc.updateRoute(selectedRouteId, widget.organizationNummer);
+                                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                                          setState(() {
+                                            _isUpdateRouteLoading = true;
+                                          });
+                                        });
+                                      }
                                     }
                                   }
                                 },
@@ -561,7 +608,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                   ),
                 ),
               ),
-              if (_isCustomerTypeLoading || _isUpdateLoading || _isSuperiorOrganizationLoading) const Loading(),
+              if (_isCustomerTypeLoading ||
+                  _isUpdateLoading ||
+                  _isRouteLoading ||
+                  _isSuperiorOrganizationLoading ||
+                  _isUpdateRouteLoading)
+                const Loading(),
             ],
           ),
         ));
@@ -672,12 +724,17 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                 ],
               );
             case Status.ERROR:
+              
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
+                  _isCustomerTypeErrorMessageShown = true;
                   _isCustomerTypeLoading = false;
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                if (!_isCustomerTypeErrorMessageShown) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                }
               });
+
               return Container();
           }
         }
@@ -711,9 +768,11 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                   setState(() {
                     _isSuccessMessageShown = true;
                   });
+                  //_checkForSuccess();
                 });
               }
               _isUpdatePressed = false;
+              _isUpdateOrganizationCompleted = true;
               break;
             case Status.ERROR:
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -768,35 +827,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         ),
       ),
       onPressed: () {
-        (isDataViewer(widget.designationNummer))
-            ? WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pop(context, true);
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => HomeV2Page(
-                          username: widget.username,
-                          userNummer: widget.userNummer,
-                          userOrganizationNummer: widget.userOrganizationNummer,
-                          loggedUserNummer: widget.userNummer,
-                          isTeamMemberUi: false,
-                          designationNummer: widget.designationNummer,
-                          initialTabIndex: 1)),
-                );
-              })
-            : WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pop(context, true);
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(
-                          username: widget.username,
-                          userNummer: widget.userNummer,
-                          userOrganizationNummer: widget.userOrganizationNummer,
-                          loggedUserNummer: widget.userNummer,
-                          isTeamMemberUi: false,
-                          designationNummer: widget.designationNummer,
-                          initialTabIndex: 1)),
-                );
-              });
+        // (isDataViewer(widget.designationNummer))
+        // ?
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pop(context, true);
+          Navigator.pop(context, true);
+        });
       },
     );
 
@@ -907,7 +943,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                 setState(() {
                   _isSuperiorOrganizationLoading = false;
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                if (!_isSuperiorOrganizationErrorShown) {
+                  _isSuperiorOrganizationErrorShown = true;
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                }
               });
           }
         }
@@ -976,4 +1015,227 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
       ),
     );
   }
+
+  Widget getRouteListResponse() {
+    return StreamBuilder<ResponseList<RouteList>>(
+      stream: _routeListBloc.routeListStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isRoutesLoaded) {
+                _isRoutesLoaded = true;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isRouteLoading = false;
+                    _routeList = snapshot.data!.data!;
+
+                    // RouteList matchingRoute = _routeList.firstWhere(
+                    //   (route) => route.nummer == selectedRouteNummer,
+                    //   //orElse: () => _routeList.first,
+                    // );
+
+                    // _selectedRoute = matchingRoute;
+                  });
+                });
+              }
+
+            case Status.ERROR:
+              if (!_isRouteErrorShown) {
+                _isRouteErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isRouteLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget buildRouteDropdown() {
+    return DropdownSearch<RouteList>(
+      items: _routeList,
+      itemAsString: (RouteList u) => u.namebsprRoute.toString(),
+      onChanged: (RouteList? routeOrganization) {
+        setState(() {
+          _selectedRoute = routeOrganization;
+        });
+      },
+      selectedItem: _selectedRoute,
+      clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Route",
+          hintText: "Select Route",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Route',
+            hintText: 'Type to Search Route...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              item.namebsprRoute.toString(),
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getSelectedRouteResponse() {
+    return StreamBuilder<ResponseList<RouteOrganization>>(
+      stream: _routeOrganizationBloc.routeOrganizationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = true;
+                });
+              });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isRouteLoading = false;
+                });
+              });
+
+              if (snapshot.data!.data!.isNotEmpty) {
+                selectedRouteNummer = snapshot.data!.data![0].nummer.toString();
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    RouteList matchingRoute = _routeList.firstWhere(
+                      (route) => route.nummer == selectedRouteNummer,
+                    );
+                    if (!_isSelectRouteCompleted) {
+                      _isSelectRouteCompleted = true;
+                      _selectedRoute = matchingRoute;
+                    }
+                  });
+                });
+              }
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!_isSelectedRouteErrorMessageShown) {
+                  _isSelectedRouteErrorMessageShown = true;
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isRouteLoading = false;
+                  });
+                }
+              });
+              break;
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget updateRouteResponse() {
+    return StreamBuilder<Response<UpdateRoute>>(
+      stream: _updateRouteBloc.updateRouteStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isUpdateRouteLoading = true;
+                  //_isUpdateRouteCompleted = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isUpdateRouteLoaded) {
+                print(snapshot.data!.data.toString());
+                _isUpdateRouteLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isUpdateRouteLoading = false;
+                  });
+                  if (!_isSuccessMessageShown) {
+                    _isSuccessMessageShown = true;
+                  }
+                  //_checkForSuccess();
+                });
+              }
+
+              break;
+            case Status.ERROR:
+              if (!_isUpdateRouteErrorShown) {
+                _isUpdateRouteErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isUpdateRouteLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  // void _checkForSuccess() {
+  //   print("RRRRR");
+  //   //print(_isUpdateRouteCompleted);
+  //   print(_isUpdateOrganizationCompleted);
+  //   print(_isFinalSuccessMessageShown);
+  //   if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
+  //     setState(() {
+  //       _isFinalSuccessMessageShown = true;
+  //     });
+  //     showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
+  //   }
+  // }
 }

@@ -116,7 +116,6 @@ class _CreateOrderViewState extends State<CreateOrderView> {
                           _isCreateSoErrorShown = false;
                           _isSuccessMessageShown = false;
                         });
-                        print("pressed");
 
                         List<Map<String, String?>> orderedList = _selectedProducts.map((product) {
                           return {'yprod': product.yprodnummer, 'yqty': _productQuantities[product.yprodnummer] ?? ''};

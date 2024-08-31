@@ -37,7 +37,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
   late double organizationLatitude;
   late double organizationLongitude;
   late double organizationDistance;
-    String routeName = "Not Assigned";
+  String routeName = "Not Assigned";
   String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
   bool _isRouteLoading = false;
@@ -261,7 +261,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                     const Divider(
                                       color: CustomColors.textColorGrey,
                                     ),
-                                          Row(
+                                    Row(
                                       children: [
                                         const Icon(Icons.route, color: CustomColors.textColor),
                                         const SizedBox(width: 10),
@@ -466,7 +466,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
     );
   }
 
-    Widget routeResponse() {
+  Widget routeResponse() {
     return StreamBuilder<ResponseList<RouteOrganization>>(
       stream: _routeOrganizationBloc.routeOrganizationStream,
       builder: (context, snapshot) {

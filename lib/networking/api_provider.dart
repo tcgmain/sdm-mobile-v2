@@ -16,12 +16,12 @@ class ApiProvider {
     try {
       final response = await http.post(Uri.parse(baseUrl + url), headers: requestHeaders, body: inputBody);
       String responseString = response.body.toString();
-      print(responseString);
-      print(inputBody);
       print(baseUrl + url);
+      print(inputBody);
+      print(responseString);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
-      throw FetchDataException("No Internet Connection");
+      throw FetchDataException("Please connect to the VPN to log in to the application.");
     }
     return responseJson;
   }
@@ -36,7 +36,7 @@ class ApiProvider {
       //print(baseUrl + url);
       responseJson = _response(jsonDecode(responseString), response.statusCode);
     } on SocketException {
-      throw FetchDataException("No Internet Connection");
+      throw FetchDataException("Please connect to the VPN to log in to the application.");
     }
     return responseJson;
   }

@@ -143,12 +143,16 @@ class _ApprovalViewState extends State<ApprovalView> {
               }
 
               break;
+
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
+              if (!_isErrorMessageShown) {
+                _isErrorMessageShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = false;
+                  });
                 });
-              });
+              }
           }
         }
         return Container();

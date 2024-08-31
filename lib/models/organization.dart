@@ -26,6 +26,7 @@ class Organization {
       this.ycustypId,
       this.ycustypNamebspr,
       this.yowname,
+      this.yorgowndob,
       this.ymasonry,
       this.ywaterpr,
       this.yflooring,
@@ -60,6 +61,7 @@ class Organization {
   String? ycustypId;
   String? ycustypNamebspr;
   String? yowname;
+  String? yorgowndob;
   bool? ymasonry;
   bool? ywaterpr;
   bool? yflooring;
@@ -96,6 +98,7 @@ class Organization {
       ycustypId: json["ycustyp^id"],
       ycustypNamebspr: json["ycustyp^namebspr"],
       yowname: json["yowname"],
+      yorgowndob: json["yorgowndob"],
       ymasonry: json["ymasonry"],
       ywaterpr: json["ywaterpr"],
       yflooring: json["yflooring"],
@@ -133,6 +136,7 @@ class Organization {
         "ycustyp^id": ycustypId,
         "ycustyp^namebspr": ycustypNamebspr,
         "yowname": yowname,
+        "yorgowndob": yorgowndob,
         "ymasonry": ymasonry,
         "ywaterpr": ywaterpr,
         "yflooring": yflooring,

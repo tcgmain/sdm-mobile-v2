@@ -83,6 +83,65 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
     });
   }
 
+  Future<void> _navigateToUpdateOrganizationView(
+      organizationId,
+      organizationNummer,
+      organizationName,
+      organizationTypeId,
+      organizationMail,
+      organizationPhone1,
+      organizationPhone2,
+      organizationWhatsapp,
+      organizationAddress1,
+      organizationAddress2,
+      organizationAddress3,
+      organizationTown,
+      superiorOrganizationNummer,
+      ownerName,
+      ownerBirthday,
+      ymasonry,
+      ywaterpr,
+      yflooring,
+      organizationColor) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UpdateOrganizationView(
+                userNummer: widget.userNummer,
+                loggedUserNummer: widget.loggedUserNummer,
+                username: widget.username,
+                isTeamMemberUi: widget.isTeamMemberUi,
+                organizationId: organizationId,
+                organizationNummer: organizationNummer,
+                organizationName: organizationName,
+                organizationTypeId: organizationTypeId,
+                organizationMail: organizationMail,
+                organizationPhone1: organizationPhone1,
+                organizationPhone2: organizationPhone2,
+                organizationWhatsapp: organizationWhatsapp,
+                organizationAddress1: organizationAddress1,
+                organizationAddress2: organizationAddress2,
+                organizationAddress3: organizationAddress3,
+                organizationTown: organizationTown,
+                superiorOrganizationNummer: superiorOrganizationNummer,
+                ownerName: ownerName,
+                ownerBirthday: ownerBirthday,
+                isMasonry: bool.parse(ymasonry),
+                isWaterproofing: bool.parse(ywaterpr),
+                isFlooring: bool.parse(yflooring),
+                userOrganizationNummer: widget.userOrganizationNummer,
+                designationNummer: widget.designationNummer,
+                organizationColor: organizationColor,
+              )),
+    );
+    if (result == true) {
+      setState(() {
+        _approvalOrganizationBloc.getApprovalOrganization(widget.userNummer);
+        _isLoading = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -162,31 +221,67 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                     itemBuilder: (context, index) {
                                       var organizations = _filteredOrganizations![index];
                                       //String organizationId = organizations.id.toString();
+                                      String organizationId = organizations.id.toString();
                                       String organizationNummer = organizations.orgnummer.toString();
                                       String organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
+                                      String organizationTypeId = organizations.ycustypId.toString();
+                                      String organizationMail = organizations.yemail.toString();
+                                      String organizationPhone1 = organizations.yphone1.toString();
+                                      String organizationPhone2 = organizations.yphone2.toString();
+                                      String organizationWhatsapp = organizations.ywhtapp.toString();
+                                      String organizationAddress1 = organizations.yaddressl1.toString();
+                                      String organizationAddress2 = organizations.yaddressl2.toString();
+                                      String organizationAddress3 = organizations.yaddressl3.toString();
+                                      String organizationTown = organizations.yaddressl4.toString();
+                                      String ysuporgNummer = organizations.ysuporgNummer.toString();
+                                      String ownerName = organizations.yowname.toString();
+                                      String ownerBirthday = organizations.yorgowndob.toString();
+                                      String isMasonry = organizations.ymasonry.toString();
+                                      String isWaterproofing = organizations.ywaterpr.toString();
+                                      String isFlooring = organizations.yflooring.toString();
                                       String organizationAssignTo =
                                           organizations.yassigto?.toString() ?? 'Unnamed Route';
-                                      String organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
+                                      String organizationColor = organizations.colour?.toString() ?? 'Unnamed Route';
                                       String organizationCreationDate = organizations.erfass.toString();
+
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: Slidable(
-                                                     key: const ValueKey(0),
-                                                // The end action pane is the one at the right or the bottom side.
-                                                endActionPane: ActionPane(
-                                                  extentRatio: 0.2,
-                                                  motion: const ScrollMotion(),
-                                                  children: [
-                                                    SlidableAction(
-                                                      onPressed: (context) {
-                                         
-                                                      },
-                                                      backgroundColor: CustomColors.buttonColor,
-                                                      foregroundColor: CustomColors.buttonTextColor,
-                                                      icon: Icons.edit,
-                                                    ),
-                                                  ],
-                                                ),
+                                          key: const ValueKey(0),
+                                          // The end action pane is the one at the right or the bottom side.
+                                          endActionPane: ActionPane(
+                                            extentRatio: 0.2,
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _navigateToUpdateOrganizationView(
+                                                      organizationId,
+                                                      organizationNummer,
+                                                      organizationName,
+                                                      organizationTypeId,
+                                                      organizationMail,
+                                                      organizationPhone1,
+                                                      organizationPhone2,
+                                                      organizationWhatsapp,
+                                                      organizationAddress1,
+                                                      organizationAddress2,
+                                                      organizationAddress3,
+                                                      organizationTown,
+                                                      ysuporgNummer,
+                                                      ownerName,
+                                                      ownerBirthday,
+                                                      isMasonry,
+                                                      isWaterproofing,
+                                                      isFlooring,
+                                                      organizationColor);
+                                                },
+                                                backgroundColor: CustomColors.buttonColor,
+                                                foregroundColor: CustomColors.buttonTextColor,
+                                                icon: Icons.edit,
+                                              ),
+                                            ],
+                                          ),
                                           child: GestureDetector(
                                             onTap: () {
                                               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -218,7 +313,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                                   ),
                                                   child: ListTile(
                                                     leading: CircleAvatar(
-                                                      backgroundColor: getColor(organizationColour),
+                                                      backgroundColor: getColor(organizationColor),
                                                       radius: 20,
                                                       child: const Icon(
                                                         Icons.business,

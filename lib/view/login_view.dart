@@ -103,20 +103,22 @@ class _LoginPageState extends State<LoginPage> {
     return CommonAppButton(
       buttonText: "Login",
       onPressed: () async {
-        setState(() {
+        if (usernameController.text.toString() == "" || passwordController.text.toString() == "") {
+          showErrorAlertDialog(context, "Please enter username and password");
+        } else {
           _isErrorMessageShown = false;
           _isUserDetailsErrorMessageShown = false;
-        });
 
-        String? deviceId = await _getId();
-        print("THIS IS DEVICE ID:  $deviceId");
+          String? deviceId = await _getId();
+          print("THIS IS DEVICE ID:  $deviceId");
 
-        _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
-        _isUserDetailsErrorMessageShown = false;
-        if (_saveCredentials) {
-          _saveCredentialsToPrefs();
-        } else {
-          _clearCredentials();
+          _loginBloc.login(usernameController.text.toString(), passwordController.text.toString(), deviceId.toString());
+          _isUserDetailsErrorMessageShown = false;
+          if (_saveCredentials) {
+            _saveCredentialsToPrefs();
+          } else {
+            _clearCredentials();
+          }
         }
       },
     );

@@ -53,6 +53,7 @@ class _ManageStockViewState extends State<ManageStockView> {
   late String newLastUpdatedUser;
   bool _isLoading = false;
   bool _isLoading1 = false;
+  bool _isErrorShown = false;
   final Map<String, TextEditingController> _stockControllers = {};
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -232,7 +233,11 @@ class _ManageStockViewState extends State<ManageStockView> {
                                 setState(() {
                                   _isLoading = false;
                                 });
-                                showErrorAlertDialog(context, snapshot.data!.message.toString());
+                                if(!_isErrorShown){
+                                  _isErrorShown = true;
+                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                                }
+                                
                               });
                           }
                         }

@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
@@ -16,7 +17,6 @@ import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/route_list.dart';
-//import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -24,6 +24,7 @@ import 'package:sdm/utils/validations.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/date_picker_calender_2.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/success_alert.dart';
@@ -72,6 +73,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late String organizationSearchWord;
   bool _isUpdateLoading = false;
   bool _isSuperiorOrganizationLoading = false;
+  bool _isSuperiorOrganizationErrorShown = false;
   bool _isCustomerTypeLoading = false;
   bool _isRouteLoading = false;
   bool _isUpdateRouteLoading = false;
@@ -97,6 +99,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   int? _selectedCustomerTypeIndex;
   final _nameController = TextEditingController();
   final _ownerNameController = TextEditingController();
+  final TextEditingController _ownerBirthdayController = TextEditingController();
   final _emailController = TextEditingController();
   final _phone1Controller = TextEditingController();
   final _phone2Controller = TextEditingController();
@@ -108,6 +111,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _ownerNameFocusNode = FocusNode();
+  final FocusNode _ownerBirthdayFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phone1FocusNode = FocusNode();
   final FocusNode _phone2FocusNode = FocusNode();
@@ -305,18 +309,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _customerTypeBloc.getCustomerType();
     _getCurrentLocation();
 
-    setState(() {
-      _isLoadingNearlyOrganizations = true;
-    });
-
     _superiorOrganizationBloc.getOrganizationByType("Distributor");
     _routeListBloc.getRouteList("");
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _isSuperiorOrganizationLoading = true;
-        _isRouteLoading = true;
-      });
+    //WidgetsBinding.instance.addPostFrameCallback((_) {
+    setState(() {
+      _isSuperiorOrganizationLoading = true;
+      _isRouteLoading = true;
+      _isLoadingNearlyOrganizations = true;
     });
+    //});
   }
 
   @override
@@ -326,6 +327,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _addGoodsManagementBloc.dispose();
     _nameController.dispose();
     _ownerNameController.dispose();
+    _ownerBirthdayController.dispose();
     _emailController.dispose();
     _phone1Controller.dispose();
     _phone2Controller.dispose();
@@ -336,6 +338,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _townController.dispose();
     _nameFocusNode.dispose();
     _ownerNameFocusNode.dispose();
+    _ownerBirthdayFocusNode.dispose();
     _emailFocusNode.dispose();
     _phone1FocusNode.dispose();
     _phone2FocusNode.dispose();
@@ -352,9 +355,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   void _validateField(String fieldName) {
+    _isSuccessMessageShown = true;
+    _isAddOrganizationErrorMessageShown = true;
     setState(() {
-      _isSuccessMessageShown = true;
-      _isAddOrganizationErrorMessageShown = true;
+      // _isSuccessMessageShown = true;
+      // _isAddOrganizationErrorMessageShown = true;
       switch (fieldName) {
         case 'name':
           _validationMessages['name'] = _validateName(_nameController.text);
@@ -363,6 +368,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         case 'ownerName':
           _validationMessages['ownerName'] = null;
           _validationStatus['ownerName'] = true;
+          break;
+        case 'ownerBirthday':
+          _validationMessages['ownerBirthday'] = null;
+          _validationStatus['ownerBirthday'] = true;
           break;
         case 'email':
           _validationMessages['email'] = _validateEmail(_emailController.text);
@@ -573,6 +582,25 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             validator: (value) => null,
                           ),
                           const SizedBox(height: 16),
+                          // buildDateSelectionFormField(
+                          //   controller: _ownerBirthdayController,
+                          //   label: 'Owner Birthday',
+                          //   fieldName: 'ownerBirthday',
+                          //   focusNode: _ownerBirthdayFocusNode,
+                          //   context: context,
+                          //   validator: (value) => null,
+                          // ),
+                          CustomDatePicker.buildDateSelectionFormField(
+                            controller: _ownerBirthdayController,
+                            label: 'Owner Birthday',
+                            fieldName: 'ownerBirthday',
+                            focusNode: _ownerBirthdayFocusNode,
+                            context: context,
+                            validator: (value) => null,
+                            validateField: _validateField,
+                            validationStatus: _validationStatus,
+                          ),
+                          const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _emailController,
                             label: 'E-mail',
@@ -659,6 +687,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 _address3Controller.text = capitalizeWords(_address3Controller.text);
                                 _townController.text = capitalizeWords(_townController.text);
 
+                                print(_ownerBirthdayController.text);
+
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
                                   //setState(() {
@@ -679,6 +709,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   final address3 = _address3Controller.text.toString();
                                   final town = _townController.text.toString();
                                   final ownerName = _ownerNameController.text.toString();
+                                  final ownerBirthday = _ownerBirthdayController.text.toString();
                                   final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
 
                                   if (!_isSubmitPressed) {
@@ -705,6 +736,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         widget.loggedUserNummer,
                                         widget.userOrganizationNummer,
                                         ownerName,
+                                        ownerBirthday,
                                         isMasonry.toString(),
                                         isWaterproofing.toString(),
                                         isFlooring.toString(),
@@ -778,15 +810,22 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                       ),
                       onPressed: (index) {
                         print(_allCustomerTypes![index].aebez.toString());
-                        setState(() {
-                          isMasonry = false;
-                          isWaterproofing = false;
-                          isFlooring = false;
-                          _selectedCustomerTypeIndex = index;
-                          _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
-                          organizationType = _allCustomerTypes![index].aebez.toString();
-                          organizationColor = getOrganizationColor(organizationType);
-                        });
+                        // setState(() {
+                        //   isMasonry = false;
+                        //   isWaterproofing = false;
+                        //   isFlooring = false;
+                        //   _selectedCustomerTypeIndex = index;
+                        //   _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
+                        //   organizationType = _allCustomerTypes![index].aebez.toString();
+                        //   organizationColor = getOrganizationColor(organizationType);
+                        // });
+                        isMasonry = false;
+                        isWaterproofing = false;
+                        isFlooring = false;
+                        _selectedCustomerTypeIndex = index;
+                        _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
+                        organizationType = _allCustomerTypes![index].aebez.toString();
+                        organizationColor = getOrganizationColor(organizationType);
                       },
                       children: _allCustomerTypes!.map((CustomerType type) {
                         return Padding(
@@ -849,6 +888,63 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     );
   }
 
+// Widget _buildDateSelectionFormField({
+//   required TextEditingController controller,
+//   required String label,
+//   required String fieldName,
+//   required FocusNode focusNode,
+//   required BuildContext context,
+//   required String? Function(String?) validator,
+// }) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       TextFormField(
+//         controller: controller,
+//         decoration: InputDecoration(
+//           labelText: label,
+//           labelStyle: const TextStyle(color: CustomColors.cardTextColor1),
+//           suffixIcon: _validationStatus[fieldName] == null
+//               ? null
+//               : _validationStatus[fieldName]!
+//                   ? const Icon(Icons.check, color: Colors.green)
+//                   : const Icon(Icons.error, color: Colors.red),
+//         ),
+//         readOnly: true,
+//         focusNode: focusNode,
+//         validator: validator,
+//         onTap: () async {
+//           FocusScope.of(context).requestFocus(FocusNode()); // To prevent opening the keyboard
+//           DateTime? pickedDate = await showDatePicker(
+//             context: context,
+//             initialDate: DateTime.now(),
+//             firstDate: DateTime(1920),
+//             lastDate: DateTime(2101),
+//             builder: (BuildContext context, Widget? child) {
+//               return Theme(
+//                 data: ThemeData.light().copyWith(
+//                   colorScheme: const ColorScheme.light(
+//                     primary: Colors.red, // Red background for selected date
+//                     onPrimary: Colors.white, // Text color for selected date
+//                     onSurface: Colors.black, // Default text color for unselected dates
+//                   ),
+//                   dialogBackgroundColor: Colors.white,
+//                 ),
+//                 child: child!,
+//               );
+//             },
+//           );
+//           if (pickedDate != null) {
+//             String formattedDate = DateFormat('yyyy/MM/dd').format(pickedDate);
+//             controller.text = formattedDate;
+//             _validateField(fieldName);
+//           }
+//         },
+//       ),
+//     ],
+//   );
+// }
+
   Widget addOrganizationResponse() {
     return StreamBuilder<Response<AddOrganization>>(
       stream: _addOrganizationBloc.addOrganizationStream,
@@ -897,9 +993,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               if (!_isAddOrganizationErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  setState(() {
-                    _isAddOrganizationErrorMessageShown = true;
-                  });
+                  // setState(() {
+                  //   _isAddOrganizationErrorMessageShown = true;
+                  // });
+                  _isAddOrganizationErrorMessageShown = true;
                 });
               }
               _isSubmitPressed = false;
@@ -930,20 +1027,25 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 });
               });
               if (!_isSuccessMessageShown) {
-                final name = _nameController.text.toString();
+                //final name = _nameController.text.toString();
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   //showSuccessAlertDialog(context, "$name has been added successfully.", () {});
-                  setState(() {
-                    _isSuccessMessageShown = true;
-                    _isUpdateOrganizationCompleted = true;
-                  });
-                  // Future.delayed(const Duration(milliseconds: 500), () {
-                  //   setState(() {
-                  //     clearFormFields();
-                  //   });
+                  // setState(() {
+                  //   _isSuccessMessageShown = true;
+                  //   _isUpdateOrganizationCompleted = true;
                   // });
 
-                  _checkForSuccess();
+                  _isSuccessMessageShown = true;
+                  _isUpdateOrganizationCompleted = true;
+
+                  if (_selectedRoute != null) {
+                    _checkForSuccess();
+                  } else {
+                    final name = _nameController.text.toString();
+                    showSuccessAlertDialog(context, "$name has been added successfully.", () {
+                      Navigator.pop(context, true);
+                    });
+                  }
                 });
               }
               break;
@@ -1001,12 +1103,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isSuperiorOrganizationLoading = false;
+              if (!_isSuperiorOrganizationErrorShown) {
+                _isSuperiorOrganizationErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isSuperiorOrganizationLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
           }
         }
         return Container();
@@ -1079,7 +1184,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   if (!_isSuccessMessageShown) {
                     _isSuccessMessageShown = true;
                   }
-                  _checkForSuccess();
+                  if (_selectedRoute != null) {
+                    _checkForSuccess();
+                  }
                 });
               }
 
@@ -1364,18 +1471,19 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   void _checkForSuccess() {
-    print("RRRRR");
     if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
       setState(() {
         _isFinalSuccessMessageShown = true;
       });
       final name = _nameController.text.toString();
-      showSuccessAlertDialog(context, "$name has been updated.", () {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          setState(() {
-            clearFormFields();
-          });
-        });
+      showSuccessAlertDialog(context, "$name has been added successfully.", () {
+        // Future.delayed(const Duration(milliseconds: 500), () {
+        //   setState(() {
+        //     clearFormFields();
+        //   });
+        // });
+        Navigator.pop(context, true);
+        Navigator.pop(context, true);
       });
     }
   }
