@@ -65,7 +65,7 @@ class RouteOrganization {
   bool? yflooring;
   String? ywhtapp;
   String? yassigtoSuch;
-  String? ysequno;
+  int? ysequno;
   String? ynxtvisitdat;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {

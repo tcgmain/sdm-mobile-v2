@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
@@ -41,6 +42,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isLoading = false;
   bool _isErrorMessageShown = false;
+  String _sortBy = 'Priority'; // Default sort by Priority
 
   @override
   void initState() {
@@ -56,6 +58,46 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   void dispose() {
     _routeOrganizationBloc.dispose();
     super.dispose();
+  }
+
+  // Function to sort organizations based on the selected criteria
+  List<RouteOrganization> _sortOrganizations(List<RouteOrganization> organizations) {
+    if (_sortBy == 'Priority') {
+   organizations.sort((a, b) {
+      final dateFormat = DateFormat('dd/MM/yyyy');
+      DateTime? dateA, dateB;
+
+      // Parse date strings if they are not null or empty
+      if (a.ynxtvisitdat != null && a.ynxtvisitdat!.isNotEmpty) {
+        try {
+          dateA = dateFormat.parse(a.ynxtvisitdat!);
+        } catch (_) {
+          dateA = null;
+        }
+      }
+      if (b.ynxtvisitdat != null && b.ynxtvisitdat!.isNotEmpty) {
+        try {
+          dateB = dateFormat.parse(b.ynxtvisitdat!);
+        } catch (_) {
+          dateB = null;
+        }
+      }
+
+      // Handle cases where one or both dates are null
+      if (dateA == null && dateB == null) return 0;
+      if (dateA == null) return 1; // `a` should come last if `dateA` is null
+      if (dateB == null) return -1; // `b` should come last if `dateB` is null
+
+      return dateA.compareTo(dateB);
+    });
+    } else if (_sortBy == 'Sequence') {
+      organizations.sort((a, b) {
+        final seqA = a.ysequno.toString();
+        final seqB = b.ysequno.toString();
+        return seqA.compareTo(seqB);
+      });
+    }
+    return organizations;
   }
 
   Future<void> _navigateToUpdateOrganizationView(
@@ -144,6 +186,29 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                   const SizedBox(
                     height: 10,
                   ),
+                  // Add DropdownButton for sorting
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: DropdownButton<String>(
+                      borderRadius: BorderRadius.circular(8),
+                      iconEnabledColor: CustomColors.textColor,
+                      dropdownColor: CustomColors.dropDownColor,
+                      value: _sortBy,
+                      items: const [
+                        DropdownMenuItem(value: 'Priority', child: Text('Sort by Priority')),
+                        DropdownMenuItem(value: 'Sequence', child: Text('Sort by Sequence')),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _sortBy = value!;
+                        });
+                      },
+                      isExpanded: false,
+                      underline: Container(),
+                      style: const TextStyle(color: CustomColors.textColor),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: StreamBuilder<ResponseList<RouteOrganization>>(
                       stream: _routeOrganizationBloc.routeOrganizationStream,
@@ -158,12 +223,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                               });
 
                             case Status.COMPLETED:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
                                 setState(() {
                                   _isLoading = false;
                                 });
                               });
-                              int noOfOrganizations = snapshot.data!.data!.length;
+
+                                int noOfOrganizations = snapshot.data!.data!.length;
                               if (noOfOrganizations == 0) {
                                 return Center(
                                   child: Text(
@@ -173,13 +239,16 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                   ),
                                 );
                               } else {
+                                // Sort organizations before displaying
+                                List<RouteOrganization> sortedOrganizations = _sortOrganizations(snapshot.data!.data!);
+
                                 return SlidableAutoCloseBehavior(
                                   closeWhenOpened: true,
                                   closeWhenTapped: false,
                                   child: ListView.builder(
-                                    itemCount: snapshot.data!.data!.length,
+                                    itemCount: sortedOrganizations.length,
                                     itemBuilder: (context, index) {
-                                      final organizations = snapshot.data!.data![index];
+                                      final organizations = sortedOrganizations[index];
                                       final organizationId = organizations.ysdmorgId.toString();
                                       final organizationNummer = organizations.orgnummer.toString();
                                       final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
@@ -214,150 +283,154 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       final isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
                                       final organizationAssignTo =
                                           organizations.yassigtoSuch?.toString() ?? 'Unnamed Route';
+                                      final sequence = organizations.ysequno.toString();
+                                      final nextVisitDueDate =
+                                          organizations.ynxtvisitdat?.toString() ?? '';
+
+                                      // Parse the nextVisitDueDate to DateTime
+                                      DateTime? nextVisitDate;
+                                      if (nextVisitDueDate != '') {
+                                    
+                                        nextVisitDate = DateFormat('dd/MM/yyyy').parse(nextVisitDueDate);
+                                      }
+
+                                      // Check if nextVisitDueDate is in the past
+                                      bool isPastDueDate =
+                                          nextVisitDate != null && nextVisitDate.isBefore(DateTime.now());
 
                                       return Padding(
                                           padding: const EdgeInsets.only(bottom: 3, top: 3),
                                           child: Slidable(
-                                            key: const ValueKey(0),
-                                            endActionPane: ActionPane(
-                                              extentRatio: 0.2,
-                                              motion: const ScrollMotion(),
-                                              children: [
-                                                SlidableAction(
-                                                  onPressed: (context) {
-
-                                                    _navigateToUpdateOrganizationView(
-                                                        organizationId,
-                                                        organizationNummer,
-                                                        organizationName,
-                                                        organizationTypeId,
-                                                        organizationMail,
-                                                        organizationPhone1,
-                                                        organizationPhone2,
-                                                        organizationWhatsapp,
-                                                        organizationAddress1,
-                                                        organizationAddress2,
-                                                        organizationAddress3,
-                                                        organizationTown,
-                                                        ysuporgNummer,
-                                                        ownerName,
-                                                        ownerBirthday,
-                                                        isMasonry,
-                                                        isWaterproofing,
-                                                        isFlooring,
-                                                        organizationColour);
-                                                  },
-                                                  backgroundColor: CustomColors.buttonColor,
-                                                  foregroundColor: CustomColors.buttonTextColor,
-                                                  icon: Icons.edit,
-                                                ),
-                                              ],
-                                            ),
-
-                                            child: InkWell(
-                                              splashColor: CustomColors.buttonColor,
-                                              onTap: () {
-                                                // Add your onPressed functionality here
-                                                print('Container pressed!');
-
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                    builder: (context) => HomeOrganizationView(
-                                                          userNummer: widget.userNummer,
-                                                          username: widget.username,
-                                                          routeNummer: widget.routeNummer,
-                                                          organizationId: organizationId,
-                                                          organizationNummer: organizationNummer,
-                                                          organizationName: organizationName,
-                                                          organizationPhone1: organizationPhone1,
-                                                          organizationPhone2: organizationPhone2,
-                                                          organizationWhatsapp: organizationWhatsapp,
-                                                          organizationAddress1: organizationAddress1,
-                                                          organizationAddress2: organizationAddress2,
-                                                          organizationAddress3: organizationAddress3,
-                                                          organizationTown: organizationTown,
-                                                          organizationColour: organizationColour,
-                                                          organizationLongitude: organizationLongitude,
-                                                          organizationLatitude: organizationLatitude,
-                                                          organizationDistance: organizationDistance,
-                                                          organizationMail: organizationMail,
-                                                          isTeamMemberUi: widget.isTeamMemberUi,
-                                                          loggedUserNummer: widget.loggedUserNummer,
-                                                          ysuporgNummer: ysuporgNummer,
-                                                          ysuporgNamebspr: ysuporgNamebspr,
-                                                          designationNummer: widget.designationNummer,
-                                                          organizationTypeNamebspr: organizationTypeNamebspr,
-                                                          userOrganizationNummer: widget.userOrganizationNummer,
-                                                        )));
-                                              },
-                                              child: Container(
-                                                decoration: const BoxDecoration(
-                                                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                                                  shape: BoxShape.rectangle,
-                                                  gradient: LinearGradient(
-                                                    colors: <Color>[
-                                                      Colors.black,
-                                                      Colors.black26,
-                                                    ],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
+                                              key: const ValueKey(0),
+                                              endActionPane: ActionPane(
+                                                extentRatio: 0.2,
+                                                motion: const ScrollMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    onPressed: (context) {
+                                                      _navigateToUpdateOrganizationView(
+                                                          organizationId,
+                                                          organizationNummer,
+                                                          organizationName,
+                                                          organizationTypeId,
+                                                          organizationMail,
+                                                          organizationPhone1,
+                                                          organizationPhone2,
+                                                          organizationWhatsapp,
+                                                          organizationAddress1,
+                                                          organizationAddress2,
+                                                          organizationAddress3,
+                                                          organizationTown,
+                                                          ysuporgNummer,
+                                                          ownerName,
+                                                          ownerBirthday,
+                                                          isMasonry,
+                                                          isWaterproofing,
+                                                          isFlooring,
+                                                          organizationColour);
+                                                    },
+                                                    backgroundColor: CustomColors.buttonColor,
+                                                    foregroundColor: CustomColors.buttonTextColor,
+                                                    icon: Icons.edit,
                                                   ),
-                                                ),
-                                                child: ListTile(
-                                                  leading: CircleAvatar(
-                                                    backgroundColor: getColor(organizationColour),
-                                                    radius: 20,
-                                                    child: const Icon(
-                                                      Icons.business,
-                                                      size: 20,
+                                                ],
+                                              ),
+                                              child: InkWell(
+                                                splashColor: CustomColors.buttonColor,
+                                                onTap: () {
+                                                  // Add your onPressed functionality here
+                                                  print('Container pressed!');
+
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) => HomeOrganizationView(
+                                                            userNummer: widget.userNummer,
+                                                            username: widget.username,
+                                                            routeNummer: widget.routeNummer,
+                                                            organizationId: organizationId,
+                                                            organizationNummer: organizationNummer,
+                                                            organizationName: organizationName,
+                                                            organizationPhone1: organizationPhone1,
+                                                            organizationPhone2: organizationPhone2,
+                                                            organizationWhatsapp: organizationWhatsapp,
+                                                            organizationAddress1: organizationAddress1,
+                                                            organizationAddress2: organizationAddress2,
+                                                            organizationAddress3: organizationAddress3,
+                                                            organizationTown: organizationTown,
+                                                            organizationColour: organizationColour,
+                                                            organizationLongitude: organizationLongitude,
+                                                            organizationLatitude: organizationLatitude,
+                                                            organizationDistance: organizationDistance,
+                                                            organizationMail: organizationMail,
+                                                            isTeamMemberUi: widget.isTeamMemberUi,
+                                                            loggedUserNummer: widget.loggedUserNummer,
+                                                            ysuporgNummer: ysuporgNummer,
+                                                            ysuporgNamebspr: ysuporgNamebspr,
+                                                            designationNummer: widget.designationNummer,
+                                                            organizationTypeNamebspr: organizationTypeNamebspr,
+                                                            userOrganizationNummer: widget.userOrganizationNummer,
+                                                          )));
+                                                },
+                                                child: Container(
+                                                  decoration: const BoxDecoration(
+                                                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                    shape: BoxShape.rectangle,
+                                                    gradient: LinearGradient(
+                                                      colors: <Color>[
+                                                        Colors.black,
+                                                        Colors.black26,
+                                                      ],
+                                                      begin: Alignment.topCenter,
+                                                      end: Alignment.bottomCenter,
                                                     ),
                                                   ),
-                                                  title: Text(organizationName,
-                                                      style: const TextStyle(color: CustomColors.textColor)),
-                                                  subtitle: Text(
-                                                    organizationAssignTo,
-                                                    style: const TextStyle(color: CustomColors.textColor2),
+                                                  child: ListTile(
+                                                    leading: CircleAvatar(
+                                                      backgroundColor: getColor(organizationColour),
+                                                      radius: 20,
+                                                      child: const Icon(
+                                                        Icons.business,
+                                                        size: 20,
+                                                      ),
+                                                    ),
+                                                    title: Text(organizationName,
+                                                        style: const TextStyle(color: CustomColors.textColor)),
+                                                    // subtitle: Text(
+                                                    //   organizationAssignTo,
+                                                    //   style: const TextStyle(color: CustomColors.textColor2),
+                                                    // ),
+
+                                                    subtitle: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          'Next Visit: $nextVisitDueDate',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: isPastDueDate
+                                                                ? Colors.redAccent
+                                                                : CustomColors.textColor,
+                                                          ),
+                                                        ),
+                                                        if (isPastDueDate)
+                                                          const Text(
+                                                            'Visit overdue!',
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.redAccent,
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ),
-
-                                            // child: ListButton(
-                                            //   displayName: organizationName,
-                                            //   onPressed: () {
-                                            //     Navigator.of(context).push(MaterialPageRoute(
-                                            //         builder: (context) => HomeOrganizationView(
-                                            //               userNummer: widget.userNummer,
-                                            //               username: widget.username,
-                                            //               routeNummer: widget.routeNummer,
-                                            //               organizationId: organizationId,
-                                            //               organizationNummer: organizationNummer,
-                                            //               organizationName: organizationName,
-                                            //               organizationPhone1: organizationPhone1,
-                                            //               organizationPhone2: organizationPhone2,
-                                            //               organizationAddress1: organizationAddress1,
-                                            //               organizationAddress2: organizationAddress2,
-                                            //               organizationAddress3: organizationAddress3,
-                                            //               organizationTown: organizationTown,
-                                            //               organizationColour: organizationColour,
-                                            //               organizationLongitude: organizationLongitude,
-                                            //               organizationLatitude: organizationLatitude,
-                                            //               organizationDistance: organizationDistance,
-                                            //               organizationMail: organizationMail,
-                                            //               isTeamMemberUi: widget.isTeamMemberUi,
-                                            //               loggedUserNummer: widget.loggedUserNummer,
-                                            //               ysuporgNummer: ysuporgNummer,
-                                            //               ysuporgNamebspr: ysuporgNamebspr,
-                                            //               designationNummer: widget.designationNummer,
-                                            //               organizationTypeNamebspr: organizationTypeNamebspr,
-                                            //               userOrganizationNummer: widget.userOrganizationNummer,
-                                            //             )));
-                                            //   },
-                                            // ),
-                                          ));
+                                              )));
                                     },
                                   ),
                                 );
                               }
+
+                              
+                            
 
                             case Status.ERROR:
                               if (!_isErrorMessageShown) {
