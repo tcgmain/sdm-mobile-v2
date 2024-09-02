@@ -63,33 +63,33 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   // Function to sort organizations based on the selected criteria
   List<RouteOrganization> _sortOrganizations(List<RouteOrganization> organizations) {
     if (_sortBy == 'Priority') {
-   organizations.sort((a, b) {
-      final dateFormat = DateFormat('dd/MM/yyyy');
-      DateTime? dateA, dateB;
+      organizations.sort((a, b) {
+        final dateFormat = DateFormat('dd/MM/yyyy');
+        DateTime? dateA, dateB;
 
-      // Parse date strings if they are not null or empty
-      if (a.ynxtvisitdat != null && a.ynxtvisitdat!.isNotEmpty) {
-        try {
-          dateA = dateFormat.parse(a.ynxtvisitdat!);
-        } catch (_) {
-          dateA = null;
+        // Parse date strings if they are not null or empty
+        if (a.ynxtvisitdat != null && a.ynxtvisitdat!.isNotEmpty) {
+          try {
+            dateA = dateFormat.parse(a.ynxtvisitdat!);
+          } catch (_) {
+            dateA = null;
+          }
         }
-      }
-      if (b.ynxtvisitdat != null && b.ynxtvisitdat!.isNotEmpty) {
-        try {
-          dateB = dateFormat.parse(b.ynxtvisitdat!);
-        } catch (_) {
-          dateB = null;
+        if (b.ynxtvisitdat != null && b.ynxtvisitdat!.isNotEmpty) {
+          try {
+            dateB = dateFormat.parse(b.ynxtvisitdat!);
+          } catch (_) {
+            dateB = null;
+          }
         }
-      }
 
-      // Handle cases where one or both dates are null
-      if (dateA == null && dateB == null) return 0;
-      if (dateA == null) return 1; // `a` should come last if `dateA` is null
-      if (dateB == null) return -1; // `b` should come last if `dateB` is null
+        // Handle cases where one or both dates are null
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1; // `a` should come last if `dateA` is null
+        if (dateB == null) return -1; // `b` should come last if `dateB` is null
 
-      return dateA.compareTo(dateB);
-    });
+        return dateA.compareTo(dateB);
+      });
     } else if (_sortBy == 'Sequence') {
       organizations.sort((a, b) {
         final seqA = a.ysequno.toString();
@@ -223,13 +223,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                               });
 
                             case Status.COMPLETED:
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
                                 setState(() {
                                   _isLoading = false;
                                 });
                               });
 
-                                int noOfOrganizations = snapshot.data!.data!.length;
+                              int noOfOrganizations = snapshot.data!.data!.length;
                               if (noOfOrganizations == 0) {
                                 return Center(
                                   child: Text(
@@ -284,13 +284,12 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       final organizationAssignTo =
                                           organizations.yassigtoSuch?.toString() ?? 'Unnamed Route';
                                       final sequence = organizations.ysequno.toString();
-                                      final nextVisitDueDate =
-                                          organizations.ynxtvisitdat?.toString() ?? '';
+                                      final nextVisitDueDate = organizations.ynxtvisitdat?.toString() ?? '';
+                                      final yactiv = organizations.yactiv.toString();
 
                                       // Parse the nextVisitDueDate to DateTime
                                       DateTime? nextVisitDate;
                                       if (nextVisitDueDate != '') {
-                                    
                                         nextVisitDate = DateFormat('dd/MM/yyyy').parse(nextVisitDueDate);
                                       }
 
@@ -371,13 +370,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                           )));
                                                 },
                                                 child: Container(
-                                                  decoration: const BoxDecoration(
-                                                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                                                     shape: BoxShape.rectangle,
                                                     gradient: LinearGradient(
                                                       colors: <Color>[
                                                         Colors.black,
-                                                        Colors.black26,
+                                                        (isPastDueDate) ? CustomColors.buttonColor3 : Colors.black26,
                                                       ],
                                                       begin: Alignment.topCenter,
                                                       end: Alignment.bottomCenter,
@@ -394,33 +393,19 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                     ),
                                                     title: Text(organizationName,
                                                         style: const TextStyle(color: CustomColors.textColor)),
-                                                    // subtitle: Text(
-                                                    //   organizationAssignTo,
-                                                    //   style: const TextStyle(color: CustomColors.textColor2),
-                                                    // ),
-
-                                                    subtitle: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          'Next Visit: $nextVisitDueDate',
-                                                          style: TextStyle(
-                                                            fontSize: 14,
-                                                            color: isPastDueDate
-                                                                ? Colors.redAccent
-                                                                : CustomColors.textColor,
-                                                          ),
-                                                        ),
-                                                        if (isPastDueDate)
-                                                          const Text(
-                                                            'Visit overdue!',
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: Colors.redAccent,
-                                                            ),
-                                                          ),
-                                                      ],
+                                                    subtitle: Text(
+                                                      'Next Visit: $nextVisitDueDate',
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        color: CustomColors.textColor,
+                                                      ),
                                                     ),
+                                                    trailing: (yactiv == "true")
+                                                        ? const Icon(Icons.check_circle, color: Colors.green)
+                                                        : const Icon(
+                                                            Icons.cancel,
+                                                            color: Colors.red,
+                                                          ),
                                                   ),
                                                 ),
                                               )));
@@ -428,9 +413,6 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                   ),
                                 );
                               }
-
-                              
-                            
 
                             case Status.ERROR:
                               if (!_isErrorMessageShown) {

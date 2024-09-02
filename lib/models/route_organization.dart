@@ -31,7 +31,8 @@ class RouteOrganization {
       this.ywhtapp,
       this.yassigtoSuch,
       this.ysequno,
-      this.ynxtvisitdat
+      this.ynxtvisitdat,
+      this.yactiv
       
       });
 
@@ -67,6 +68,7 @@ class RouteOrganization {
   String? yassigtoSuch;
   int? ysequno;
   String? ynxtvisitdat;
+  bool? yactiv;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -105,6 +107,7 @@ class RouteOrganization {
       yassigtoSuch: json["ysdmorg^yassigto^such"] ?? '',
       ysequno: json["ysequno"] ?? '',
       ynxtvisitdat: json["ysdmorg^ynxtvisitdat"] ?? '',
+      yactiv: json["ysdmorg^yactiv"] ?? '',
     );
   }
 
@@ -140,5 +143,6 @@ class RouteOrganization {
         "ysdmorg^yassigto^such": yassigtoSuch ?? '',
         "ysequno": ysequno ?? '',
         "ysdmorg^ynxtvisitdat": ynxtvisitdat ?? '',
+        "ysdmorg^yactiv": yactiv ?? '',
       };
 }
