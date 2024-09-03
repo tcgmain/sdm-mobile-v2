@@ -69,6 +69,10 @@ class CustomColors {
   static const Color tableTextColor = Color(0xff3b3b3b);
 
   static const Color dropDownColor = Color(0xFFb0161b);
+
+  static const Color disabledFieldFillColor = Color(0xff3b3b3b);
+  static const Color disabledTextColor = Color(0xff3b3b3b);
+  static const Color disabledFieldBorderColor = Color(0xff3b3b3b);
 }
 
 getFontSize() {

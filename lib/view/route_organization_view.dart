@@ -339,35 +339,39 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                 onTap: () {
                                                   // Add your onPressed functionality here
                                                   print('Container pressed!');
-
-                                                  Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => HomeOrganizationView(
-                                                            userNummer: widget.userNummer,
-                                                            username: widget.username,
-                                                            routeNummer: widget.routeNummer,
-                                                            organizationId: organizationId,
-                                                            organizationNummer: organizationNummer,
-                                                            organizationName: organizationName,
-                                                            organizationPhone1: organizationPhone1,
-                                                            organizationPhone2: organizationPhone2,
-                                                            organizationWhatsapp: organizationWhatsapp,
-                                                            organizationAddress1: organizationAddress1,
-                                                            organizationAddress2: organizationAddress2,
-                                                            organizationAddress3: organizationAddress3,
-                                                            organizationTown: organizationTown,
-                                                            organizationColour: organizationColour,
-                                                            organizationLongitude: organizationLongitude,
-                                                            organizationLatitude: organizationLatitude,
-                                                            organizationDistance: organizationDistance,
-                                                            organizationMail: organizationMail,
-                                                            isTeamMemberUi: widget.isTeamMemberUi,
-                                                            loggedUserNummer: widget.loggedUserNummer,
-                                                            ysuporgNummer: ysuporgNummer,
-                                                            ysuporgNamebspr: ysuporgNamebspr,
-                                                            designationNummer: widget.designationNummer,
-                                                            organizationTypeNamebspr: organizationTypeNamebspr,
-                                                            userOrganizationNummer: widget.userOrganizationNummer,
-                                                          )));
+                                                  if (yactiv == "true") {
+                                                    Navigator.of(context).push(MaterialPageRoute(
+                                                        builder: (context) => HomeOrganizationView(
+                                                              userNummer: widget.userNummer,
+                                                              username: widget.username,
+                                                              routeNummer: widget.routeNummer,
+                                                              organizationId: organizationId,
+                                                              organizationNummer: organizationNummer,
+                                                              organizationName: organizationName,
+                                                              organizationPhone1: organizationPhone1,
+                                                              organizationPhone2: organizationPhone2,
+                                                              organizationWhatsapp: organizationWhatsapp,
+                                                              organizationAddress1: organizationAddress1,
+                                                              organizationAddress2: organizationAddress2,
+                                                              organizationAddress3: organizationAddress3,
+                                                              organizationTown: organizationTown,
+                                                              organizationColour: organizationColour,
+                                                              organizationLongitude: organizationLongitude,
+                                                              organizationLatitude: organizationLatitude,
+                                                              organizationDistance: organizationDistance,
+                                                              organizationMail: organizationMail,
+                                                              isTeamMemberUi: widget.isTeamMemberUi,
+                                                              loggedUserNummer: widget.loggedUserNummer,
+                                                              ysuporgNummer: ysuporgNummer,
+                                                              ysuporgNamebspr: ysuporgNamebspr,
+                                                              designationNummer: widget.designationNummer,
+                                                              organizationTypeNamebspr: organizationTypeNamebspr,
+                                                              userOrganizationNummer: widget.userOrganizationNummer,
+                                                            )));
+                                                  } else {
+                                                    showErrorAlertDialog(
+                                                        context, "You cannot mark visits for inactive organizations.");
+                                                  }
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(
@@ -383,29 +387,52 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                     ),
                                                   ),
                                                   child: ListTile(
-                                                    leading: CircleAvatar(
-                                                      backgroundColor: getColor(organizationColour),
-                                                      radius: 20,
-                                                      child: const Icon(
-                                                        Icons.business,
-                                                        size: 20,
-                                                      ),
+                                                    leading: Stack(
+                                                      children: [
+                                                        CircleAvatar(
+                                                          backgroundColor: getColor(organizationColour),
+                                                          radius: 20,
+                                                          child: const Icon(
+                                                            Icons.business,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          right: 0,
+                                                          bottom: 0,
+                                                          child: (yactiv == "true")
+                                                              ? const Icon(Icons.circle, color: Colors.green, size: 12)
+                                                              : const Icon(Icons.circle, color: Colors.red, size: 12),
+                                                        ),
+                                                      ],
                                                     ),
                                                     title: Text(organizationName,
                                                         style: const TextStyle(color: CustomColors.textColor)),
-                                                    subtitle: Text(
-                                                      'Next Visit: $nextVisitDueDate',
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                        color: CustomColors.textColor,
-                                                      ),
-                                                    ),
-                                                    trailing: (yactiv == "true")
-                                                        ? const Icon(Icons.check_circle, color: Colors.green)
-                                                        : const Icon(
-                                                            Icons.cancel,
-                                                            color: Colors.red,
+                                                    subtitle: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          'Assigned To: $organizationAssignTo',
+                                                          style: TextStyle(
+                                                            fontSize: getFontSize(),
+                                                            color: CustomColors.textColor2,
                                                           ),
+                                                        ),
+                                                        Text(
+                                                          'Next Visit: $nextVisitDueDate',
+                                                          style: TextStyle(
+                                                            fontSize: getFontSizeSmall(),
+                                                            color: CustomColors.textColor,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    // trailing: (yactiv == "true")
+                                                    //     ? const Icon(Icons.check_circle, color: Colors.green)
+                                                    //     : const Icon(
+                                                    //         Icons.cancel,
+                                                    //         color: Colors.red,
+                                                    //       ),
                                                   ),
                                                 ),
                                               )));
