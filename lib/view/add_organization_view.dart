@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
@@ -59,7 +58,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late RouteListBloc _routeListBloc;
   late UpdateRouteBloc _updateRouteBloc;
   List<CustomerType>? _allCustomerTypes;
-  //List<Organization>? _allNearbyOrganizations;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
@@ -74,6 +72,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isUpdateLoading = false;
   bool _isSuperiorOrganizationLoading = false;
   bool _isSuperiorOrganizationErrorShown = false;
+  bool _isGoodsManagementSuccessShown = false;
   bool _isCustomerTypeLoading = false;
   bool _isRouteLoading = false;
   bool _isUpdateRouteLoading = false;
@@ -230,16 +229,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     showNearbyOrganizationsPopup(context, nearByOrganizations);
                   });
                 }
-              } else {
-                // _superiorOrganizationBloc.getOrganizationByType("Distributor");
-                // _routeListBloc.getRouteList("");
-                // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //   setState(() {
-                //     _isSuperiorOrganizationLoading = true;
-                //     _isRouteLoading = true;
-                //   });
-                // });
               }
+              // else {
+              //   // _superiorOrganizationBloc.getOrganizationByType("Distributor");
+              //   // _routeListBloc.getRouteList("");
+              //   // WidgetsBinding.instance.addPostFrameCallback((_) {
+              //   //   setState(() {
+              //   //     _isSuperiorOrganizationLoading = true;
+              //   //     _isRouteLoading = true;
+              //   //   });
+              //   // });
+              // }
               break;
 
             case Status.ERROR:
@@ -311,13 +311,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
     _superiorOrganizationBloc.getOrganizationByType("Distributor");
     _routeListBloc.getRouteList("");
-    //WidgetsBinding.instance.addPostFrameCallback((_) {
     setState(() {
       _isSuperiorOrganizationLoading = true;
       _isRouteLoading = true;
       _isLoadingNearlyOrganizations = true;
     });
-    //});
   }
 
   @override
@@ -358,8 +356,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _isSuccessMessageShown = true;
     _isAddOrganizationErrorMessageShown = true;
     setState(() {
-      // _isSuccessMessageShown = true;
-      // _isAddOrganizationErrorMessageShown = true;
       switch (fieldName) {
         case 'name':
           _validationMessages['name'] = _validateName(_nameController.text);
@@ -582,14 +578,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             validator: (value) => null,
                           ),
                           const SizedBox(height: 16),
-                          // buildDateSelectionFormField(
-                          //   controller: _ownerBirthdayController,
-                          //   label: 'Owner Birthday',
-                          //   fieldName: 'ownerBirthday',
-                          //   focusNode: _ownerBirthdayFocusNode,
-                          //   context: context,
-                          //   validator: (value) => null,
-                          // ),
                           CustomDatePicker.buildDateSelectionFormField(
                             controller: _ownerBirthdayController,
                             label: 'Owner Birthday',
@@ -691,12 +679,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
-                                  //setState(() {
                                   _isSuccessMessageShown = false;
                                   _isAddGoodsManagementAPICall = false;
                                   _isAddOrganizationErrorMessageShown = false;
                                   _isUpdateRouteLoaded = false;
-                                  //});
 
                                   final customerTypeId = _selectedCustomerType.toString();
                                   final name = "${_nameController.text}_${_townController.text}";
@@ -809,16 +795,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                         (index) => index == _selectedCustomerTypeIndex,
                       ),
                       onPressed: (index) {
-                        print(_allCustomerTypes![index].aebez.toString());
-                        // setState(() {
-                        //   isMasonry = false;
-                        //   isWaterproofing = false;
-                        //   isFlooring = false;
-                        //   _selectedCustomerTypeIndex = index;
-                        //   _selectedCustomerType = _allCustomerTypes![index].vaufzelemId;
-                        //   organizationType = _allCustomerTypes![index].aebez.toString();
-                        //   organizationColor = getOrganizationColor(organizationType);
-                        // });
                         isMasonry = false;
                         isWaterproofing = false;
                         isFlooring = false;
@@ -888,63 +864,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     );
   }
 
-// Widget _buildDateSelectionFormField({
-//   required TextEditingController controller,
-//   required String label,
-//   required String fieldName,
-//   required FocusNode focusNode,
-//   required BuildContext context,
-//   required String? Function(String?) validator,
-// }) {
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       TextFormField(
-//         controller: controller,
-//         decoration: InputDecoration(
-//           labelText: label,
-//           labelStyle: const TextStyle(color: CustomColors.cardTextColor1),
-//           suffixIcon: _validationStatus[fieldName] == null
-//               ? null
-//               : _validationStatus[fieldName]!
-//                   ? const Icon(Icons.check, color: Colors.green)
-//                   : const Icon(Icons.error, color: Colors.red),
-//         ),
-//         readOnly: true,
-//         focusNode: focusNode,
-//         validator: validator,
-//         onTap: () async {
-//           FocusScope.of(context).requestFocus(FocusNode()); // To prevent opening the keyboard
-//           DateTime? pickedDate = await showDatePicker(
-//             context: context,
-//             initialDate: DateTime.now(),
-//             firstDate: DateTime(1920),
-//             lastDate: DateTime(2101),
-//             builder: (BuildContext context, Widget? child) {
-//               return Theme(
-//                 data: ThemeData.light().copyWith(
-//                   colorScheme: const ColorScheme.light(
-//                     primary: Colors.red, // Red background for selected date
-//                     onPrimary: Colors.white, // Text color for selected date
-//                     onSurface: Colors.black, // Default text color for unselected dates
-//                   ),
-//                   dialogBackgroundColor: Colors.white,
-//                 ),
-//                 child: child!,
-//               );
-//             },
-//           );
-//           if (pickedDate != null) {
-//             String formattedDate = DateFormat('yyyy/MM/dd').format(pickedDate);
-//             controller.text = formattedDate;
-//             _validateField(fieldName);
-//           }
-//         },
-//       ),
-//     ],
-//   );
-// }
-
   Widget addOrganizationResponse() {
     return StreamBuilder<Response<AddOrganization>>(
       stream: _addOrganizationBloc.addOrganizationStream,
@@ -993,9 +912,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               if (!_isAddOrganizationErrorMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  // setState(() {
-                  //   _isAddOrganizationErrorMessageShown = true;
-                  // });
                   _isAddOrganizationErrorMessageShown = true;
                 });
               }
@@ -1026,19 +942,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   _isUpdateLoading = false;
                 });
               });
-              if (!_isSuccessMessageShown) {
-                //final name = _nameController.text.toString();
+              if (!_isGoodsManagementSuccessShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  //showSuccessAlertDialog(context, "$name has been added successfully.", () {});
-                  // setState(() {
-                  //   _isSuccessMessageShown = true;
-                  //   _isUpdateOrganizationCompleted = true;
-                  // });
-
-                  _isSuccessMessageShown = true;
+                  _isGoodsManagementSuccessShown = true;
                   _isUpdateOrganizationCompleted = true;
-
                   if (_selectedRoute != null) {
+                    print("WWWWWWWWWWWWWWW");
                     _checkForSuccess();
                   } else {
                     final name = _nameController.text.toString();
@@ -1185,6 +1094,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     _isSuccessMessageShown = true;
                   }
                   if (_selectedRoute != null) {
+                    print("xxxxxxxxxxxxxxxxx");
                     _checkForSuccess();
                   }
                 });
@@ -1289,12 +1199,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // _superiorOrganizationBloc.getOrganizationByType("Distributor");
-                          // _routeListBloc.getRouteList("");
-                          // setState(() {
-                          //   _isSuperiorOrganizationLoading = true;
-                          //   _isRouteLoading = true;
-                          // });
                           Navigator.of(context).pop();
                         },
                         child: const Text(
@@ -1346,7 +1250,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         });
       },
       selectedItem: _selectedSuperiorOrganization,
-      clearButtonProps: const ClearButtonProps(isVisible: true),
+      //clearButtonProps: const ClearButtonProps(isVisible: true),
       dropdownDecoratorProps: const DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "Select Superior Organization",
@@ -1471,6 +1375,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   void _checkForSuccess() {
+    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+    print(_isUpdateRouteCompleted);
+    print(_isUpdateOrganizationCompleted);
+    print(_isFinalSuccessMessageShown);
     if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
       setState(() {
         _isFinalSuccessMessageShown = true;
@@ -1483,7 +1391,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         //   });
         // });
         Navigator.pop(context, true);
-        Navigator.pop(context, true);
+        //Navigator.pop(context, true);
       });
     }
   }

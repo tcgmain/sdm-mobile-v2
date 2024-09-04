@@ -47,6 +47,12 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize the date range picker with today's date
+    final today = DateTime.now();
+    _selectedDateRange = DateTimeRange(start: today, end: today);
+    _dateRangeController.text = "${_dateFormat.format(today)} - ${_dateFormat.format(today)}";
+
     _visitBloc = VisitBloc();
     _visitBloc.visit("", "");
     _searchController.addListener(_onSearchChanged);
@@ -160,21 +166,21 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
     }
   }
 
-  void _resetFilters() {
-    setState(() {
-      _searchController.clear();
-      _organizationController.clear();
-      _dateRangeController.clear();
-      _selectedDateRange = null;
-      _filteredVisitList = _allVisitList;
-    });
-  }
+  // void _resetFilters() {
+  //   setState(() {
+  //     _searchController.clear();
+  //     _organizationController.clear();
+  //     _dateRangeController.clear();
+  //     _selectedDateRange = null;
+  //     _filteredVisitList = _allVisitList;
+  //   });
+  // }
 
-  void _toggleFilters() {
-    setState(() {
-      _isFiltersVisible = !_isFiltersVisible;
-    });
-  }
+  // void _toggleFilters() {
+  //   setState(() {
+  //     _isFiltersVisible = !_isFiltersVisible;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -185,12 +191,12 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
           Navigator.pop(context);
         },
         isHomePage: true,
-        customActions: [
-          IconButton(
-            icon: Icon(_isFiltersVisible ? Icons.filter_list_off : Icons.filter_list),
-            onPressed: _toggleFilters,
-          ),
-        ],
+        // customActions: [
+        //   IconButton(
+        //     icon: Icon(_isFiltersVisible ? Icons.filter_list_off : Icons.filter_list),
+        //     onPressed: _toggleFilters,
+        //   ),
+        // ],
       ),
       body: SafeArea(
         child: Stack(
@@ -199,7 +205,7 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
               isTeamMemberUi: widget.isTeamMemberUi,
               child: Column(
                 children: [
-                  if (_isFiltersVisible) ...[
+                  //if (_isFiltersVisible) ...[
                     const SizedBox(height: 10),
                     text_field.TextField(
                       controller: _searchController,
@@ -211,6 +217,7 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                       filled: true,
                       labelText: "Type to search visitors...",
                       onChangedFunction: () {},
+                      showClearButton: true,
                     ),
                     const SizedBox(height: 10),
                     text_field.TextField(
@@ -223,6 +230,7 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                       filled: true,
                       labelText: "Type to search organization...",
                       onChangedFunction: () {},
+                      showClearButton: true,
                     ),
                     const SizedBox(height: 10),
                     GestureDetector(
@@ -240,14 +248,14 @@ class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    CommonAppButton(
-                        buttonText: "Reset All Filters",
-                        onPressed: () {
-                          _resetFilters();
-                        }),
-                    const SizedBox(height: 10),
-                  ],
+                    // const SizedBox(height: 10),
+                    // CommonAppButton(
+                    //     buttonText: "Reset All Filters",
+                    //     onPressed: () {
+                    //       _resetFilters();
+                    //     }),
+                    // const SizedBox(height: 10),
+                  //],
                   Expanded(
                     child: StreamBuilder<ResponseList<Visit>>(
                       stream: _visitBloc.visitStream,

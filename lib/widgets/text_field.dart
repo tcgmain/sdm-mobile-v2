@@ -17,25 +17,27 @@ class TextField extends StatelessWidget {
   final String? labelText;
   final Widget? suffixIcon;
   final bool? autoFocus;
+  final bool showClearButton;
 
-  const TextField(
-      {required this.controller,
-      this.obscureText,
-      required this.inputType,
-      required this.isRequired,
-      this.function,
-      required this.onChangedFunction,
-      this.fillColor,
-      this.myFocusNode,
-      this.filled,
-      this.labelText,
-      this.suffixIcon,
-      this.autoFocus});
+  const TextField({
+    required this.controller,
+    this.obscureText,
+    required this.inputType,
+    required this.isRequired,
+    this.function,
+    required this.onChangedFunction,
+    this.fillColor,
+    this.myFocusNode,
+    this.filled,
+    this.labelText,
+    this.suffixIcon,
+    this.autoFocus,
+    this.showClearButton = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    
-      final focusNode = myFocusNode ?? FocusNode();
+    final focusNode = myFocusNode ?? FocusNode();
 
     return TextFormField(
       style: const TextStyle(color: CustomColors.textFieldTextColor, fontWeight: FontWeight.bold),
@@ -44,7 +46,7 @@ class TextField extends StatelessWidget {
       },
       controller: controller,
       obscureText: obscureText!,
-      focusNode: focusNode ,
+      focusNode: focusNode,
       autofocus: autoFocus == true ? true : false,
       decoration: InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -53,7 +55,21 @@ class TextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(50.0),
             borderSide: BorderSide.none,
           ),
-          suffixIcon: suffixIcon,
+          suffixIcon: showClearButton && controller.text.isNotEmpty
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (suffixIcon != null) suffixIcon!,
+                    IconButton(
+                      icon: const Icon(Icons.clear, color: CustomColors.textColor2),
+                      onPressed: () {
+                        controller.clear();
+                        onChangedFunction(); // Trigger the change function after clearing
+                      },
+                    ),
+                  ],
+                )
+              : suffixIcon,
           fillColor: fillColor,
           filled: filled,
           labelText: labelText,
@@ -61,8 +77,8 @@ class TextField extends StatelessWidget {
             borderSide: const BorderSide(color: CustomColors.textFieldBorderColor, width: 2.0),
             borderRadius: BorderRadius.circular(50.0),
           ),
-          labelStyle: TextStyle(
-              color: focusNode .hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
+          labelStyle:
+              TextStyle(color: focusNode.hasFocus ? CustomColors.textFieldTextColor : CustomColors.textFieldTextColor)),
 
       // ignore: missing_return
       validator: (v) {

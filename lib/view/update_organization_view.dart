@@ -104,7 +104,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   bool _isUpdateRouteLoaded = false;
   bool _isCustomerTypeErrorMessageShown = false;
   bool _isUpdateOrganizationCompleted = false;
-  //bool _isUpdateRouteCompleted = false;
+  bool _isUpdateRouteCompleted = false;
   bool _isUpdateRouteErrorShown = false;
   bool _isFinalSuccessMessageShown = false;
   bool _isSelectRouteCompleted = false;
@@ -587,7 +587,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                         isFlooring = false;
                                       }
 
-                                      if (_selectedRoute != null) {
+                                      if (_selectedRoute != null && selectedRouteNummer.isEmpty) {
+                                        print("rrr");
                                         String selectedRouteId = _selectedRoute!.id.toString();
                                         _updateRouteBloc.updateRoute(selectedRouteId, widget.organizationNummer);
                                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -724,7 +725,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                 ],
               );
             case Status.ERROR:
-              
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   _isCustomerTypeErrorMessageShown = true;
@@ -764,11 +764,13 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
               });
               if (!_isSuccessMessageShown) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
-                  setState(() {
-                    _isSuccessMessageShown = true;
-                  });
-                  //_checkForSuccess();
+                  //showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
+                  _isSuccessMessageShown = true;
+                  if (_selectedRoute != null) {
+                    _checkForSuccess();
+                  } else {
+                    showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
+                  }
                 });
               }
               _isUpdatePressed = false;
@@ -965,7 +967,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
         });
       },
       selectedItem: _selectedSuperiorOrganization,
-      clearButtonProps: const ClearButtonProps(isVisible: true),
+      //clearButtonProps: const ClearButtonProps(isVisible: false),
       dropdownDecoratorProps: const DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "Select Superior Organization",
@@ -1069,13 +1071,16 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     return DropdownSearch<RouteList>(
       items: _routeList,
       itemAsString: (RouteList u) => u.namebsprRoute.toString(),
-      onChanged: (RouteList? routeOrganization) {
-        setState(() {
-          _selectedRoute = routeOrganization;
-        });
-      },
+      onChanged: selectedRouteNummer.isEmpty
+          ? (RouteList? routeOrganization) {
+              setState(() {
+                _selectedRoute = routeOrganization;
+              });
+            }
+          : null,
       selectedItem: _selectedRoute,
-      clearButtonProps: const ClearButtonProps(isVisible: true),
+      enabled: selectedRouteNummer.isEmpty,
+      //clearButtonProps: const ClearButtonProps(isVisible: true),
       dropdownDecoratorProps: const DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "Select Route",
@@ -1189,11 +1194,11 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   _isUpdateRouteLoading = true;
-                  //_isUpdateRouteCompleted = true;
                 });
               });
 
             case Status.COMPLETED:
+              _isUpdateRouteCompleted = true;
               if (!_isUpdateRouteLoaded) {
                 print(snapshot.data!.data.toString());
                 _isUpdateRouteLoaded = true;
@@ -1204,7 +1209,9 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                   if (!_isSuccessMessageShown) {
                     _isSuccessMessageShown = true;
                   }
-                  //_checkForSuccess();
+                  if (_selectedRoute != null) {
+                    _checkForSuccess();
+                  }
                 });
               }
 
@@ -1226,16 +1233,16 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     );
   }
 
-  // void _checkForSuccess() {
-  //   print("RRRRR");
-  //   //print(_isUpdateRouteCompleted);
-  //   print(_isUpdateOrganizationCompleted);
-  //   print(_isFinalSuccessMessageShown);
-  //   if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
-  //     setState(() {
-  //       _isFinalSuccessMessageShown = true;
-  //     });
-  //     showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
-  //   }
-  // }
+  void _checkForSuccess() {
+    print("RRRRR");
+    print(_isUpdateRouteCompleted);
+    print(_isUpdateOrganizationCompleted);
+    print(_isFinalSuccessMessageShown);
+    if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
+      setState(() {
+        _isFinalSuccessMessageShown = true;
+      });
+      showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
+    }
+  }
 }
