@@ -79,7 +79,9 @@ class _OrganizationViewState extends State<OrganizationView> {
 
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
+        isDataViewer(widget.designationNummer) == true
+        ? _organizationBloc.getOrganization("", _onlyInactive ? "false" : "true", "")
+        : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
         _isLoading = true;
       });
     }
@@ -138,7 +140,9 @@ class _OrganizationViewState extends State<OrganizationView> {
     );
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
+         isDataViewer(widget.designationNummer) == true
+        ? _organizationBloc.getOrganization("", _onlyInactive ? "false" : "true", "")
+        : _organizationBloc.getOrganization(widget.userNummer, _onlyInactive ? "false" : "true", "");
         _isLoading = true;
       });
     }

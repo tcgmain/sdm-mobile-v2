@@ -3,6 +3,8 @@ import 'package:sdm/blocs/organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/organization_info_view.dart';
+import 'package:sdm/view/update_organization_view.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/text_field.dart' as text_field;
@@ -71,6 +73,65 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
     });
   }
 
+  Future<void> _navigateToUpdateOrganizationView(
+      organizationId,
+      organizationNummer,
+      organizationName,
+      organizationTypeId,
+      organizationMail,
+      organizationPhone1,
+      organizationPhone2,
+      organizationWhatsapp,
+      organizationAddress1,
+      organizationAddress2,
+      organizationAddress3,
+      organizationTown,
+      superiorOrganizationNummer,
+      ownerName,
+      ownerBirthday,
+      ymasonry,
+      ywaterpr,
+      yflooring,
+      organizationColor) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UpdateOrganizationView(
+                userNummer: widget.userNummer,
+                loggedUserNummer: widget.loggedUserNummer,
+                username: widget.username,
+                isTeamMemberUi: widget.isTeamMemberUi,
+                organizationId: organizationId,
+                organizationNummer: organizationNummer,
+                organizationName: organizationName,
+                organizationTypeId: organizationTypeId,
+                organizationMail: organizationMail,
+                organizationPhone1: organizationPhone1,
+                organizationPhone2: organizationPhone2,
+                organizationWhatsapp: organizationWhatsapp,
+                organizationAddress1: organizationAddress1,
+                organizationAddress2: organizationAddress2,
+                organizationAddress3: organizationAddress3,
+                organizationTown: organizationTown,
+                superiorOrganizationNummer: superiorOrganizationNummer,
+                ownerName: ownerName,
+                ownerBirthday: ownerBirthday,
+                isMasonry: bool.parse(ymasonry),
+                isWaterproofing: bool.parse(ywaterpr),
+                isFlooring: bool.parse(yflooring),
+                userOrganizationNummer: widget.userOrganizationNummer,
+                designationNummer: widget.designationNummer,
+                organizationColor: organizationColor,
+              )),
+    );
+    if (result == true) {
+      setState(() {
+        _organizationBloc.getOrganization("", "false", "");
+        _isLoading = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -110,9 +171,10 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                         _filteredOrganizations = _searchController.text.isNotEmpty
                             ? _allOrganizations!
                                 .where((organization) =>
-                                    organization.namebspr!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase())
-                                    )
+                                    organization.namebspr!
+                                        .toLowerCase()
+                                        .contains(_searchController.text.toLowerCase()) ||
+                                    organization.yassigto!.toLowerCase().contains(_searchController.text.toLowerCase()))
                                 .toList()
                             : _allOrganizations!;
 
@@ -149,113 +211,143 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                     itemCount: _filteredOrganizations!.length,
                                     itemBuilder: (context, index) {
                                       var organizations = _filteredOrganizations![index];
-                                      //String organizationId = organizations.id.toString();
-                                      // String organizationNummer = organizations.orgnummer.toString();
+                                      String organizationId = organizations.id.toString();
+                                      String organizationNummer = organizations.orgnummer.toString();
                                       String organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
-                                      // String organizationPhone1 =
-                                      //     organizations.yphone1?.toString() ?? 'Unnamed Route';
-                                      // String organizationPhone2 =
-                                      //     organizations.yphone2?.toString() ?? 'Unnamed Route';
-                                      // String organizationAddress1 =
-                                      //     organizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                      // String organizationAddress2 =
-                                      //     organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      // String organizationAddress3 =
-                                      //     organizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                      // String organizationAddress4 =
-                                      //     organizations.yaddressl4?.toString() ?? 'Unnamed Route';
-                                      String organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
+                                      String organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
+                                      String organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
+                                      String organizationWhatsapp =
+                                          organizations.ywhtapp?.toString() ?? 'Unnamed Route';
+                                      String organizationAddress1 =
+                                          organizations.yaddressl1?.toString() ?? 'Unnamed Route';
+                                      String organizationAddress2 =
+                                          organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                      String organizationAddress3 =
+                                          organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                      String ownerBirthday = organizations.yorgowndob?.toString() ?? 'Unnamed Route';
+                                      String organizationColor = organizations.colour?.toString() ?? 'Unnamed Route';
                                       // String organizationLongitude =
                                       //     organizations.longitude?.toString() ?? 'Unnamed Route';
                                       // String organizationLatitude =
                                       //     organizations.latitude?.toString() ?? 'Unnamed Route';
                                       // String organizationDistance =
                                       //     organizations.distance?.toString() ?? 'Unnamed Route';
-                                      // String organizationMail =
-                                      //     organizations.yemail?.toString() ?? 'Unnamed Route';
-                                      // String ysuporgNummer =
-                                      //     organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
+                                      String organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
+                                      String ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
                                       // String ysuporgNamebspr =
                                       //     organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
-                                      // String organizationTypeId =
-                                      //     organizations.ycustypId?.toString() ?? 'Unnamed Route';
+                                      String organizationTypeId =
+                                          organizations.ycustypId?.toString() ?? 'Unnamed Route';
                                       // String organizationTypeNamebspr =
                                       //     organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
                                       String organizationAssignTo =
                                           organizations.yassigto?.toString() ?? 'Unnamed Route';
-                                      // String ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
-                                      // String isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
-                                      // String isWaterproofing =
-                                      //     organizations.ywaterpr?.toString() ?? 'Unnamed Route';
-                                      // String isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
+                                      String organizationTown = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                      String ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
+                                      String isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
+                                      String isWaterproofing = organizations.ywaterpr?.toString() ?? 'Unnamed Route';
+                                      String isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
                                       String creationDate = organizations.erfass?.toString() ?? 'Unnamed Route';
                                       String approvedBy = organizations.yorgappu?.toString() ?? 'Unnamed Route';
                                       String approvedDate = organizations.yorgappdt?.toString() ?? 'Unnamed Route';
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            // WidgetsBinding.instance.addPostFrameCallback((_) {
-                                            //   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                            //       builder: (context) => ApproveOrganizationView(
-                                            //             username: widget.username,
-                                            //             userNummer: widget.userNummer,
-                                            //             organizationNummer: organizationNummer,
-                                            //             isTeamMemberUi: widget.isTeamMemberUi,
-                                            //             loggedUserNummer: widget.loggedUserNummer,
-                                            //             userId: widget.userId,
-                                            //             userOrganizationNummer: widget.userOrganizationNummer,
-                                            //             designationNummer: widget.designationNummer,
-                                            //           )));
-                                            // });
-                                          },
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(5),
-                                            child: Container(
-                                                decoration: BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: <Color>[
-                                                      Colors.grey.shade400,
-                                                      Colors.white,
-                                                    ],
-                                                    begin: Alignment.topCenter,
-                                                    end: Alignment.bottomCenter,
-                                                  ),
-                                                ),
-                                                child: ListTile(
-                                                  leading: CircleAvatar(
-                                                    backgroundColor: getColor(organizationColour),
-                                                    radius: 20,
-                                                    child: const Icon(
-                                                      Icons.business,
-                                                      size: 20,
+                                        child: Slidable(
+                                          key: const ValueKey(0),
+                                          // The end action pane is the one at the right or the bottom side.
+                                          endActionPane: ActionPane(
+                                            extentRatio: 0.2,
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _navigateToUpdateOrganizationView(
+                                                      organizationId,
+                                                      organizationNummer,
+                                                      organizationName,
+                                                      organizationTypeId,
+                                                      organizationMail,
+                                                      organizationPhone1,
+                                                      organizationPhone2,
+                                                      organizationWhatsapp,
+                                                      organizationAddress1,
+                                                      organizationAddress2,
+                                                      organizationAddress3,
+                                                      organizationTown,
+                                                      ysuporgNummer,
+                                                      ownerName,
+                                                      ownerBirthday,
+                                                      isMasonry,
+                                                      isWaterproofing,
+                                                      isFlooring,
+                                                      organizationColor);
+                                                },
+                                                backgroundColor: CustomColors.buttonColor,
+                                                foregroundColor: CustomColors.buttonTextColor,
+                                                icon: Icons.edit,
+                                              ),
+                                            ],
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(MaterialPageRoute(
+                                                  builder: (context) => OrganizationInfoView(
+                                                        username: widget.username,
+                                                        userNummer: widget.userNummer,
+                                                        organizationNummer: organizationNummer,
+                                                        isTeamMemberUi: widget.isTeamMemberUi,
+                                                        loggedUserNummer: widget.loggedUserNummer,
+                                                      )));
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: <Color>[
+                                                        Colors.grey.shade400,
+                                                        Colors.white,
+                                                      ],
+                                                      begin: Alignment.topCenter,
+                                                      end: Alignment.bottomCenter,
                                                     ),
                                                   ),
-                                                  title: Text(organizationName,
-                                                      style: const TextStyle(color: CustomColors.cardTextColor)),
-                                                  subtitle: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        "Assigned to: $organizationAssignTo",
-                                                        style: TextStyle(
-                                                            color: CustomColors.textColorGrey, fontSize: getFontSize()),
+                                                  child: ListTile(
+                                                    leading: CircleAvatar(
+                                                      backgroundColor: getColor(organizationColor),
+                                                      radius: 20,
+                                                      child: const Icon(
+                                                        Icons.business,
+                                                        size: 20,
                                                       ),
-                                                      Text(
-                                                        "Created: $creationDate",
-                                                        style: TextStyle(
-                                                            color: CustomColors.textColorGrey,
-                                                            fontSize: getFontSizeSmall()),
-                                                      ),
-                                                      Text(
-                                                        "Approved: $approvedBy, $approvedDate",
-                                                        style: TextStyle(
-                                                            color: CustomColors.textColorGrey,
-                                                            fontSize: getFontSizeSmall()),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )),
+                                                    ),
+                                                    title: Text(organizationName,
+                                                        style: const TextStyle(color: CustomColors.cardTextColor)),
+                                                    subtitle: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          "Assigned to: $organizationAssignTo",
+                                                          style: TextStyle(
+                                                              color: CustomColors.textColorGrey,
+                                                              fontSize: getFontSize()),
+                                                        ),
+                                                        Text(
+                                                          "Created: $creationDate",
+                                                          style: TextStyle(
+                                                              color: CustomColors.textColorGrey,
+                                                              fontSize: getFontSizeSmall()),
+                                                        ),
+                                                        Text(
+                                                          "Approved: $approvedBy, $approvedDate",
+                                                          style: TextStyle(
+                                                              color: CustomColors.textColorGrey,
+                                                              fontSize: getFontSizeSmall()),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )),
+                                            ),
                                           ),
                                         ),
                                       );

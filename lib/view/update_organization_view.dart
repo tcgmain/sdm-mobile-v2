@@ -526,6 +526,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               child: CommonAppButton(
                                 buttonText: 'Update',
                                 onPressed: () {
+                                  _isUpdatePressed = false;
                                   if (!_isUpdatePressed) {
                                     _isUpdatePressed = true;
 
@@ -540,8 +541,9 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                     _address2Controller.text = capitalizeWords(_address2Controller.text);
                                     _address3Controller.text = capitalizeWords(_address3Controller.text);
                                     _townController.text = capitalizeWords(_townController.text);
-
+print("NNN");
                                     if (_formKey.currentState!.validate()) {
+                                      print("ttt");
                                       setState(() {
                                         _isUpdateLoading = true;
                                       });

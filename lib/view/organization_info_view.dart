@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sdm/blocs/organization_info_bloc.dart';
 import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
@@ -79,6 +80,20 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
     }
   }
 
+  Future<void> _launchWhatsApp(String phoneNumber) async {
+    final Uri whatsappUri = Uri(
+      scheme: 'https',
+      host: 'wa.me',
+      path: phoneNumber,
+    );
+
+    if (await canLaunch(whatsappUri.toString())) {
+      await launch(whatsappUri.toString());
+    } else {
+      throw 'Could not launch $whatsappUri';
+    }
+  }
+
   Future<void> _launchDialer(String phoneNumber) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
@@ -131,6 +146,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         //final orgnummer = organization.orgnummer.toString();
                         final yphone1 = organization.yphone1.toString();
                         final yphone2 = organization.yphone2.toString();
+                        final ywhtapp = organization.ywhtapp.toString();
                         final yaddressl1 = organization.yaddressl1.toString();
                         final yaddressl2 = organization.yaddressl2.toString();
                         final yaddressl3 = organization.yaddressl3.toString();
@@ -351,7 +367,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                                               tooltip: 'Call',
                                               icon: const Icon(Icons.call),
                                               onPressed: () {
-                                                _showCallOptions(context, yphone1, yphone2);
+                                                _showCallOptions(context, yphone1, yphone2, ywhtapp);
                                               })
                                         ],
                                       ),
@@ -420,7 +436,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
     );
   }
 
-  void _showCallOptions(BuildContext context, phone1, phone2) {
+  void _showCallOptions(BuildContext context, phone1, phone2, ywhtapp) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -451,7 +467,17 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                     },
                   ),
                 ),
-              if (phone1.isEmpty && phone2.isEmpty)
+              if (ywhtapp.isNotEmpty)
+                ListTile(
+                  leading: const FaIcon(FontAwesomeIcons.whatsapp),
+                  title: Text(ywhtapp),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    _launchWhatsApp(ywhtapp);
+                  },
+                ),
+              if (phone1.isEmpty && phone2.isEmpty && ywhtapp.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
