@@ -472,9 +472,10 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                   leading: const FaIcon(FontAwesomeIcons.whatsapp),
                   title: Text(ywhtapp),
                   onTap: () {
+                    _launchWhatsApp(ywhtapp);
                     Navigator.pop(context);
 
-                    _launchWhatsApp(ywhtapp);
+                    
                   },
                 ),
               if (phone1.isEmpty && phone2.isEmpty && ywhtapp.isEmpty)
