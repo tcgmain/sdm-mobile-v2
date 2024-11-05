@@ -338,40 +338,35 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                 splashColor: CustomColors.buttonColor,
                                                 onTap: () {
                                                   // Add your onPressed functionality here
-                                                  print('Container pressed!');
-                                                  if (yactiv == "true") {
-                                                    Navigator.of(context).push(MaterialPageRoute(
-                                                        builder: (context) => HomeOrganizationView(
-                                                              userNummer: widget.userNummer,
-                                                              username: widget.username,
-                                                              routeNummer: widget.routeNummer,
-                                                              organizationId: organizationId,
-                                                              organizationNummer: organizationNummer,
-                                                              organizationName: organizationName,
-                                                              organizationPhone1: organizationPhone1,
-                                                              organizationPhone2: organizationPhone2,
-                                                              organizationWhatsapp: organizationWhatsapp,
-                                                              organizationAddress1: organizationAddress1,
-                                                              organizationAddress2: organizationAddress2,
-                                                              organizationAddress3: organizationAddress3,
-                                                              organizationTown: organizationTown,
-                                                              organizationColour: organizationColour,
-                                                              organizationLongitude: organizationLongitude,
-                                                              organizationLatitude: organizationLatitude,
-                                                              organizationDistance: organizationDistance,
-                                                              organizationMail: organizationMail,
-                                                              isTeamMemberUi: widget.isTeamMemberUi,
-                                                              loggedUserNummer: widget.loggedUserNummer,
-                                                              ysuporgNummer: ysuporgNummer,
-                                                              ysuporgNamebspr: ysuporgNamebspr,
-                                                              designationNummer: widget.designationNummer,
-                                                              organizationTypeNamebspr: organizationTypeNamebspr,
-                                                              userOrganizationNummer: widget.userOrganizationNummer,
-                                                            )));
-                                                  } else {
-                                                    showErrorAlertDialog(
-                                                        context, "You cannot mark visits for inactive organizations.");
-                                                  }
+
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) => HomeOrganizationView(
+                                                            userNummer: widget.userNummer,
+                                                            username: widget.username,
+                                                            routeNummer: widget.routeNummer,
+                                                            organizationId: organizationId,
+                                                            organizationNummer: organizationNummer,
+                                                            organizationName: organizationName,
+                                                            organizationPhone1: organizationPhone1,
+                                                            organizationPhone2: organizationPhone2,
+                                                            organizationWhatsapp: organizationWhatsapp,
+                                                            organizationAddress1: organizationAddress1,
+                                                            organizationAddress2: organizationAddress2,
+                                                            organizationAddress3: organizationAddress3,
+                                                            organizationTown: organizationTown,
+                                                            organizationColour: organizationColour,
+                                                            organizationLongitude: organizationLongitude,
+                                                            organizationLatitude: organizationLatitude,
+                                                            organizationDistance: organizationDistance,
+                                                            organizationMail: organizationMail,
+                                                            isTeamMemberUi: widget.isTeamMemberUi,
+                                                            loggedUserNummer: widget.loggedUserNummer,
+                                                            ysuporgNummer: ysuporgNummer,
+                                                            ysuporgNamebspr: ysuporgNamebspr,
+                                                            designationNummer: widget.designationNummer,
+                                                            organizationTypeNamebspr: organizationTypeNamebspr,
+                                                            userOrganizationNummer: widget.userOrganizationNummer,
+                                                          )));
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(

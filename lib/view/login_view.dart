@@ -132,20 +132,27 @@ class _LoginPageState extends State<LoginPage> {
         PopupMenuItem<String>(
           value: 'Device ID',
           enabled: true,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Device ID: $deviceId"),
-              IconButton(
-                icon: const Icon(Icons.copy),
-                onPressed: () {
-                  FlutterClipboard.copy(deviceId).then((result) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Device ID copied to clipboard')),
-                    );
-                  });
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Device ID: $deviceId"),
+                  IconButton(
+                    icon: const Icon(Icons.copy),
+                    onPressed: () {
+                      FlutterClipboard.copy(deviceId).then((result) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Device ID copied to clipboard')),
+                        );
+                      });
+                    },
+                  ),
+                ],
               ),
+              const Text("Version: 1.1"),
             ],
           ),
         ),

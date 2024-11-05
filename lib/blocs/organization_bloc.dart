@@ -29,6 +29,18 @@ class OrganizationBloc {
     }
   }
 
+    getOrganizationByApprover(String userNummer, String isActive, String isApproved, String approverName) async {
+    organizationSink.add(ResponseList.loading(''));
+    try {
+      List<Organization> res = await _organizationRepository.getOrganizationByApprover(userNummer, isActive, isApproved, approverName);
+      organizationSink.add(ResponseList.completed(res));
+      print("ORGANIZATION BY APPROVER SUCCESS");
+    } catch (e) {
+      organizationSink.add(ResponseList.error(e.toString()));
+      print("ORGANIZATION BY APPROVER ERROR $e");
+    }
+  }
+
   getOrganizationByLocation(minLongitude, maxLongitude, minLatitude, maxLatitude) async {
     organizationSink.add(ResponseList.loading(''));
     try {

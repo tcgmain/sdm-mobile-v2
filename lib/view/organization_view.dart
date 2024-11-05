@@ -383,7 +383,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                     ? InkWell(
                                                         splashColor: CustomColors.buttonColor,
                                                         onTap: () {
-                                                          if (_onlyInactive == false) {
+                                                         
                                                             Navigator.of(context).push(MaterialPageRoute(
                                                                 builder: (context) => HomeOrganizationView(
                                                                       userNummer: widget.userNummer,
@@ -414,12 +414,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                                       userOrganizationNummer:
                                                                           widget.userOrganizationNummer,
                                                                     )));
-                                                          } else {
-                                                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                              showErrorAlertDialog(context,
-                                                                  "You cannot mark visits for inactive organizations.");
-                                                            });
-                                                          }
+                                                          
                                                         },
                                                         child: Container(
                                                           decoration: const BoxDecoration(

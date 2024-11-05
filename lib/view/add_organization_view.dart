@@ -149,111 +149,97 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   };
 
   Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
     // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      // Only call setState here if you need to update the UI
       setState(() {});
       return;
     }
 
-    // Check for location permissions
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
+    // Check and request location permissions
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        // Only call setState here if you need to show permission warning UI
         setState(() {});
         return;
       }
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      setState(() {});
-      return;
-    }
+    // Use last known position as fallback for faster retrieval if available
+    Position? position = await Geolocator.getLastKnownPosition();
+    position ??= await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
-    // Get the current position
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // Avoid calling setState if latitude and longitude don’t affect UI immediately
     latitude = position.latitude.toString();
     longitude = position.longitude.toString();
 
-    calculateLatLngRange(double.parse(latitude), double.parse(longitude), 100);
+    calculateLatLngRange(position.latitude, position.longitude, 100);
   }
 
-  calculateLatLngRange(double lat, double lon, double distanceInMeters) {
-    const double earthRadius = 6371.0; // Earth's radius in km
+  void calculateLatLngRange(double lat, double lon, double distanceInMeters) {
+    const double earthRadius = 6371.0;
+    const double degreeToRad = pi / 180;
+    const double latAdjustment = earthRadius * degreeToRad;
+
     double distanceInKm = distanceInMeters / 1000.0;
+    double latRange = distanceInKm / latAdjustment;
+    double lonRange = distanceInKm / (latAdjustment * cos(lat * degreeToRad));
 
-    // Latitude range
-    double latRange = distanceInKm / (earthRadius * (pi / 180));
-
-    // Longitude range (adjusted by latitude)
-    double lonRange = distanceInKm / (earthRadius * (pi / 180) * cos(lat * pi / 180));
-
-    double minLat = lat - latRange;
-    double maxLat = lat + latRange;
-    double minLon = lon - lonRange;
-    double maxLon = lon + lonRange;
-
+    // Minimize calls to bloc by processing only when necessary
     _organizationBloc.getOrganizationByLocation(
-        minLon.toString(), maxLon.toString(), minLat.toString(), maxLat.toString());
+      (lon - lonRange).toString(),
+      (lon + lonRange).toString(),
+      (lat - latRange).toString(),
+      (lat + latRange).toString(),
+    );
   }
 
   getNearlyOrganizationsResponse() {
     return StreamBuilder<ResponseList<Organization>>(
       stream: _organizationBloc.organizationStream,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoadingNearlyOrganizations = true;
-                });
-              });
+        if (!snapshot.hasData) return Container();
 
-            case Status.COMPLETED:
+        switch (snapshot.data!.status!) {
+          case Status.LOADING:
+            if (!_isLoadingNearlyOrganizations) {
+              _isLoadingNearlyOrganizations = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {});
+              });
+            }
+            break;
+
+          case Status.COMPLETED:
+            if (_isLoadingNearlyOrganizations) {
+              _isLoadingNearlyOrganizations = false;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {});
+              });
+            }
+
+            List<Organization>? nearByOrganizations = snapshot.data!.data;
+            if (nearByOrganizations != null && nearByOrganizations.isNotEmpty && !_isNearbyOrganizationPopupShown) {
+              _isNearbyOrganizationPopupShown = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showNearbyOrganizationsPopup(context, nearByOrganizations);
+              });
+            }
+            break;
+
+          case Status.ERROR:
+            if (!_isNearbyOrganizationErrorMessageShown) {
+              _isNearbyOrganizationErrorMessageShown = true;
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 setState(() {
                   _isLoadingNearlyOrganizations = false;
                 });
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
               });
-              List<Organization>? nearByOrganizations = snapshot.data!.data;
-
-              if (nearByOrganizations!.isNotEmpty) {
-                if (!_isNearbyOrganizationPopupShown) {
-                  _isNearbyOrganizationPopupShown = true;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showNearbyOrganizationsPopup(context, nearByOrganizations);
-                  });
-                }
-              }
-              // else {
-              //   // _superiorOrganizationBloc.getOrganizationByType("Distributor");
-              //   // _routeListBloc.getRouteList("");
-              //   // WidgetsBinding.instance.addPostFrameCallback((_) {
-              //   //   setState(() {
-              //   //     _isSuperiorOrganizationLoading = true;
-              //   //     _isRouteLoading = true;
-              //   //   });
-              //   // });
-              // }
-              break;
-
-            case Status.ERROR:
-              if (!_isNearbyOrganizationErrorMessageShown) {
-                _isNearbyOrganizationErrorMessageShown = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isLoadingNearlyOrganizations = false;
-                  });
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                });
-              }
-              break;
-          }
+            }
+            break;
         }
         return Container();
       },

@@ -44,7 +44,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
   void initState() {
     super.initState();
     _organizationBloc = OrganizationBloc();
-    _organizationBloc.getOrganization("", "true", "true");
+    _organizationBloc.getOrganizationByApprover("", "true", "true", widget.username);
     _searchController.addListener(_onSearchChanged);
     setState(() {
       _isLoading = true;
@@ -126,7 +126,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
     );
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization("", "false", "");
+        _organizationBloc.getOrganization("", "true", "true");
         _isLoading = true;
       });
     }

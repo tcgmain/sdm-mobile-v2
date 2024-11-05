@@ -185,7 +185,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
                 ),
                 const GButton(
                   icon: Icons.corporate_fare,
-                  text: 'Sub Region',
+                  text: 'Sub Organizations',
                 ),
                 const GButton(
                   icon: Icons.receipt,
