@@ -64,6 +64,7 @@ class _HomeV2PageState extends State<HomeV2Page> {
       TeamView(
         userNummer: widget.userNummer,
         username: widget.username,
+        loggedUserNummer: widget.loggedUserNummer,
         isTeamMemberUi: widget.isTeamMemberUi,
       ),
     ];

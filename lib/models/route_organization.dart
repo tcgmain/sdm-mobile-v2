@@ -32,7 +32,12 @@ class RouteOrganization {
       this.yassigtoSuch,
       this.ysequno,
       this.ynxtvisitdat,
-      this.yactiv
+      this.yactiv,
+      this.yscemet,
+      this.ystilea,
+      this.yswaterp,
+      this.ysanmet,
+      this.yspaint
       
       });
 
@@ -69,6 +74,11 @@ class RouteOrganization {
   int? ysequno;
   String? ynxtvisitdat;
   bool? yactiv;
+  bool? yscemet;
+  bool? ystilea;
+  bool? yswaterp;
+  bool? ysanmet;
+  bool? yspaint;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -108,6 +118,11 @@ class RouteOrganization {
       ysequno: json["ysequno"] ?? '',
       ynxtvisitdat: json["ysdmorg^ynxtvisitdat"] ?? '',
       yactiv: json["ysdmorg^yactiv"] ?? '',
+      yscemet: json["ysdmorg^yscemet"] ?? '',
+      ystilea: json["ysdmorg^ystilea"] ?? '',
+      yswaterp: json["ysdmorg^yswaterp"] ?? '',
+      ysanmet: json["ysdmorg^ysanmet"] ?? '',
+      yspaint: json["ysdmorg^yspaint"] ?? '',
     );
   }
 
@@ -144,37 +159,10 @@ class RouteOrganization {
         "ysequno": ysequno ?? '',
         "ysdmorg^ynxtvisitdat": ynxtvisitdat ?? '',
         "ysdmorg^yactiv": yactiv ?? '',
+        "ysdmorg^yscemet": yscemet ?? '',
+        "ysdmorg^ystilea": ystilea ?? '',
+        "ysdmorg^yswaterp": yswaterp ?? '',
+        "ysdmorg^ysanmet": ysanmet ?? '',
+        "ysdmorg^yspaint": yspaint ?? '',
       };
 }
-
-
-            // "ysdmorg^ygpslat": "6.90090090",
-            // "ysdmorg^yvisdis": 600,
-            // "ysdmorg^yemail": "sales@tokyocement.lk",
-            // "ysdmorg^yassigto^such": "ASHEN_IT",
-            // "ysdmorg^yaddressl2": "Bouddaloka Mawatha",
-            // "ysdmorg^ycustyp^such": "DI",
-            // "ysdmorg^yaddressl3": "Colombo 4",
-            // "ysdmorg^yaddressl1": "Tokyo Cement Plc",
-            // "nummer": "120",
-            // "ysdmorg^namebspr": "Tokyo Cement Company",
-            // "ysdmorg^ycustyp^namebspr": "Distributor",
-            // "ysdmorg^ysuporg^namebspr": "",
-            // "zid": "(272,77,0,1)",
-            // "ysdmorg^yowname": "",
-            // "ysdmorg^yflooring": false,
-            // "ysdmorg^ywaterpr": false,
-            // "id": "(272,77,0)",
-            // "ysdmorg^yphone2": "0772536958",
-            // "ysdmorg^ycustyp^id": "(4115,12,0)",
-            // "ysdmorg^yphone1": "0765858595",
-            // "namebspr": "TEST ROUTE",
-            // "ysdmorg^id": "(157,77,0)",
-            // "ysdmorg^ywhtapp": "0772536958",
-            // "ysdmorg^ygpslon": "79.85781297",
-            // "ysdmorg^yselcolour^such": "BLUE",
-            // "ysdmorg^such": "TOKYO_CEMENT",
-            // "ysdmorg^ysuporg^nummer": "",
-            // "ysdmorg^nummer": "5",
-            // "ysdmorg^yaddressl4": "Sri Lanka",
-            // "ysdmorg^ymasonry": false

@@ -339,6 +339,11 @@ class _OrganizationViewState extends State<OrganizationView> {
                                             String isWaterproofing =
                                                 organizations.ywaterpr?.toString() ?? 'Unnamed Route';
                                             String isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
+                                            final yscemet = organizations.yscemet;
+                                            final ystilea = organizations.ystilea?.toString() ?? 'Unnamed Route';
+                                            final yswaterp = organizations.yswaterp?.toString() ?? 'Unnamed Route';
+                                            final ysanmet = organizations.ysanmet?.toString() ?? 'Unnamed Route';
+                                            final yspaint = organizations.yspaint?.toString() ?? 'Unnamed Route';
 
                                             return Padding(
                                               padding: const EdgeInsets.only(bottom: 3, top: 3),

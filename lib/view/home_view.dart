@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> {
         userNummer: widget.userNummer,
         username: widget.username,
         isTeamMemberUi: widget.isTeamMemberUi,
+        loggedUserNummer: widget.loggedUserNummer,
       ),
     ];
   }

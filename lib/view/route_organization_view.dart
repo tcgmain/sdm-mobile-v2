@@ -286,6 +286,11 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       final sequence = organizations.ysequno.toString();
                                       final nextVisitDueDate = organizations.ynxtvisitdat?.toString() ?? '';
                                       final yactiv = organizations.yactiv.toString();
+                                      final yscemet = organizations.yscemet.toString();
+                                      final ystilea = organizations.ystilea.toString();
+                                      final yswaterp = organizations.yswaterp.toString();
+                                      final ysanmet = organizations.ysanmet.toString();
+                                      final yspaint = organizations.yspaint.toString();
 
                                       // Parse the nextVisitDueDate to DateTime
                                       DateTime? nextVisitDate;

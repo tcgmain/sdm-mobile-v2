@@ -46,6 +46,8 @@ class _RouteViewState extends State<RouteView> {
     super.initState();
     _routeBloc = RouteBloc();
     _getRoutesForSelectedDate();
+    print("QWERTYYUUIIOOP" + widget.loggedUserNummer.toString());
+    print("QWERTYYUUIIOOP" + widget.username.toString());
   }
 
   @override

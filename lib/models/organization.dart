@@ -33,7 +33,12 @@ class Organization {
       this.ywhtapp,
       this.erfass,
       this.yorgappu,
-      this.yorgappdt});
+      this.yorgappdt,
+      this.yscemet,
+      this.ystilea,
+      this.yswaterp,
+      this.ysanmet,
+      this.yspaint});
 
   String? id;
   String? such;
@@ -69,6 +74,11 @@ class Organization {
   String? erfass;
   String? yorgappu;
   String? yorgappdt;
+  bool? yscemet;
+  bool? ystilea;
+  bool? yswaterp;
+  bool? ysanmet;
+  bool? yspaint;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -106,6 +116,11 @@ class Organization {
       erfass: json["erfass"],
       yorgappu: json["yorgappu"],
       yorgappdt: json["yorgappdt"],
+       yscemet: json["yscemet"] ?? '',
+      ystilea: json["ystilea"] ?? '',
+      yswaterp: json["yswaterp"] ?? '',
+      ysanmet: json["ysanmet"] ?? '',
+      yspaint: json["yspaint"] ?? '',
     );
   }
 
@@ -144,5 +159,10 @@ class Organization {
         "erfass": erfass,
         "yorgappu": yorgappu,
         "yorgappdt": yorgappdt,
+        "yscemet": yscemet ?? '',
+        "ystilea": ystilea ?? '',
+        "yswaterp": yswaterp ?? '',
+        "ysanmet": ysanmet ?? '',
+        "yspaint": yspaint ?? '',
       };
 }

@@ -14,12 +14,15 @@ import 'package:sdm/widgets/text_field.dart' as text_field;
 class TeamView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String loggedUserNummer;
   final bool isTeamMemberUi;
+  
 
   const TeamView({
     super.key,
     required this.userNummer,
     required this.username,
+    required this.loggedUserNummer,
     required this.isTeamMemberUi,
   });
 

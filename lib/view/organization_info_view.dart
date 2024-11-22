@@ -162,6 +162,11 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                         final ysuporgNamebspr = organization.ysuporgNamebspr.toString();
                         //final ycustypSuch = organization.ycustypSuch.toString();
                         final ycustypNamebspr = organization.ycustypNamebspr.toString();
+                        final yscemet = organization.yscemet.toString();
+                        final ystilea = organization.ystilea.toString();
+                        final yswaterp = organization.yswaterp.toString();
+                        final ysanmet = organization.ysanmet.toString();
+                        final yspaint = organization.yspaint.toString();
 
                         String fullAddress = "";
                         if (yaddressl1.isNotEmpty) fullAddress += yaddressl1;

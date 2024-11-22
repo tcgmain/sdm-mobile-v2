@@ -211,7 +211,6 @@ class _ManageStockViewState extends State<ManageStockView> {
                                                 getCurrentDate(),
                                                 productCode,
                                                 newStockController.text.toString(),
-                                                widget.username,
                                                 widget.visitNummer,
                                               )
                                                   .then((_) {
