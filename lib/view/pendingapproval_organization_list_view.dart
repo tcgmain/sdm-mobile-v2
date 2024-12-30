@@ -94,8 +94,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
       organizationWhatsapp,
       organizationAddress1,
       organizationAddress2,
-      organizationAddress3,
-      organizationTown,
+      territoryNummer,
       superiorOrganizationNummer,
       ownerName,
       ownerBirthday,
@@ -121,8 +120,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                 organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
-                organizationAddress3: organizationAddress3,
-                organizationTown: organizationTown,
+                territoryNummer: territoryNummer,
                 superiorOrganizationNummer: superiorOrganizationNummer,
                 ownerName: ownerName,
                 ownerBirthday: ownerBirthday,
@@ -231,8 +229,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                       String organizationWhatsapp = organizations.ywhtapp.toString();
                                       String organizationAddress1 = organizations.yaddressl1.toString();
                                       String organizationAddress2 = organizations.yaddressl2.toString();
-                                      String organizationAddress3 = organizations.yaddressl3.toString();
-                                      String organizationTown = organizations.yaddressl4.toString();
+                                      String territoryNummer = organizations.yterritory.toString();
                                       String ysuporgNummer = organizations.ysuporgNummer.toString();
                                       String ownerName = organizations.yowname.toString();
                                       String ownerBirthday = organizations.yorgowndob.toString();
@@ -266,8 +263,7 @@ class _PendingApproveOrganizationListViewState extends State<PendingApproveOrgan
                                                       organizationWhatsapp,
                                                       organizationAddress1,
                                                       organizationAddress2,
-                                                      organizationAddress3,
-                                                      organizationTown,
+                                                      territoryNummer,
                                                       ysuporgNummer,
                                                       ownerName,
                                                       ownerBirthday,

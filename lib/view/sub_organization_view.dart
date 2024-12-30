@@ -79,8 +79,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       organizationWhatsapp,
       organizationAddress1,
       organizationAddress2,
-      organizationAddress3,
-      organizationTown,
+      territoryNummer,
       superiorOrganizationNummer,
       ownerName,
       ownerBirthday,
@@ -106,8 +105,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
-                organizationAddress3: organizationAddress3,
-                organizationTown: organizationTown,
+                territoryNummer: territoryNummer,
                 superiorOrganizationNummer: superiorOrganizationNummer,
                 ownerName: ownerName,
                 ownerBirthday: ownerBirthday,
@@ -217,10 +215,8 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                           subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       String subOrganizationAddress2 =
                                           subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      String subOrganizationAddress3 =
-                                          subOrganizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                      String subOrganizationTown =
-                                          subOrganizations.yaddressl4?.toString() ?? 'Unnamed Route';
+                                        String territoryNummer =
+                                          subOrganizations.yterritory?.toString() ?? 'Unnamed Route';
                                       String subOrganizationColour =
                                           subOrganizations.colour?.toString() ?? '';
                                       String subOrganizationLongitude =
@@ -258,9 +254,6 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                             children: [
                                               SlidableAction(
                                                 onPressed: (context) {
-                                                  print("Pressed");
-                                                  print(ownerBirthday);
-                                                  print("ownerBirthday");
 
                                                   // _navigateToUpdateOrganizationView(
                                                   //     subOrganizationId,
@@ -273,8 +266,6 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                   //     subOrganizationWhatsapp,
                                                   //     subOrganizationAddress1,
                                                   //     subOrganizationAddress2,
-                                                  //     subOrganizationAddress3,
-                                                  //     subOrganizationTown,
                                                   //     ownerName,
                                                   //     ownerBirthday,
                                                   //     isMasonry,
@@ -294,8 +285,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                             subOrganizationWhatsapp,
                                                             subOrganizationAddress1,
                                                             subOrganizationAddress2,
-                                                            subOrganizationAddress3,
-                                                            subOrganizationTown,
+                                                            territoryNummer,
                                                             subOrganizationSuperiorOrgNummer,
                                                             ownerName,
                                                             ownerBirthday,
@@ -326,8 +316,6 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                         organizationWhatsapp: subOrganizationWhatsapp,
                                                         organizationAddress1: subOrganizationAddress1,
                                                         organizationAddress2: subOrganizationAddress2,
-                                                        organizationAddress3: subOrganizationAddress3,
-                                                        organizationTown: subOrganizationTown,
                                                         organizationColour: subOrganizationColour,
                                                         organizationLongitude: subOrganizationLongitude,
                                                         organizationLatitude: subOrganizationLatitude,
@@ -339,7 +327,8 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                         ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
                                                         designationNummer: widget.designationNummer,
                                                         organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr,
-                                                        userOrganizationNummer: widget.userOrganizationNummer,
+                                                        userOrganizationNummer: widget.userOrganizationNummer, 
+                                                        territoryNummer: '',
                                                       )));
                                             },
                                           ),

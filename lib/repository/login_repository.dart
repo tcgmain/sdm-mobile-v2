@@ -16,7 +16,7 @@ class LoginRepository {
     };
 
     inputBody = {
-      "id": "(262,77,0)",
+      "id": "(154,77,0)",
       "ylogopr": username,
       "ylogpwd": password,
       "ylogimei": deviceId,

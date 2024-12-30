@@ -19,7 +19,7 @@ class UpdateOrganizationBloc {
     _updateOrganizationRepository = UpdateOrganizationRepository();
   }
 
-  updateOrganization(id, email, ownerName, phone1, phone2, whatsapp, address1, address2, address3, town, customerTypeId,
+  updateOrganization(id, email, ownerName, phone1, phone2, whatsapp, address1, address2, customerTypeId,
       isMasonry, isWaterproofing, isFlooring, organizationColor, superiorOrganization) async {
     if (_updateOrganizationController?.isClosed ?? true) return;
     updateOrganizationSink.add(Response.loading(''));
@@ -33,8 +33,6 @@ class UpdateOrganizationBloc {
           whatsapp,
           address1,
           address2,
-          address3,
-          town,
           customerTypeId,
           isMasonry,
           isWaterproofing,

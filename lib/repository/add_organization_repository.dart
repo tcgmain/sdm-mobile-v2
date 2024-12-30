@@ -18,7 +18,7 @@ class AddOrganizationRepository {
       String whatsapp,
       String address1,
       String address2,
-      String address3,
+      String territory,
       String town,
       String latitude,
       String longitude,
@@ -44,8 +44,8 @@ class AddOrganizationRepository {
       "ywhtapp": whatsapp,
       "yaddressl1": address1,
       "yaddressl2": address2,
-      "yaddressl3": address3,
-      "yaddressl4": town,
+      "yterritory": territory,
+      "ytown": town,
       "ygpslat": latitude,
       "ygpslon": longitude,
       "ycustyp": customerTypeId,
@@ -61,6 +61,8 @@ class AddOrganizationRepository {
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);
+    print("response111111111111111111111111111111111111111");
+    print(response);
     return AddOrganization.fromJson(response);
   }
 }

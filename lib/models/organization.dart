@@ -11,8 +11,8 @@ class Organization {
       this.yphone2,
       this.yaddressl1,
       this.yaddressl2,
-      this.yaddressl3,
-      this.yaddressl4,
+      this.yterritory,
+      this.ytown,
       this.colour,
       this.longitude,
       this.latitude,
@@ -38,7 +38,13 @@ class Organization {
       this.ystilea,
       this.yswaterp,
       this.ysanmet,
-      this.yspaint});
+      this.yspaint,
+      this.ycuname,
+      this.ymnginv,
+      this.yselrec,
+      this.ycusid,
+      this.ysuporgSuch,
+      });
 
   String? id;
   String? such;
@@ -51,8 +57,8 @@ class Organization {
   String? yphone2;
   String? yaddressl1;
   String? yaddressl2;
-  String? yaddressl3;
-  String? yaddressl4;
+  String? ytown;
+  String? yterritory;
   String? colour;
   String? longitude;
   String? latitude;
@@ -79,48 +85,58 @@ class Organization {
   bool? yswaterp;
   bool? ysanmet;
   bool? yspaint;
+  String? ycuname;
+  bool? ymnginv;
+  bool? yselrec;
+  String? ycusid;
+  String? ysuporgSuch;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
-      id: json["id"],
-      such: json["such"],
-      yassigto: json["yassigto^such"],
-      yassigtoNummer: json["yassigto^nummer"],
-      yassigtoNamebspr: json["yassigto^namebspr"],
-      namebspr: json["namebspr"],
-      orgnummer: json["nummer"],
-      yphone1: json["yphone1"],
-      yphone2: json["yphone2"],
-      yaddressl1: json["yaddressl1"],
-      yaddressl2: json["yaddressl2"],
-      yaddressl3: json["yaddressl3"],
-      yaddressl4: json["yaddressl4"],
-      colour: json["yselcolour^such"],
-      longitude: json["ygpslon"],
-      latitude: json["ygpslat"],
+      id: json["id"] ?? '',
+      such: json["such"] ?? '',
+      yassigto: json["yassigto^such"] ?? '',
+      yassigtoNummer: json["yassigto^nummer"] ?? '',
+      yassigtoNamebspr: json["yassigto^namebspr"] ?? '',
+      namebspr: json["namebspr"] ?? '',
+      orgnummer: json["nummer"] ?? '',
+      yphone1: json["yphone1"] ?? '',
+      yphone2: json["yphone2"] ?? '',
+      yaddressl1: json["yaddressl1"] ?? '',
+      yaddressl2: json["yaddressl2"] ?? '',
+      ytown: json["ytown"],
+      yterritory: json["yterritory"] ?? '',
+      colour: json["yselcolour^such"] ?? '',
+      longitude: json["ygpslon"] ?? '',
+      latitude: json["ygpslat"] ?? '',
       distance: json["yvisdis"],
-      yemail: json["yemail"],
+      yemail: json["yemail"] ?? '',
       yactiv: json["yactiv"],
       ylev: json["ylev"],
-      ysuporgNummer: json["ysuporg^nummer"],
-      ysuporgNamebspr: json["ysuporg^namebspr"],
-      ycustypSuch: json["ycustyp^such"],
+      ysuporgNummer: json["ysuporg^nummer"] ?? '',
+      ysuporgNamebspr: json["ysuporg^namebspr"] ?? '',
+      ycustypSuch: json["ycustyp^such"] ?? '',
       ycustypId: json["ycustyp^id"],
-      ycustypNamebspr: json["ycustyp^namebspr"],
-      yowname: json["yowname"],
-      yorgowndob: json["yorgowndob"],
+      ycustypNamebspr: json["ycustyp^namebspr"] ?? '',
+      yowname: json["yowname"] ?? '',
+      yorgowndob: json["yorgowndob"] ?? '',
       ymasonry: json["ymasonry"],
       ywaterpr: json["ywaterpr"],
       yflooring: json["yflooring"],
-      ywhtapp: json["ywhtapp"],
+      ywhtapp: json["ywhtapp"] ?? '',
       erfass: json["erfass"],
       yorgappu: json["yorgappu"],
       yorgappdt: json["yorgappdt"],
-       yscemet: json["yscemet"] ?? '',
-      ystilea: json["ystilea"] ?? '',
-      yswaterp: json["yswaterp"] ?? '',
-      ysanmet: json["ysanmet"] ?? '',
-      yspaint: json["yspaint"] ?? '',
+      yscemet: json["yscemet"],
+      ystilea: json["ystilea"],
+      yswaterp: json["yswaterp"],
+      ysanmet: json["ysanmet"],
+      yspaint: json["yspaint"],
+      ycuname: json["ycuname"] ?? '',
+      ymnginv: json["ymnginv"],
+      yselrec: json["yselrec"],
+      ycusid: json["ycusid"] ?? '',
+      ysuporgSuch: json["ysuporg^such"] ?? '',
     );
   }
 
@@ -136,8 +152,8 @@ class Organization {
         "yphone2": yphone2,
         "yaddressl1": yaddressl1,
         "yaddressl2": yaddressl2,
-        "yaddressl3": yaddressl3,
-        "yaddressl4": yaddressl4,
+        "yterritory": yterritory,
+        "ytown": ytown,
         "yselcolour^such": colour,
         "ygpslon": longitude,
         "ygpslat": latitude,
@@ -164,5 +180,11 @@ class Organization {
         "yswaterp": yswaterp ?? '',
         "ysanmet": ysanmet ?? '',
         "yspaint": yspaint ?? '',
+        "ycuname": ycuname ?? '',
+        "ymnginv": ymnginv ?? '',
+        "yselrec": yselrec ?? '',
+        "ycusid": ycusid ?? '',
+        "ysuporg^such": ysuporgSuch ?? '',
       };
+      
 }

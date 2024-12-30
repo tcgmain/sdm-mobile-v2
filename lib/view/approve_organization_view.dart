@@ -158,8 +158,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                         final yphone2 = organization.yphone2.toString();
                         final yaddressl1 = organization.yaddressl1.toString();
                         final yaddressl2 = organization.yaddressl2.toString();
-                        final yaddressl3 = organization.yaddressl3.toString();
-                        final yaddressl4 = organization.yaddressl4.toString();
                         final colour = organization.colour.toString();
                         final longitude = organization.longitude.toString();
                         final latitude = organization.latitude.toString();
@@ -181,8 +179,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                         String fullAddress = "";
                         if (yaddressl1.isNotEmpty) fullAddress += yaddressl1;
                         if (yaddressl2.isNotEmpty) fullAddress += ", $yaddressl2";
-                        if (yaddressl3.isNotEmpty) fullAddress += ", $yaddressl3";
-                        if (yaddressl4.isNotEmpty) fullAddress += ", $yaddressl4";
 
                         return ListView(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),

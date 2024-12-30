@@ -17,15 +17,12 @@ class UpdateOrganizationRepository {
       String whatsapp,
       String address1,
       String address2,
-      String address3,
-      String town,
       String customerTypeId,
       String isMasonry,
       String isWaterproofing,
       String isFlooring,
       String organizationColor,
-      String superiorOrganization
-      ) async {
+      String superiorOrganization) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -37,8 +34,6 @@ class UpdateOrganizationRepository {
       "ywhtapp": whatsapp,
       "yaddressl1": address1,
       "yaddressl2": address2,
-      "yaddressl3": address3,
-      "yaddressl4": town,
       "ycustyp": customerTypeId,
       "ymasonry": isMasonry,
       "ywaterpr": isWaterproofing,

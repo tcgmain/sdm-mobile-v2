@@ -28,7 +28,7 @@ class AddOrganizationBloc {
       whatsapp,
       address1,
       address2,
-      address3,
+      territory,
       town,
       latitude,
       longitude,
@@ -54,7 +54,7 @@ class AddOrganizationBloc {
           whatsapp,
           address1,
           address2,
-          address3,
+          territory,
           town,
           latitude,
           longitude,
@@ -74,6 +74,7 @@ class AddOrganizationBloc {
     } catch (e) {
       if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.error(e.toString()));
+      print(e);
       print("ADD ORGANIZATION ERROR");
     }
   }

@@ -53,9 +53,10 @@ class _ManageStockViewState extends State<ManageStockView> {
   late String newLastUpdatedUser;
   bool _isLoading = false;
   bool _isLoading1 = false;
-  bool _isErrorShown = false;
+  bool _isStockViewErrorShown = false;
   final Map<String, TextEditingController> _stockControllers = {};
   final FocusNode _searchFocusNode = FocusNode();
+  bool _isStockUpdatErrorShown = false;
 
   @override
   void initState() {
@@ -200,6 +201,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                                             lastUpdatedDate: lastUpdatedDate,
                                             lastUpdatedUser: lastUpdatedUser,
                                             onPressedUpdate: () {
+                                              _isStockUpdatErrorShown = false;
                                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                                 setState(() {
                                                   _isLoading = false;
@@ -232,11 +234,10 @@ class _ManageStockViewState extends State<ManageStockView> {
                                 setState(() {
                                   _isLoading = false;
                                 });
-                                if(!_isErrorShown){
-                                  _isErrorShown = true;
+                                if (!_isStockViewErrorShown) {
+                                  _isStockViewErrorShown = true;
                                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 }
-                                
                               });
                           }
                         }
@@ -283,12 +284,15 @@ class _ManageStockViewState extends State<ManageStockView> {
               break;
 
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading = false;
+              if (!_isStockUpdatErrorShown) {
+                _isStockUpdatErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
           }
         }
         return Container();
@@ -296,50 +300,49 @@ class _ManageStockViewState extends State<ManageStockView> {
     );
   }
 
-Widget organizationIdResponse() {
-  return StreamBuilder<ResponseList<GoodManagementID>>(
-    stream: _goodMangementIdBloc.goodManagementIdStream,
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        switch (snapshot.data!.status!) {
-          case Status.LOADING:
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading1 = true;
-              });
-            });
-            break;
-          case Status.COMPLETED:
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading1 = false;
-              });
-            });
-            var dataList = snapshot.data!.data!;
-            if (dataList.isNotEmpty) {
-              var items = dataList[0];
-              goodsManagementId = items.id.toString();
-            } else {
+  Widget organizationIdResponse() {
+    return StreamBuilder<ResponseList<GoodManagementID>>(
+      stream: _goodMangementIdBloc.goodManagementIdStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, "Goods management record is not created for this organization.");
+                setState(() {
+                  _isLoading1 = true;
+                });
               });
-            }
-            break;
-          case Status.ERROR:
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _isLoading1 = false;
+              break;
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading1 = false;
+                });
               });
-            });
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showErrorAlertDialog(context, snapshot.data!.message.toString());
-            });
-            break;
+              var dataList = snapshot.data!.data!;
+              if (dataList.isNotEmpty) {
+                var items = dataList[0];
+                goodsManagementId = items.id.toString();
+              } else {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, "Goods management record is not created for this organization.");
+                });
+              }
+              break;
+            case Status.ERROR:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading1 = false;
+                });
+              });
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showErrorAlertDialog(context, snapshot.data!.message.toString());
+              });
+              break;
+          }
         }
-      }
-      return Container();
-    },
-  );
-}
-
+        return Container();
+      },
+    );
+  }
 }

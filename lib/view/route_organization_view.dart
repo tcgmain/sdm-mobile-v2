@@ -111,8 +111,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
       organizationWhatsapp,
       organizationAddress1,
       organizationAddress2,
-      organizationAddress3,
-      organizationTown,
+      territoryNummer,
       superiorOrganizationNummer,
       ownerName,
       ownerBirthday,
@@ -138,8 +137,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                 organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
-                organizationAddress3: organizationAddress3,
-                organizationTown: organizationTown,
+                territoryNummer: territoryNummer,
                 ownerName: ownerName,
                 ownerBirthday: ownerBirthday,
                 isMasonry: bool.parse(isMasonry),
@@ -260,9 +258,6 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                           organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       final organizationAddress2 =
                                           organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress3 =
-                                          organizations.yaddressl3?.toString() ?? 'Unnamed Route';
-                                      final organizationTown = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
                                       final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
                                       final organizationLongitude =
                                           organizations.longitude?.toString() ?? 'Unnamed Route';
@@ -283,15 +278,9 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                       final isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
                                       final organizationAssignTo =
                                           organizations.yassigtoSuch?.toString() ?? 'Unnamed Route';
-                                      final sequence = organizations.ysequno.toString();
                                       final nextVisitDueDate = organizations.ynxtvisitdat?.toString() ?? '';
                                       final yactiv = organizations.yactiv.toString();
-                                      final yscemet = organizations.yscemet.toString();
-                                      final ystilea = organizations.ystilea.toString();
-                                      final yswaterp = organizations.yswaterp.toString();
-                                      final ysanmet = organizations.ysanmet.toString();
-                                      final yspaint = organizations.yspaint.toString();
-
+                                    
                                       // Parse the nextVisitDueDate to DateTime
                                       DateTime? nextVisitDate;
                                       if (nextVisitDueDate != '') {
@@ -323,8 +312,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                           organizationWhatsapp,
                                                           organizationAddress1,
                                                           organizationAddress2,
-                                                          organizationAddress3,
-                                                          organizationTown,
+                                                          "territoryNummer",
                                                           ysuporgNummer,
                                                           ownerName,
                                                           ownerBirthday,
@@ -356,9 +344,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                             organizationPhone2: organizationPhone2,
                                                             organizationWhatsapp: organizationWhatsapp,
                                                             organizationAddress1: organizationAddress1,
+                                                            territoryNummer: "territoryNummer",
                                                             organizationAddress2: organizationAddress2,
-                                                            organizationAddress3: organizationAddress3,
-                                                            organizationTown: organizationTown,
                                                             organizationColour: organizationColour,
                                                             organizationLongitude: organizationLongitude,
                                                             organizationLatitude: organizationLatitude,

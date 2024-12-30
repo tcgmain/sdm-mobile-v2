@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sdm/blocs/organization_bloc.dart';
+import 'package:sdm/blocs/organization_approver_bloc.dart';
+import 'package:sdm/blocs/organization_asignee_bloc.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -33,7 +34,8 @@ class ApprovedOrganizationListView extends StatefulWidget {
 }
 
 class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListView> {
-  late OrganizationBloc _organizationBloc;
+  late OrganizationApproverBloc _organizationApproverBloc;
+  late OrganizationAsigneeBloc _organizationAsigneeBloc;
   final TextEditingController _searchController = TextEditingController();
   List<Organization>? _filteredOrganizations = [];
   List<Organization>? _allOrganizations;
@@ -43,8 +45,9 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
   @override
   void initState() {
     super.initState();
-    _organizationBloc = OrganizationBloc();
-    _organizationBloc.getOrganizationByApprover("", "true", "true", widget.username);
+    _organizationApproverBloc = OrganizationApproverBloc();
+    _organizationAsigneeBloc = OrganizationAsigneeBloc();
+    _organizationApproverBloc.getOrganizationByApprover("", "true", "true", widget.username);
     _searchController.addListener(_onSearchChanged);
     setState(() {
       _isLoading = true;
@@ -53,7 +56,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
 
   @override
   void dispose() {
-    _organizationBloc.dispose();
+    _organizationApproverBloc.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -84,8 +87,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
       organizationWhatsapp,
       organizationAddress1,
       organizationAddress2,
-      organizationAddress3,
-      organizationTown,
+      territoryNummer,
       superiorOrganizationNummer,
       ownerName,
       ownerBirthday,
@@ -111,8 +113,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                 organizationWhatsapp: organizationWhatsapp,
                 organizationAddress1: organizationAddress1,
                 organizationAddress2: organizationAddress2,
-                organizationAddress3: organizationAddress3,
-                organizationTown: organizationTown,
+                territoryNummer: territoryNummer,
                 superiorOrganizationNummer: superiorOrganizationNummer,
                 ownerName: ownerName,
                 ownerBirthday: ownerBirthday,
@@ -126,7 +127,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
     );
     if (result == true) {
       setState(() {
-        _organizationBloc.getOrganization("", "true", "true");
+        _organizationAsigneeBloc.getOrganization("", "true", "true");
         _isLoading = true;
       });
     }
@@ -150,7 +151,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                 onChangedFunction: () {}),
             Expanded(
               child: StreamBuilder<ResponseList<Organization>>(
-                stream: _organizationBloc.organizationStream,
+                stream: _organizationAsigneeBloc.organizationAsigneeStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     switch (snapshot.data!.status!) {
@@ -222,8 +223,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                           organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       String organizationAddress2 =
                                           organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      String organizationAddress3 =
-                                          organizations.yaddressl3?.toString() ?? 'Unnamed Route';
+                                      String territoryNummer = organizations.yterritory?.toString() ?? 'Unnamed Route';
                                       String ownerBirthday = organizations.yorgowndob?.toString() ?? 'Unnamed Route';
                                       String organizationColor = organizations.colour?.toString() ?? 'Unnamed Route';
                                       // String organizationLongitude =
@@ -242,7 +242,6 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                       //     organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
                                       String organizationAssignTo =
                                           organizations.yassigto?.toString() ?? 'Unnamed Route';
-                                      String organizationTown = organizations.yaddressl4?.toString() ?? 'Unnamed Route';
                                       String ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
                                       String isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
                                       String isWaterproofing = organizations.ywaterpr?.toString() ?? 'Unnamed Route';
@@ -272,8 +271,7 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                                       organizationWhatsapp,
                                                       organizationAddress1,
                                                       organizationAddress2,
-                                                      organizationAddress3,
-                                                      organizationTown,
+                                                      territoryNummer,
                                                       ysuporgNummer,
                                                       ownerName,
                                                       ownerBirthday,

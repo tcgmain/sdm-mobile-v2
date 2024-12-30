@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              const Text("Version: 1.2"),
+              const Text("Version: 1.5"),
             ],
           ),
         ),

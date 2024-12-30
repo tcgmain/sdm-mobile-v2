@@ -21,8 +21,7 @@ class HomeOrganizationView extends StatefulWidget {
   final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
-  final String organizationAddress3;
-  final String organizationTown;
+  final String territoryNummer;
   final String organizationColour;
   final String organizationLongitude;
   final String organizationLatitude;
@@ -49,8 +48,7 @@ class HomeOrganizationView extends StatefulWidget {
     required this.organizationWhatsapp,
     required this.organizationAddress1,
     required this.organizationAddress2,
-    required this.organizationAddress3,
-    required this.organizationTown,
+    required this.territoryNummer,
     required this.organizationColour,
     required this.organizationLongitude,
     required this.organizationLatitude,
@@ -99,8 +97,6 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
             organizationWhatsapp: widget.organizationWhatsapp,
             organizationAddress1: widget.organizationAddress1,
             organizationAddress2: widget.organizationAddress2,
-            organizationAddress3: widget.organizationAddress3,
-            organizationTown: widget.organizationTown,
             organizationColour: widget.organizationColour,
             organizationLongitude: widget.organizationLongitude,
             organizationLatitude: widget.organizationLatitude,

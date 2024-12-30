@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sdm/blocs/mark_visit_bloc.dart';
+import 'package:sdm/blocs/update_organization_location_bloc.dart';
 import 'package:sdm/models/mark_visit.dart';
+import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_stock_view.dart';
@@ -33,8 +35,6 @@ class MarkVisitView extends StatefulWidget {
   final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
-  final String organizationAddress3;
-  final String organizationTown;
   final String organizationColour;
   final String organizationLongitude;
   final String organizationLatitude;
@@ -58,8 +58,6 @@ class MarkVisitView extends StatefulWidget {
       required this.organizationWhatsapp,
       required this.organizationAddress1,
       required this.organizationAddress2,
-      required this.organizationAddress3,
-      required this.organizationTown,
       required this.organizationColour,
       required this.organizationLongitude,
       required this.organizationLatitude,
@@ -83,20 +81,26 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   late double organizationLongitude = double.parse(widget.organizationLongitude);
   late double organizationDistance = double.parse(widget.organizationDistance);
   bool _isLoading = false;
+  bool _showLocationUpdateButton = false;
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
+  late UpdateOrganizationLocationBloc _updateOrganizationLocationBloc;
+  String currentLatitude = "";
+  String currentLongitude = "";
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
     _markVisitBloc = MarkVisitBloc();
+    _updateOrganizationLocationBloc = UpdateOrganizationLocationBloc();
   }
 
   @override
   void dispose() {
     _markVisitBloc.dispose();
+    _updateOrganizationLocationBloc.dispose();
     super.dispose();
   }
 
@@ -104,8 +108,6 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     String fullAddress = "";
     if (widget.organizationAddress1.isNotEmpty) fullAddress += widget.organizationAddress1;
     if (widget.organizationAddress2.isNotEmpty) fullAddress += ", ${widget.organizationAddress2}";
-    if (widget.organizationAddress3.isNotEmpty) fullAddress += ", ${widget.organizationAddress3}";
-    if (widget.organizationTown.isNotEmpty) fullAddress += ", ${widget.organizationTown}";
     return fullAddress;
   }
 
@@ -146,6 +148,9 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     double currentLat = position.latitude;
     double currentLon = position.longitude;
 
+    currentLatitude = position.latitude.toString();
+    currentLongitude = position.longitude.toString();
+
     bool isWithin = LocationUtils.isWithinRadius(
         currentLat, currentLon, organizationLatitude, organizationLongitude, organizationDistance);
 
@@ -155,8 +160,19 @@ class _MarkVisitViewState extends State<MarkVisitView> {
         _locationMessage += "You are within the range of this organization.";
       });
     } else {
+      final currentDate = DateTime.now();
+      final startDate = DateTime(2025, 1, 1); // 01/01/2025
+      final endDate = DateTime(2025, 1, 31, 23, 59, 59); // 31/01/2025 23:59:59
+
       setState(() {
         _locationMessage += "You are not within the ${widget.organizationDistance} range of this organization.";
+
+        // Check if the current date is within the specified range
+        if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)) {
+          _showLocationUpdateButton = true;
+        } else {
+          _showLocationUpdateButton = false;
+        }
       });
     }
   }
@@ -374,7 +390,15 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                   Text(_locationMessage,
                       style: TextStyle(color: _isWithinRadius ? Colors.green : Colors.red, fontSize: getFontSize()),
                       textAlign: TextAlign.center),
-                  markVisitResponse()
+                  if (_showLocationUpdateButton)
+                    CommonAppButton(
+                        buttonText: "Update Location",
+                        onPressed: () {
+                          _updateOrganizationLocationBloc.updateOrganizationLocation(
+                              widget.organizationId, currentLongitude, currentLatitude);
+                        }),
+                  markVisitResponse(),
+                  updateLocationResponse()
                 ],
               ),
             ),
@@ -510,20 +534,71 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     );
   }
 
-//   Widget customIconButton(BuildContext context, String tooltip){
-// return CircleAvatar(
-//                         radius: 20,
-//                         backgroundColor: CustomColors.buttonColor1,
-//                         child: IconButton(
-//                           splashColor: CustomColors.buttonColor2,
-//                           highlightColor: CustomColors.buttonColor2,
-//                           hoverColor: CustomColors.buttonColor2,
-//                           focusColor: CustomColors.buttonColor2,
-//                           color: CustomColors.buttonTextColor,
-//                           icon: const Icon(Icons.directions),
-//                           tooltip: 'Navigate to google map',
-//                           onPressed: () {},
-//                         ),
-//                       );
-//   }
+  //Update location response
+  Widget updateLocationResponse() {
+    return StreamBuilder<Response<UpdateOrganization>>(
+      stream: _updateOrganizationLocationBloc.updateOrganizationLocationStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
+              break;
+            case Status.COMPLETED:
+              String latitude = snapshot.data!.data!.ygpslat.toString();
+              String longitude = snapshot.data!.data!.ygpslon.toString();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MarkVisitView(
+                            username: widget.username,
+                            userNummer: widget.userNummer,
+                            routeNummer: widget.routeNummer,
+                            organizationId: widget.organizationId,
+                            organizationNummer: widget.organizationNummer,
+                            organizationName: widget.organizationName,
+                            organizationPhone1: widget.organizationPhone1,
+                            organizationPhone2: widget.organizationPhone2,
+                            organizationWhatsapp: widget.organizationWhatsapp,
+                            organizationAddress1: widget.organizationAddress1,
+                            organizationAddress2: widget.organizationAddress2,
+                            organizationColour: widget.organizationColour,
+                            organizationLongitude: longitude,
+                            organizationLatitude: latitude,
+                            organizationDistance: widget.organizationDistance,
+                            organizationMail: widget.organizationMail,
+                            isTeamMemberUi: widget.isTeamMemberUi,
+                            loggedUserNummer: widget.loggedUserNummer,
+                            ysuporgNummer: widget.ysuporgNummer,
+                            ysuporgNamebspr: widget.ysuporgNamebspr,
+                            organizationTypeNamebspr: widget.organizationTypeNamebspr,
+                          )),
+                  (Route<dynamic> route) => false,
+                );
+              });
+              break;
+            case Status.ERROR:
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = false;
+                });
+              });
+              if (!_isErrorMessageShown) {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+                _isErrorMessageShown = true;
+              }
+              break;
+          }
+        }
+        return Container();
+      },
+    );
+  }
 }

@@ -40,7 +40,6 @@ class RouteOrganizationRepository {
     for (var i = 0; i < resultLength; i++) {
       itemArray.add(jsonDecode(jsonEncode(response))[i]);
     }
-print("LLLLLLLLLLLLLLLLL");
     var list = itemArray;
     List<RouteOrganization> routeOrganization = list.map((obj) => RouteOrganization.fromJson(obj)).toList();
     return routeOrganization;

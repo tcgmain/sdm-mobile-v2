@@ -8,14 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
-import 'package:sdm/blocs/organization_bloc.dart';
+import 'package:sdm/blocs/organization_location_bloc.dart';
+import 'package:sdm/blocs/organization_type_bloc.dart';
 import 'package:sdm/blocs/route_list_bloc.dart';
+import 'package:sdm/blocs/territory_bloc.dart';
+import 'package:sdm/blocs/town_bloc.dart';
 import 'package:sdm/blocs/update_route_bloc.dart';
 import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/route_list.dart';
+import 'package:sdm/models/territory.dart';
+import 'package:sdm/models/town.dart';
 import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -51,12 +56,14 @@ class AddOrganizationView extends StatefulWidget {
 
 class _AddOrganizationViewState extends State<AddOrganizationView> {
   late CustomerTypeBloc _customerTypeBloc;
-  late OrganizationBloc _organizationBloc;
-  late OrganizationBloc _superiorOrganizationBloc;
+  late OrganizationLocationBloc _organizationLocationBloc;
+  late OrganizationTypeBloc _organizationTypeBloc;
   late AddOrganizationBloc _addOrganizationBloc;
   late AddGoodsManagementBloc _addGoodsManagementBloc;
   late RouteListBloc _routeListBloc;
   late UpdateRouteBloc _updateRouteBloc;
+  late TerritoryBloc _territoryBloc;
+  late TownBloc _townBloc;
   List<CustomerType>? _allCustomerTypes;
   late String latitude;
   late String longitude;
@@ -75,6 +82,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isGoodsManagementSuccessShown = false;
   bool _isCustomerTypeLoading = false;
   bool _isRouteLoading = false;
+  bool _isTerritoryLoading = false;
+  bool _isTownLoading = false;
   bool _isUpdateRouteLoading = false;
   bool _isUpdateRouteErrorShown = false;
   bool _isLoadingNearlyOrganizations = false;
@@ -84,10 +93,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   List<Organization> _superiorOrganizations = [];
   List<RouteList> _routeList = [];
+  List<Territory> _territoryList = [];
+  List<Town> _townList = [];
   bool _isRouteErrorShown = false;
+  bool _isTerritoryErrorShown = false;
   Organization? _selectedSuperiorOrganization;
+  Territory? _selectedTerritory;
+  Town? _selectedTown;
   bool _isOrganizationsLoaded = false;
   bool _isRoutesLoaded = false;
+  bool _isTerritoryLoaded = false;
+  bool _isTownLoaded = false;
   bool _isUpdateRouteCompleted = false;
   bool _isUpdateOrganizationCompleted = false;
   RouteList? _selectedRoute;
@@ -105,7 +121,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final _whatsappController = TextEditingController();
   final _address1Controller = TextEditingController();
   final _address2Controller = TextEditingController();
-  final _address3Controller = TextEditingController();
+  final _territoryController = TextEditingController();
   final _townController = TextEditingController();
 
   final FocusNode _nameFocusNode = FocusNode();
@@ -117,8 +133,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   final FocusNode _whatsappFocusNode = FocusNode();
   final FocusNode _address1FocusNode = FocusNode();
   final FocusNode _address2FocusNode = FocusNode();
-  final FocusNode _address3FocusNode = FocusNode();
-  final FocusNode _townFocusNode = FocusNode();
 
   bool isMasonry = false;
   bool isWaterproofing = false;
@@ -132,7 +146,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     'whatsapp': null,
     'address1': null,
     'address2': null,
-    'address3': null,
+    'territory': null,
     'town': null,
   };
 
@@ -144,7 +158,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     'whatsapp': null,
     'address1': null,
     'address2': null,
-    'address3': null,
+    'territory': null,
     'town': null,
   };
 
@@ -175,7 +189,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     latitude = position.latitude.toString();
     longitude = position.longitude.toString();
 
-    calculateLatLngRange(position.latitude, position.longitude, 100);
+    if (position.latitude < 0 || position.longitude < 0) {
+      showErrorAlertDialogWithBack(context, "You are not permitted to add organization from this location");
+    } else {
+      calculateLatLngRange(position.latitude, position.longitude, 100);
+    }
   }
 
   void calculateLatLngRange(double lat, double lon, double distanceInMeters) {
@@ -188,7 +206,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     double lonRange = distanceInKm / (latAdjustment * cos(lat * degreeToRad));
 
     // Minimize calls to bloc by processing only when necessary
-    _organizationBloc.getOrganizationByLocation(
+
+    _organizationLocationBloc.getOrganizationByLocation(
       (lon - lonRange).toString(),
       (lon + lonRange).toString(),
       (lat - latRange).toString(),
@@ -198,7 +217,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   getNearlyOrganizationsResponse() {
     return StreamBuilder<ResponseList<Organization>>(
-      stream: _organizationBloc.organizationStream,
+      stream: _organizationLocationBloc.organizationLocationStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return Container();
 
@@ -263,7 +282,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _whatsappController.clear();
     _address1Controller.clear();
     _address2Controller.clear();
-    _address3Controller.clear();
+    _territoryController.clear();
     _townController.clear();
 
     _selectedCustomerType = null;
@@ -284,22 +303,26 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   @override
   void initState() {
     super.initState();
-    _superiorOrganizationBloc = OrganizationBloc();
+    _organizationTypeBloc = OrganizationTypeBloc();
     _customerTypeBloc = CustomerTypeBloc();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
-    _organizationBloc = OrganizationBloc();
     _routeListBloc = RouteListBloc();
     _updateRouteBloc = UpdateRouteBloc();
+    _territoryBloc = TerritoryBloc();
+    _townBloc = TownBloc();
+    _organizationLocationBloc = OrganizationLocationBloc();
 
     _customerTypeBloc.getCustomerType();
     _getCurrentLocation();
 
-    _superiorOrganizationBloc.getOrganizationByType("Distributor");
+    _organizationTypeBloc.getOrganizationByType("Distributor");
     _routeListBloc.getRouteList("");
+    _territoryBloc.getTerritory(widget.loggedUserNummer);
     setState(() {
       _isSuperiorOrganizationLoading = true;
       _isRouteLoading = true;
+      _isTerritoryLoading = true;
       _isLoadingNearlyOrganizations = true;
     });
   }
@@ -309,6 +332,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _customerTypeBloc.dispose();
     _addOrganizationBloc.dispose();
     _addGoodsManagementBloc.dispose();
+    _territoryBloc.dispose();
+    _townBloc.dispose();
     _nameController.dispose();
     _ownerNameController.dispose();
     _ownerBirthdayController.dispose();
@@ -318,8 +343,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _whatsappController.dispose();
     _address1Controller.dispose();
     _address2Controller.dispose();
-    _address3Controller.dispose();
-    _townController.dispose();
     _nameFocusNode.dispose();
     _ownerNameFocusNode.dispose();
     _ownerBirthdayFocusNode.dispose();
@@ -329,10 +352,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _whatsappFocusNode.dispose();
     _address1FocusNode.dispose();
     _address2FocusNode.dispose();
-    _address3FocusNode.dispose();
-    _townFocusNode.dispose();
-    _organizationBloc.dispose();
-    _superiorOrganizationBloc.dispose();
+    _organizationLocationBloc.dispose();
+    _organizationTypeBloc.dispose();
     _routeListBloc.dispose();
     _updateRouteBloc.dispose();
     super.dispose();
@@ -383,10 +404,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           _validationMessages['address3'] = null;
           _validationStatus['address3'] = true;
           break;
-        case 'town':
-          _validationMessages['town'] = _validateTown(_townController.text);
-          _validationStatus['town'] = _validationMessages['town'] == null;
-          break;
       }
     });
   }
@@ -412,9 +429,16 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return null;
   }
 
-  String? _validateTown(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter town';
+  String? _validateTerritory(Territory? value) {
+    if (value == null) {
+      return 'Please select territory';
+    }
+    return null;
+  }
+
+  String? _validateTown(Town? value) {
+    if (value == null) {
+      return 'Please select town';
     }
     return null;
   }
@@ -511,6 +535,8 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           updateRouteResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
+                          getTerritoryResponse(),
+                          getTownResponse(),
                           if (_validateCustomerType() != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
@@ -627,22 +653,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             validator: _validateAddress2,
                           ),
                           const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _address3Controller,
-                            label: 'Address Line 3',
-                            fieldName: 'address3',
-                            focusNode: _address3FocusNode,
-                            validator: (value) => null,
-                          ),
+                          buildTerritoryDropdown(),
                           const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _townController,
-                            label: 'Town',
-                            fieldName: 'town',
-                            focusNode: _townFocusNode,
-                            validator: _validateTown,
-                          ),
-                          const SizedBox(height: 16),
+                          _selectedTerritory != null ? buildTownDropdown() : Container(),
+                          _selectedTerritory != null ? const SizedBox(height: 16) : Container(),
                           buildSuperiorOrganizationDropdown(),
                           const SizedBox(height: 16),
                           buildRouteDropdown(),
@@ -658,10 +672,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 _whatsappController.text = capitalizeWords(_whatsappController.text);
                                 _address1Controller.text = capitalizeWords(_address1Controller.text);
                                 _address2Controller.text = capitalizeWords(_address2Controller.text);
-                                _address3Controller.text = capitalizeWords(_address3Controller.text);
-                                _townController.text = capitalizeWords(_townController.text);
-
-                                print(_ownerBirthdayController.text);
 
                                 final customerTypeValidation = _validateCustomerType();
                                 if (_formKey.currentState!.validate() && customerTypeValidation == null) {
@@ -671,15 +681,15 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   _isUpdateRouteLoaded = false;
 
                                   final customerTypeId = _selectedCustomerType.toString();
-                                  final name = "${_nameController.text}_${_townController.text}";
+                                  final name = "${_nameController.text}_${_selectedTown!.ytsublocNamebspr.toString()}";
                                   final email = _emailController.text.toString();
                                   final phone1 = _phone1Controller.text.toString();
                                   final phone2 = _phone2Controller.text.toString();
                                   final whatsapp = _whatsappController.text.toString();
                                   final address1 = _address1Controller.text.toString();
                                   final address2 = _address2Controller.text.toString();
-                                  final address3 = _address3Controller.text.toString();
-                                  final town = _townController.text.toString();
+                                  final territory = _selectedTerritory!.ytterritoryNummer.toString();
+                                  final town = _selectedTown!.ytsublocNummer.toString();
                                   final ownerName = _ownerNameController.text.toString();
                                   final ownerBirthday = _ownerBirthdayController.text.toString();
                                   final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
@@ -700,7 +710,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         whatsapp,
                                         address1,
                                         address2,
-                                        address3,
+                                        territory,
                                         town,
                                         latitude,
                                         longitude,
@@ -737,7 +747,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 _isLoadingNearlyOrganizations ||
                 _isSuperiorOrganizationLoading ||
                 _isRouteLoading ||
-                _isUpdateRouteLoading)
+                _isUpdateRouteLoading ||
+                _isTerritoryLoading ||
+                _isTownLoading)
               const Loading(),
           ],
         ),
@@ -933,7 +945,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   _isGoodsManagementSuccessShown = true;
                   _isUpdateOrganizationCompleted = true;
                   if (_selectedRoute != null) {
-                    print("WWWWWWWWWWWWWWW");
                     _checkForSuccess();
                   } else {
                     final name = _nameController.text.toString();
@@ -967,7 +978,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   getSuperiorOrganizationResponse() {
     return StreamBuilder<ResponseList<Organization>>(
-      stream: _superiorOrganizationBloc.organizationStream,
+      stream: _organizationTypeBloc.organizationTypeStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
@@ -1055,6 +1066,112 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     );
   }
 
+  Widget getTerritoryResponse() {
+    return StreamBuilder<ResponseList<Territory>>(
+      stream: _territoryBloc.territoryStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTerritoryLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isTerritoryLoaded) {
+                _isTerritoryLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTerritoryLoading = false;
+                    _territoryList = snapshot.data!.data!;
+                    print(_territoryList.length.toString());
+
+                    if (_territoryList.length == 1) {
+                      // Find the matching organization or set a default value
+                      Territory matchingTerritory = _territoryList.firstWhere(
+                        (territory) => territory.ytterritoryNamebspr == widget.userOrganizationNummer,
+                        orElse: () => _territoryList.first, // Use a fallback, like the first item in the list
+                      );
+
+                      _selectedTerritory = matchingTerritory;
+
+                      _townBloc.getTown(_territoryList[0].ytterritoryNummer.toString()).then((fetchedTowns) {
+                        setState(() {
+                          _townList = fetchedTowns;
+                          _isTownLoading = false;
+                        });
+                      }).catchError((error) {
+                        setState(() {
+                          _isTownLoading = false;
+                        });
+                      });
+                    }
+                  });
+                });
+              }
+
+            case Status.ERROR:
+              if (!_isTerritoryErrorShown) {
+                _isTerritoryErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTerritoryLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget getTownResponse() {
+    return StreamBuilder<ResponseList<Town>>(
+      stream: _townBloc.townStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTownLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              // if (!_isTownLoaded) {
+              //   _isTownLoaded = true;
+              //   WidgetsBinding.instance.addPostFrameCallback((_) {
+              //     setState(() {
+              //       _isTownLoading = false;
+              //       _townList = snapshot.data!.data!;
+              //     });
+              //   });
+              // }
+
+              _townList = snapshot.data!.data!;
+
+            case Status.ERROR:
+              if (!_isTerritoryErrorShown) {
+                _isTerritoryErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTerritoryLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
   Widget updateRouteResponse() {
     return StreamBuilder<Response<UpdateRoute>>(
       stream: _updateRouteBloc.updateRouteStream,
@@ -1080,7 +1197,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     _isSuccessMessageShown = true;
                   }
                   if (_selectedRoute != null) {
-                    print("xxxxxxxxxxxxxxxxx");
                     _checkForSuccess();
                   }
                 });
@@ -1226,6 +1342,146 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     );
   }
 
+  Widget buildTerritoryDropdown() {
+    return DropdownSearch<Territory>(
+      items: _territoryList,
+      itemAsString: (Territory u) => u.ytterritoryNamebspr.toString(),
+      onChanged: (Territory? territory) {
+        setState(() {
+          _selectedTerritory = territory;
+          _selectedTown = null;
+          _townList = [];
+          _isTownLoading = true;
+        });
+
+        if (territory != null) {
+          _townBloc.getTown(territory.ytterritoryNummer.toString()).then((fetchedTowns) {
+            setState(() {
+              _townList = fetchedTowns;
+              _isTownLoading = false;
+            });
+          }).catchError((error) {
+            setState(() {
+              _isTownLoading = false;
+            });
+          });
+        }
+      },
+      selectedItem: _selectedTerritory,
+      //clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Territory",
+          hintText: "Select Territory",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Territory',
+            hintText: 'Type to Search Territory...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              "${item.ytterritoryNamebspr}",
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
+      validator: _validateTerritory,
+    );
+  }
+
+  Widget buildTownDropdown() {
+    return DropdownSearch<Town>(
+      items: _townList,
+      itemAsString: (Town u) => u.ytsublocNamebspr.toString(),
+      onChanged: (Town? town) {
+        setState(() {
+          _selectedTown = town;
+        });
+      },
+      selectedItem: _selectedTown,
+      //clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Town",
+          hintText: "Select Town",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Town',
+            hintText: 'Type to Search Town...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              "${item.ytsublocNamebspr}",
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
+      validator: _validateTown,
+    );
+  }
+
   Widget buildSuperiorOrganizationDropdown() {
     return DropdownSearch<Organization>(
       items: _superiorOrganizations,
@@ -1288,18 +1544,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   Widget buildRouteDropdown() {
-    // // Use a Set to store unique route names
-    // final Set<String> uniqueRouteNames = _routeList.map((e) => e.namebsprRoute.toString()).toSet();
-
-    // // Filter the _routeOrganization list to include only unique route names
-    // final List<RouteList> uniqueRoutes = _routeList.where((route) {
-    //   if (uniqueRouteNames.contains(route.namebsprRoute)) {
-    //     uniqueRouteNames.remove(route.namebsprRoute);
-    //     return true;
-    //   }
-    //   return false;
-    // }).toList();
-
     return DropdownSearch<RouteList>(
       items: _routeList,
       itemAsString: (RouteList u) => u.namebsprRoute.toString(),
@@ -1361,10 +1605,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   void _checkForSuccess() {
-    print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
-    print(_isUpdateRouteCompleted);
-    print(_isUpdateOrganizationCompleted);
-    print(_isFinalSuccessMessageShown);
     if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
       setState(() {
         _isFinalSuccessMessageShown = true;

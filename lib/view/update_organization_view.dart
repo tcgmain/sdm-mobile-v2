@@ -1,7 +1,8 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
-import 'package:sdm/blocs/organization_bloc.dart';
+//import 'package:sdm/blocs/organization_asignee_bloc.dart';
+import 'package:sdm/blocs/organization_type_bloc.dart';
 import 'package:sdm/blocs/route_list_bloc.dart';
 import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/blocs/update_organization_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
 import 'package:sdm/models/route_list.dart';
 import 'package:sdm/models/route_organization.dart';
+import 'package:sdm/models/territory.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
@@ -37,8 +39,7 @@ class UpdateOrganizationView extends StatefulWidget {
   final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
-  final String organizationAddress3;
-  final String organizationTown;
+  final String territoryNummer;
   final String superiorOrganizationNummer;
   final String ownerName;
   final String ownerBirthday;
@@ -65,8 +66,7 @@ class UpdateOrganizationView extends StatefulWidget {
     required this.organizationWhatsapp,
     required this.organizationAddress1,
     required this.organizationAddress2,
-    required this.organizationAddress3,
-    required this.organizationTown,
+    required this.territoryNummer,
     required this.superiorOrganizationNummer,
     required this.ownerName,
     required this.ownerBirthday,
@@ -113,16 +113,18 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   //late String organizationNummer;
   late String organizationSearchWord;
   late UpdateOrganizationBloc _updateOrganizationBloc;
-  late OrganizationBloc _superiorOrganizationBloc;
+  late OrganizationTypeBloc _organizationTypeBloc;
   late RouteListBloc _routeListBloc;
   late UpdateRouteBloc _updateRouteBloc;
   late RouteOrganizationBloc _routeOrganizationBloc;
   Organization? _selectedSuperiorOrganization;
+  Territory? _selectedTerritory;
   String organizationType = "";
   String organizationColor = "";
   String selectedRouteNummer = "";
   List<Organization> _superiorOrganizations = [];
   List<RouteList> _routeList = [];
+  List<Territory> _territoryList = [];
   RouteList? _selectedRoute;
 
   String? _selectedCustomerType;
@@ -135,8 +137,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   late TextEditingController _whatsappController;
   late TextEditingController _address1Controller;
   late TextEditingController _address2Controller;
-  late TextEditingController _address3Controller;
-  late TextEditingController _townController;
 
   final FocusNode _ownerNameFocusNode = FocusNode();
   final FocusNode _ownerBirthdayFocusNode = FocusNode();
@@ -146,8 +146,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   final FocusNode _whatsappFocusNode = FocusNode();
   final FocusNode _address1FocusNode = FocusNode();
   final FocusNode _address2FocusNode = FocusNode();
-  final FocusNode _address3FocusNode = FocusNode();
-  final FocusNode _townFocusNode = FocusNode();
 
   late bool isMasonry;
   late bool isWaterproofing;
@@ -160,8 +158,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     'whatsapp': null,
     'address1': null,
     'address2': null,
-    'address3': null,
-    'town': null,
   };
 
   final Map<String, String?> _validationMessages = {
@@ -171,8 +167,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     'whatsapp': null,
     'address1': null,
     'address2': null,
-    'address3': null,
-    'town': null,
   };
 
   @override
@@ -191,8 +185,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _whatsappController = TextEditingController(text: widget.organizationWhatsapp.toString());
     _address1Controller = TextEditingController(text: widget.organizationAddress1.toString());
     _address2Controller = TextEditingController(text: widget.organizationAddress2.toString());
-    _address3Controller = TextEditingController(text: widget.organizationAddress3.toString());
-    _townController = TextEditingController(text: widget.organizationTown.toString());
     organizationType = widget.organizationTypeId;
     organizationColor = widget.organizationColor;
 
@@ -202,13 +194,13 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
 
     _customerTypeBloc = CustomerTypeBloc();
     _updateOrganizationBloc = UpdateOrganizationBloc();
-    _superiorOrganizationBloc = OrganizationBloc();
-    _customerTypeBloc.getCustomerType();
-    _superiorOrganizationBloc.getOrganizationByType("Distributor");
-    _routeListBloc = RouteListBloc();
-    _routeListBloc.getRouteList("");
+    _organizationTypeBloc = OrganizationTypeBloc();
     _updateRouteBloc = UpdateRouteBloc();
     _routeOrganizationBloc = RouteOrganizationBloc();
+    _routeListBloc = RouteListBloc();
+    _customerTypeBloc.getCustomerType();
+    _organizationTypeBloc.getOrganizationByType("Distributor");
+    _routeListBloc.getRouteList("");
     _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
   }
 
@@ -224,8 +216,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _whatsappController.dispose();
     _address1Controller.dispose();
     _address2Controller.dispose();
-    _address3Controller.dispose();
-    _townController.dispose();
     _ownerNameFocusNode.dispose();
     _ownerBirthdayFocusNode.dispose();
     _emailFocusNode.dispose();
@@ -234,9 +224,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _whatsappFocusNode.dispose();
     _address1FocusNode.dispose();
     _address2FocusNode.dispose();
-    _address3FocusNode.dispose();
-    _townFocusNode.dispose();
-    _superiorOrganizationBloc.dispose();
+    _organizationTypeBloc.dispose();
     _routeListBloc.dispose();
     _updateRouteBloc.dispose();
     super.dispose();
@@ -291,10 +279,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
           _validationMessages['address3'] = null;
           _validationStatus['address3'] = true;
           break;
-        case 'town':
-          _validationMessages['town'] = _validateTown(_townController.text);
-          _validationStatus['town'] = _validationMessages['town'] == null;
-          break;
       }
     });
   }
@@ -309,13 +293,6 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   String? _validateAddress2(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter address line 2';
-    }
-    return null;
-  }
-
-  String? _validateTown(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter town';
     }
     return null;
   }
@@ -502,21 +479,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               validator: _validateAddress2,
                             ),
                             const SizedBox(height: 16),
-                            _buildValidatedTextFormField(
-                              controller: _address3Controller,
-                              label: 'Address Line 3',
-                              fieldName: 'address3',
-                              focusNode: _address3FocusNode,
-                              validator: (value) => null,
-                            ),
-                            const SizedBox(height: 16),
-                            _buildValidatedTextFormField(
-                              controller: _townController,
-                              label: 'Town',
-                              fieldName: 'town',
-                              focusNode: _townFocusNode,
-                              validator: _validateTown,
-                            ),
+                            buildTerritoryDropdown(),
                             const SizedBox(height: 16),
                             if (widget.organizationNummer != "5") buildSuperiorOrganizationDropdown(),
                             if (widget.organizationNummer != "5") const SizedBox(height: 16),
@@ -539,11 +502,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                     _whatsappController.text = capitalizeWords(_whatsappController.text);
                                     _address1Controller.text = capitalizeWords(_address1Controller.text);
                                     _address2Controller.text = capitalizeWords(_address2Controller.text);
-                                    _address3Controller.text = capitalizeWords(_address3Controller.text);
-                                    _townController.text = capitalizeWords(_townController.text);
-print("NNN");
                                     if (_formKey.currentState!.validate()) {
-                                      print("ttt");
                                       setState(() {
                                         _isUpdateLoading = true;
                                       });
@@ -556,8 +515,6 @@ print("NNN");
                                       final whatsapp = _whatsappController.text.toString();
                                       final address1 = _address1Controller.text.toString();
                                       final address2 = _address2Controller.text.toString();
-                                      final address3 = _address3Controller.text.toString();
-                                      final town = _townController.text.toString();
                                       String superiorOrganization;
                                       if (widget.organizationNummer.toString() != "5") {
                                         superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
@@ -574,8 +531,6 @@ print("NNN");
                                           whatsapp,
                                           address1,
                                           address2,
-                                          address3,
-                                          town,
                                           customerTypeId,
                                           isMasonry.toString(),
                                           isWaterproofing.toString(),
@@ -590,7 +545,6 @@ print("NNN");
                                       }
 
                                       if (_selectedRoute != null && selectedRouteNummer.isEmpty) {
-                                        print("rrr");
                                         String selectedRouteId = _selectedRoute!.id.toString();
                                         _updateRouteBloc.updateRoute(selectedRouteId, widget.organizationNummer);
                                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -909,7 +863,7 @@ print("NNN");
 
   getSuperiorOrganizationResponse() {
     return StreamBuilder<ResponseList<Organization>>(
-      stream: _superiorOrganizationBloc.organizationStream,
+      stream: _organizationTypeBloc.organizationTypeStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           switch (snapshot.data!.status!) {
@@ -956,6 +910,68 @@ print("NNN");
         }
         return Container();
       },
+    );
+  }
+
+  
+  Widget buildTerritoryDropdown() {
+    return DropdownSearch<Territory>(
+      items: _territoryList,
+      itemAsString: (Territory u) => u.ytterritoryNamebspr.toString(),
+      onChanged: (Territory? territory) {
+        setState(() {
+          _selectedTerritory = territory;
+        });
+      },
+      selectedItem: _selectedTerritory,
+      //clearButtonProps: const ClearButtonProps(isVisible: true),
+      dropdownDecoratorProps: const DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+          labelText: "Select Territory",
+          hintText: "Select Territory",
+          fillColor: CustomColors.textFieldFillColor,
+          labelStyle: TextStyle(
+            color: CustomColors.textFieldTextColor,
+          ),
+        ),
+      ),
+      popupProps: PopupProps.bottomSheet(
+        showSearchBox: true,
+        searchFieldProps: TextFieldProps(
+          decoration: InputDecoration(
+            focusColor: CustomColors.buttonColor,
+            labelText: 'Search Territory',
+            hintText: 'Type to Search Territory...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(50.0),
+              borderSide: const BorderSide(
+                color: CustomColors.textFieldBorderColor,
+                width: 2.0,
+              ),
+            ),
+            fillColor: CustomColors.textFieldFillColor,
+            filled: true,
+            labelStyle: const TextStyle(
+              color: CustomColors.textFieldTextColor,
+            ),
+          ),
+        ),
+        itemBuilder: (context, item, isSelected) {
+          return ListTile(
+            title: Text(
+              "${item.ytterritoryNamebspr}",
+              style: TextStyle(
+                color: CustomColors.cardTextColor,
+                fontSize: getFontSize(),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -1236,10 +1252,6 @@ print("NNN");
   }
 
   void _checkForSuccess() {
-    print("RRRRR");
-    print(_isUpdateRouteCompleted);
-    print(_isUpdateOrganizationCompleted);
-    print(_isFinalSuccessMessageShown);
     if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
       setState(() {
         _isFinalSuccessMessageShown = true;

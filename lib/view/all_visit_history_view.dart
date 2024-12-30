@@ -4,7 +4,6 @@ import 'package:sdm/blocs/visit_bloc.dart';
 import 'package:sdm/models/visit.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
-import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
@@ -32,7 +31,6 @@ class AllVisitHistoryView extends StatefulWidget {
 class _AllVisitHistoryViewState extends State<AllVisitHistoryView> {
   bool _isLoading = false;
   bool _isErrorShown = false;
-  bool _isFiltersVisible = false;
   late VisitBloc _visitBloc;
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _organizationController = TextEditingController();

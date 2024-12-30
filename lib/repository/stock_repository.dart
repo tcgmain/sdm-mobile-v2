@@ -12,7 +12,7 @@ class StockRepository {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     Map<String, dynamic> inputBody = {
-      "id": "(310,77,0)",
+      "id": "(5591,77,0)",
       "ysdmemp": userNummer,
       "ysdmorg": organizationNummer,
       "table": [
