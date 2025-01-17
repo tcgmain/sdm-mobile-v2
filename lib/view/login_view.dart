@@ -25,6 +25,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String version = "1.5";
   late LoginBloc _loginBloc;
   late UserDetailsBloc _userDetailsBloc;
   bool _showPassword = true;
@@ -152,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              const Text("Version: 1.5"),
+              Text("Version: $version"),
             ],
           ),
         ),
@@ -312,8 +313,22 @@ class _LoginPageState extends State<LoginPage> {
               );
             case Status.COMPLETED:
               if (snapshot.data!.data!.ylogver == true) {
-                username = snapshot.data!.data!.ylogopr.toString();
-                _userDetailsBloc.getUserDetails(username);
+                String erpVersionNo = snapshot.data!.data!.mobileappversiondev.toString();
+                //Check application version
+                if (version == erpVersionNo) {
+                  username = snapshot.data!.data!.ylogopr.toString();
+                  _userDetailsBloc.getUserDetails(username);
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!_isErrorMessageShown) {
+                      showErrorAlertDialog(context,
+                          "Current version is $erpVersionNo. Your version is $version. Please update to continue.");
+                      setState(() {
+                        _isErrorMessageShown = true;
+                      });
+                    }
+                  });
+                }
               } else {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (!_isErrorMessageShown) {
@@ -399,6 +414,7 @@ class _LoginPageState extends State<LoginPage> {
               break;
             case Status.ERROR:
               if (!_isUserDetailsErrorMessageShown) {
+                _isUserDetailsErrorMessageShown = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {

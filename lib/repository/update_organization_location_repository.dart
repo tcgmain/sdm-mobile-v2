@@ -9,21 +9,23 @@ class UpdateOrganizationLocationRepository {
   dynamic inputBody, requestHeaders;
 
   Future<UpdateOrganization> updateOrganizationLocation(
-      String id,
-      String longitude,
-      String latitude,
-     ) async {
+    String id,
+    String longitude,
+    String latitude,
+    String updatedBy,
+    String updatedOn,
+  ) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
       "id": id,
       "ygpslat": latitude,
       "ygpslon": longitude,
-     
+      "locationupdatedby": updatedBy,
+      "locationupdatedon": updatedOn
     };
 
     final response = await _provider.post("/updateorganization", jsonEncode(inputBody), requestHeaders);
     return UpdateOrganization.fromJson(response);
   }
-
 }

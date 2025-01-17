@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:sdm/blocs/route_organization_bloc.dart';
-import 'package:sdm/models/route_organization.dart';
+import 'package:sdm/blocs/route_organization2_bloc.dart';
+import 'package:sdm/models/route_organization2.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_organization_view.dart';
@@ -10,24 +11,25 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
-class RouteOrganizationView extends StatefulWidget {
+class RouteOrganization2View extends StatefulWidget {
   final String userNummer;
   final String username;
   final String routeNummer;
   final String routeName;
+  final String date;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
   final String designationNummer;
   final String userOrganizationNummer;
 
-  const RouteOrganizationView({
+  const RouteOrganization2View({
     super.key,
     required this.userNummer,
     required this.username,
     required this.routeNummer,
     required this.routeName,
+    required this.date,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
     required this.designationNummer,
@@ -35,14 +37,13 @@ class RouteOrganizationView extends StatefulWidget {
   });
 
   @override
-  State<RouteOrganizationView> createState() => _RouteOrganizationViewState();
+  State<RouteOrganization2View> createState() => _RouteOrganization2ViewState();
 }
 
-class _RouteOrganizationViewState extends State<RouteOrganizationView> {
-  late RouteOrganizationBloc _routeOrganizationBloc;
+class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
+  late RouteOrganization2Bloc _routeOrganization2Bloc;
   bool _isLoading = false;
   bool _isErrorMessageShown = false;
-  String _sortBy = 'Priority'; // Default sort by Priority
 
   @override
   void initState() {
@@ -50,54 +51,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
     setState(() {
       _isLoading = true;
     });
-    _routeOrganizationBloc = RouteOrganizationBloc();
-    _routeOrganizationBloc.getRouteOrganization(widget.routeNummer);
+    _routeOrganization2Bloc = RouteOrganization2Bloc();
+    _routeOrganization2Bloc.getRouteOrganization(widget.routeNummer, widget.date);
   }
 
   @override
   void dispose() {
-    _routeOrganizationBloc.dispose();
     super.dispose();
-  }
-
-  // Function to sort organizations based on the selected criteria
-  List<RouteOrganization> _sortOrganizations(List<RouteOrganization> organizations) {
-    if (_sortBy == 'Priority') {
-      organizations.sort((a, b) {
-        final dateFormat = DateFormat('dd/MM/yyyy');
-        DateTime? dateA, dateB;
-
-        // Parse date strings if they are not null or empty
-        if (a.ynxtvisitdat != null && a.ynxtvisitdat!.isNotEmpty) {
-          try {
-            dateA = dateFormat.parse(a.ynxtvisitdat!);
-          } catch (_) {
-            dateA = null;
-          }
-        }
-        if (b.ynxtvisitdat != null && b.ynxtvisitdat!.isNotEmpty) {
-          try {
-            dateB = dateFormat.parse(b.ynxtvisitdat!);
-          } catch (_) {
-            dateB = null;
-          }
-        }
-
-        // Handle cases where one or both dates are null
-        if (dateA == null && dateB == null) return 0;
-        if (dateA == null) return 1; // `a` should come last if `dateA` is null
-        if (dateB == null) return -1; // `b` should come last if `dateB` is null
-
-        return dateA.compareTo(dateB);
-      });
-    } else if (_sortBy == 'Sequence') {
-      organizations.sort((a, b) {
-        final seqA = a.ysequno.toString();
-        final seqB = b.ysequno.toString();
-        return seqA.compareTo(seqB);
-      });
-    }
-    return organizations;
   }
 
   Future<void> _navigateToUpdateOrganizationView(
@@ -152,7 +112,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
 
     if (result == true) {
       setState(() {
-        _routeOrganizationBloc.getRouteOrganization(widget.routeNummer);
+        _routeOrganization2Bloc.getRouteOrganization(widget.routeNummer, widget.date);
         _isLoading = true;
       });
     }
@@ -184,32 +144,9 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                   const SizedBox(
                     height: 10,
                   ),
-                  // Add DropdownButton for sorting
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: DropdownButton<String>(
-                      borderRadius: BorderRadius.circular(8),
-                      iconEnabledColor: CustomColors.textColor,
-                      dropdownColor: CustomColors.dropDownColor,
-                      value: _sortBy,
-                      items: const [
-                        DropdownMenuItem(value: 'Priority', child: Text('Sort by Priority')),
-                        DropdownMenuItem(value: 'Sequence', child: Text('Sort by Sequence')),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          _sortBy = value!;
-                        });
-                      },
-                      isExpanded: false,
-                      underline: Container(),
-                      style: const TextStyle(color: CustomColors.textColor),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                   Expanded(
-                    child: StreamBuilder<ResponseList<RouteOrganization>>(
-                      stream: _routeOrganizationBloc.routeOrganizationStream,
+                    child: StreamBuilder<ResponseList<RouteOrganization2>>(
+                      stream: _routeOrganization2Bloc.routeOrganization2Stream,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           switch (snapshot.data!.status!) {
@@ -237,49 +174,40 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                   ),
                                 );
                               } else {
-                                // Sort organizations before displaying
-                                List<RouteOrganization> sortedOrganizations = _sortOrganizations(snapshot.data!.data!);
-
                                 return SlidableAutoCloseBehavior(
                                   closeWhenOpened: true,
                                   closeWhenTapped: false,
                                   child: ListView.builder(
-                                    itemCount: sortedOrganizations.length,
+                                    itemCount: snapshot.data!.data!.length,
                                     itemBuilder: (context, index) {
-                                      final organizations = sortedOrganizations[index];
-                                      final organizationId = organizations.ysdmorgId.toString();
-                                      final organizationNummer = organizations.orgnummer.toString();
-                                      final organizationName = organizations.namebspr?.toString() ?? 'Unnamed Route';
-                                      final organizationTypeId = organizations.ycustypId?.toString() ?? 'Unnamed Route';
-                                      final organizationPhone1 = organizations.yphone1?.toString() ?? 'Unnamed Route';
-                                      final organizationPhone2 = organizations.yphone2?.toString() ?? 'Unnamed Route';
-                                      final organizationWhatsapp = organizations.ywhtapp?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress1 =
-                                          organizations.yaddressl1?.toString() ?? 'Unnamed Route';
-                                      final organizationAddress2 =
-                                          organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                      final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
-                                      final organizationLongitude =
-                                          organizations.longitude?.toString() ?? 'Unnamed Route';
-                                      final organizationLatitude =
-                                          organizations.latitude?.toString() ?? 'Unnamed Route';
-                                      final organizationDistance =
-                                          organizations.distance?.toString() ?? 'Unnamed Route';
-                                      final organizationMail = organizations.yemail?.toString() ?? 'Unnamed Route';
-                                      final ysuporgNummer = organizations.ysuporgNummer?.toString() ?? 'Unnamed Route';
-                                      final ysuporgNamebspr =
-                                          organizations.ysuporgNamebspr?.toString() ?? 'Unnamed Route';
+                                      final organizations = snapshot.data!.data![index];
+
+                                      final organizationId = organizations.organizationId.toString();
+                                      final organizationNummer = organizations.organizationNummer.toString();
+                                      final organizationName = organizations.organizationNamebspr.toString();
+                                      final organizationTypeId = organizations.organizationYcustypId.toString();
+                                      final organizationPhone1 = organizations.organizationYphone1.toString();
+                                      final organizationPhone2 = organizations.organizationYphone2.toString();
+                                      final organizationWhatsapp = organizations.organizationYwhtapp.toString();
+                                      final organizationAddress1 = organizations.organizationYaddressl1.toString();
+                                      final organizationAddress2 = organizations.organizationYaddressl2.toString();
+                                      final organizationColour = organizations.organizationYselcolourSuch.toString();
+                                      final organizationLongitude = organizations.organizationYgpslon.toString();
+                                      final organizationLatitude = organizations.organizationYgpslat.toString();
+                                      final organizationDistance = organizations.organizationYvisdis.toString();
+                                      final organizationMail = organizations.organizationYemail.toString();
+                                      final ysuporgNummer = organizations.organizationYsuporgNummer.toString();
+                                      final ysuporgNamebspr = organizations.organizationYsuporgNamebspr.toString();
                                       final organizationTypeNamebspr =
-                                          organizations.ycustypNamebspr?.toString() ?? 'Unnamed Route';
-                                      final ownerName = organizations.yowname?.toString() ?? 'Unnamed Route';
-                                      final ownerBirthday = organizations.yorgowndob?.toString() ?? 'Unnamed Route';
-                                      final isMasonry = organizations.ymasonry?.toString() ?? 'Unnamed Route';
-                                      final isWaterproofing = organizations.ywaterpr?.toString() ?? 'Unnamed Route';
-                                      final isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
-                                      final organizationAssignTo =
-                                          organizations.yassigtoSuch?.toString() ?? 'Unnamed Route';
-                                      final nextVisitDueDate = organizations.ynxtvisitdat?.toString() ?? '';
-                                      final yactiv = organizations.yactiv.toString();
+                                          organizations.organizationYcustypNamebspr.toString();
+                                      final ownerName = organizations.organizationYowname.toString();
+                                      final ownerBirthday = organizations.organizationYorgowndob.toString();
+                                      final isMasonry = organizations.organizationYmasonry.toString();
+                                      final isWaterproofing = organizations.organizationYswaterp.toString();
+                                      final isFlooring = organizations.organizationYflooring.toString();
+                                      final organizationAssignTo = organizations.organizationYassigtoSuch.toString();
+                                      final nextVisitDueDate = organizations.nextvisitdue.toString();
+                                      final yactiv = organizations.organizationYactiv.toString();
 
                                       // Parse the nextVisitDueDate to DateTime
                                       DateTime? nextVisitDate;

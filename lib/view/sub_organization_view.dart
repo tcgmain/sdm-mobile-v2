@@ -254,26 +254,6 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                             children: [
                                               SlidableAction(
                                                 onPressed: (context) {
-
-                                                  // _navigateToUpdateOrganizationView(
-                                                  //     subOrganizationId,
-                                                  //     subOrganizationNummer,
-                                                  //     subOrganizationName,
-                                                  //     subOrganizationCustomerTypeId,
-                                                  //     subOrganizationMail,
-                                                  //     subOrganizationPhone1,
-                                                  //     subOrganizationPhone2,
-                                                  //     subOrganizationWhatsapp,
-                                                  //     subOrganizationAddress1,
-                                                  //     subOrganizationAddress2,
-                                                  //     ownerName,
-                                                  //     ownerBirthday,
-                                                  //     isMasonry,
-                                                  //     isWaterproofing,
-                                                  //     isFlooring,
-                                                  //     subOrganizationSuperiorOrgNummer,
-                                                  //     subOrganizationColour);
-
                                                     _navigateToUpdateOrganizationView(
                                                             subOrganizationId,
                                                             subOrganizationNummer,

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:sdm/blocs/route_bloc.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
+import 'package:sdm/view/route_organization2_view.dart';
 import 'package:sdm/view/route_organization_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -158,11 +159,12 @@ class _RouteViewState extends State<RouteView> {
                                           splashColor: CustomColors.buttonColor,
                                           onTap: () {
                                             Navigator.of(context).push(MaterialPageRoute(
-                                                builder: (context) => RouteOrganizationView(
+                                                builder: (context) => RouteOrganization2View(
                                                       userNummer: widget.userNummer,
                                                       username: widget.username,
                                                       routeNummer: routeNumb,
                                                       routeName: routeName,
+                                                      date: DateFormat('dd/MM/yyyy').format(_selectedDate).toString(),
                                                       isTeamMemberUi: widget.isTeamMemberUi,
                                                       loggedUserNummer: widget.loggedUserNummer,
                                                       designationNummer: widget.designationNummer,

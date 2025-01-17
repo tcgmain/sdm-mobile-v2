@@ -8,7 +8,8 @@ class Login {
         this.ylogopr,
         this.table,
         this.message, 
-        this.ypwdid
+        this.ypwdid,
+        this.mobileappversiondev
 
     });
  
@@ -21,6 +22,7 @@ class Login {
     String? ylogopr;
     List<dynamic>? table;
     String? message;
+    String? mobileappversiondev;
  
     factory Login.fromJson(Map<String, dynamic> json) => Login(
         ylogver : json["ylogver"],
@@ -32,6 +34,7 @@ class Login {
         table : json["table"],
         message : json["message"],
         ypwdid :json["ypwdid"],
+        mobileappversiondev :json["mobileappversiondev"],
     );
  
     Map<String, dynamic> toJson() => {
@@ -44,5 +47,6 @@ class Login {
         "table"      : table,
         "message"    : message,
         "ypwdid"     : ypwdid,
+        "mobileappversiondev"     : mobileappversiondev,
     };
 }

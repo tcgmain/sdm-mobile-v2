@@ -57,6 +57,8 @@ class _ManageStockViewState extends State<ManageStockView> {
   final Map<String, TextEditingController> _stockControllers = {};
   final FocusNode _searchFocusNode = FocusNode();
   bool _isStockUpdatErrorShown = false;
+  bool _isOrganizationIdResponseErrorShown = false;
+  bool _isOrganizationIdResponseSuccessShown = false;
 
   @override
   void initState() {
@@ -324,20 +326,25 @@ class _ManageStockViewState extends State<ManageStockView> {
                 var items = dataList[0];
                 goodsManagementId = items.id.toString();
               } else {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  showErrorAlertDialog(context, "Goods management record is not created for this organization.");
-                });
+                if (!_isOrganizationIdResponseSuccessShown) {
+                  _isOrganizationIdResponseSuccessShown = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    showErrorAlertDialog(context, "Goods management record is not created for this organization.");
+                  });
+                }
               }
               break;
             case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isLoading1 = false;
+              if (!_isOrganizationIdResponseErrorShown) {
+                _isOrganizationIdResponseErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isLoading1 = false;
+                    showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  });
                 });
-              });
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showErrorAlertDialog(context, snapshot.data!.message.toString());
-              });
+              }
+
               break;
           }
         }

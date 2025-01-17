@@ -22,7 +22,8 @@ class LoginRepository {
       "ylogimei": deviceId,
       "ylogver": "",
       "yerrmsg": "",
-      "ypwdid": ""
+      "ypwdid": "",
+      "mobileappversiondev": ""
     };
 
     final response = await _provider.post("/login", jsonEncode(inputBody), requestHeaders);

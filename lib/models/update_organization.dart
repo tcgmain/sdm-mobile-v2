@@ -18,7 +18,9 @@ class UpdateOrganization {
       required this.yorgapp,
       required this.yselcolour,
       required this.ygpslat,
-      required this.ygpslon
+      required this.ygpslon,
+      required this.locationupdatedby,
+      required this.locationupdatedon
       });
 
   String id;
@@ -40,6 +42,8 @@ class UpdateOrganization {
   String yselcolour;
   String ygpslat;
   String ygpslon;
+  String locationupdatedby;
+  String locationupdatedon;
 
   factory UpdateOrganization.fromJson(Map<String, dynamic> json) => UpdateOrganization(
         id: json["id"] ?? "",
@@ -61,6 +65,8 @@ class UpdateOrganization {
         yselcolour: json["yselcolour"] ?? "",
         ygpslat: json["ygpslat"] ?? "",
         ygpslon: json["ygpslon"] ?? "",
+        locationupdatedby: json["locationupdatedby"] ?? "",
+        locationupdatedon: json["locationupdatedon"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,5 +89,7 @@ class UpdateOrganization {
         "yselcolour": yselcolour,
         "ygpslat": ygpslat,
         "ygpslon": ygpslon,
+        "locationupdatedby": locationupdatedby,
+        "locationupdatedon": locationupdatedon,
       };
 }

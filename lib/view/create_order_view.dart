@@ -429,8 +429,9 @@ class _CreateOrderViewState extends State<CreateOrderView> {
 
               break;
             case Status.ERROR:
-              _isCreateSoErrorShown = true;
+              
               if (!_isCreateSoErrorShown) {
+                _isCreateSoErrorShown = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                   setState(() {

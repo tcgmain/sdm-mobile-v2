@@ -72,7 +72,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isAddGoodsManagementAPICall = false;
   bool _isAddOrganizationErrorMessageShown = false;
   bool _isNearbyOrganizationErrorMessageShown = false;
-  final bool _isCustomerTypeErrorMessageShown = false;
+  bool _isCustomerTypeErrorMessageShown = false;
   bool _isNearbyOrganizationPopupShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
@@ -80,6 +80,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isSuperiorOrganizationLoading = false;
   bool _isSuperiorOrganizationErrorShown = false;
   bool _isGoodsManagementSuccessShown = false;
+  bool _isGoodsManagementErrorShown = false;
   bool _isCustomerTypeLoading = false;
   bool _isRouteLoading = false;
   bool _isTerritoryLoading = false;
@@ -813,6 +814,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               );
             case Status.ERROR:
               if (!_isCustomerTypeErrorMessageShown) {
+                _isCustomerTypeErrorMessageShown = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isCustomerTypeLoading = false;
@@ -961,12 +963,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                   _isUpdateLoading = false;
                 });
               });
-              if (!_isAddOrganizationErrorMessageShown) {
+              if (!_isGoodsManagementErrorShown) {
+                _isGoodsManagementErrorShown = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  setState(() {
-                    _isAddOrganizationErrorMessageShown = true;
-                  });
                 });
               }
           }

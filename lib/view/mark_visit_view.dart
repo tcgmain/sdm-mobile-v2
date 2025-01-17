@@ -4,8 +4,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sdm/blocs/mark_visit_bloc.dart';
 import 'package:sdm/blocs/update_organization_location_bloc.dart';
+import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/mark_visit.dart';
 import 'package:sdm/models/update_organization.dart';
+import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_stock_view.dart';
@@ -19,6 +21,7 @@ import 'package:sdm/widgets/loading.dart';
 import 'package:sdm/widgets/location_util.dart';
 import 'package:sdm/widgets/map_widget.dart';
 import 'package:sdm/widgets/success_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -45,29 +48,30 @@ class MarkVisitView extends StatefulWidget {
   final String ysuporgNummer;
   final String ysuporgNamebspr;
 
-  const MarkVisitView(
-      {super.key,
-      required this.username,
-      required this.userNummer,
-      required this.routeNummer,
-      required this.organizationId,
-      required this.organizationNummer,
-      required this.organizationName,
-      required this.organizationPhone1,
-      required this.organizationPhone2,
-      required this.organizationWhatsapp,
-      required this.organizationAddress1,
-      required this.organizationAddress2,
-      required this.organizationColour,
-      required this.organizationLongitude,
-      required this.organizationLatitude,
-      required this.organizationDistance,
-      required this.organizationMail,
-      required this.isTeamMemberUi,
-      required this.loggedUserNummer,
-      required this.ysuporgNummer,
-      required this.ysuporgNamebspr,
-      required this.organizationTypeNamebspr});
+  const MarkVisitView({
+    super.key,
+    required this.username,
+    required this.userNummer,
+    required this.routeNummer,
+    required this.organizationId,
+    required this.organizationNummer,
+    required this.organizationName,
+    required this.organizationPhone1,
+    required this.organizationPhone2,
+    required this.organizationWhatsapp,
+    required this.organizationAddress1,
+    required this.organizationAddress2,
+    required this.organizationColour,
+    required this.organizationLongitude,
+    required this.organizationLatitude,
+    required this.organizationDistance,
+    required this.organizationMail,
+    required this.isTeamMemberUi,
+    required this.loggedUserNummer,
+    required this.ysuporgNummer,
+    required this.ysuporgNamebspr,
+    required this.organizationTypeNamebspr,
+  });
 
   @override
   State<MarkVisitView> createState() => _MarkVisitViewState();
@@ -82,26 +86,39 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   late double organizationDistance = double.parse(widget.organizationDistance);
   bool _isLoading = false;
   bool _showLocationUpdateButton = false;
+  late String loggedUsername;
 
   bool _isWithinRadius = false;
   late MarkVisitBloc _markVisitBloc;
   late UpdateOrganizationLocationBloc _updateOrganizationLocationBloc;
   String currentLatitude = "";
   String currentLongitude = "";
+  late UserDetailsBloc _userDetailsBloc;
+  bool _isUserDetailsErrorMessageShown = false;
+  bool _isLocationUpdatePermissionLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
     _markVisitBloc = MarkVisitBloc();
     _updateOrganizationLocationBloc = UpdateOrganizationLocationBloc();
+
+    _userDetailsBloc = UserDetailsBloc();
+    getUserPermission();
   }
 
   @override
   void dispose() {
     _markVisitBloc.dispose();
     _updateOrganizationLocationBloc.dispose();
+    _userDetailsBloc.dispose();
     super.dispose();
+  }
+
+  getUserPermission() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    loggedUsername = prefs.getString('username') ?? '';
+    _userDetailsBloc.getUserDetails(loggedUsername);
   }
 
   getFullAddress() {
@@ -111,7 +128,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     return fullAddress;
   }
 
-  Future<void> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation(bool isLocUpdPermissionEnable) async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -153,22 +170,18 @@ class _MarkVisitViewState extends State<MarkVisitView> {
 
     bool isWithin = LocationUtils.isWithinRadius(
         currentLat, currentLon, organizationLatitude, organizationLongitude, organizationDistance);
-
+    _isLoading = false;
     if (isWithin) {
       setState(() {
         _isWithinRadius = isWithin;
         _locationMessage += "You are within the range of this organization.";
       });
     } else {
-      final currentDate = DateTime.now();
-      final startDate = DateTime(2025, 1, 1); // 01/01/2025
-      final endDate = DateTime(2025, 1, 31, 23, 59, 59); // 31/01/2025 23:59:59
-
       setState(() {
         _locationMessage += "You are not within the ${widget.organizationDistance} range of this organization.";
 
         // Check if the current date is within the specified range
-        if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)) {
+        if (isLocUpdPermissionEnable == true) {
           _showLocationUpdateButton = true;
         } else {
           _showLocationUpdateButton = false;
@@ -394,11 +407,11 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     CommonAppButton(
                         buttonText: "Update Location",
                         onPressed: () {
-                          _updateOrganizationLocationBloc.updateOrganizationLocation(
-                              widget.organizationId, currentLongitude, currentLatitude);
+                          showConfirmationPopup(context, currentLongitude, currentLatitude);
                         }),
                   markVisitResponse(),
-                  updateLocationResponse()
+                  updateLocationResponse(),
+                  userDetailsResponse()
                 ],
               ),
             ),
@@ -552,35 +565,40 @@ class _MarkVisitViewState extends State<MarkVisitView> {
               String latitude = snapshot.data!.data!.ygpslat.toString();
               String longitude = snapshot.data!.data!.ygpslon.toString();
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MarkVisitView(
-                            username: widget.username,
-                            userNummer: widget.userNummer,
-                            routeNummer: widget.routeNummer,
-                            organizationId: widget.organizationId,
-                            organizationNummer: widget.organizationNummer,
-                            organizationName: widget.organizationName,
-                            organizationPhone1: widget.organizationPhone1,
-                            organizationPhone2: widget.organizationPhone2,
-                            organizationWhatsapp: widget.organizationWhatsapp,
-                            organizationAddress1: widget.organizationAddress1,
-                            organizationAddress2: widget.organizationAddress2,
-                            organizationColour: widget.organizationColour,
-                            organizationLongitude: longitude,
-                            organizationLatitude: latitude,
-                            organizationDistance: widget.organizationDistance,
-                            organizationMail: widget.organizationMail,
-                            isTeamMemberUi: widget.isTeamMemberUi,
-                            loggedUserNummer: widget.loggedUserNummer,
-                            ysuporgNummer: widget.ysuporgNummer,
-                            ysuporgNamebspr: widget.ysuporgNamebspr,
-                            organizationTypeNamebspr: widget.organizationTypeNamebspr,
-                          )),
-                  (Route<dynamic> route) => false,
-                );
+                showSuccessAlertDialog(context, "${widget.organizationName}'s location has been updated successfully.",
+                    () {
+                  //WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MarkVisitView(
+                              username: widget.username,
+                              userNummer: widget.userNummer,
+                              routeNummer: widget.routeNummer,
+                              organizationId: widget.organizationId,
+                              organizationNummer: widget.organizationNummer,
+                              organizationName: widget.organizationName,
+                              organizationPhone1: widget.organizationPhone1,
+                              organizationPhone2: widget.organizationPhone2,
+                              organizationWhatsapp: widget.organizationWhatsapp,
+                              organizationAddress1: widget.organizationAddress1,
+                              organizationAddress2: widget.organizationAddress2,
+                              organizationColour: widget.organizationColour,
+                              organizationLongitude: longitude,
+                              organizationLatitude: latitude,
+                              organizationDistance: widget.organizationDistance,
+                              organizationMail: widget.organizationMail,
+                              isTeamMemberUi: widget.isTeamMemberUi,
+                              loggedUserNummer: widget.loggedUserNummer,
+                              ysuporgNummer: widget.ysuporgNummer,
+                              ysuporgNamebspr: widget.ysuporgNamebspr,
+                              organizationTypeNamebspr: widget.organizationTypeNamebspr,
+                            )),
+                  );
+                  //});
+                });
               });
+
               break;
             case Status.ERROR:
               SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -595,6 +613,136 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                 _isErrorMessageShown = true;
               }
               break;
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  showConfirmationPopup(BuildContext context, String currentLongitude, String currentLatitude) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            side: const BorderSide(color: CustomColors.successAlertBorderColor),
+          ),
+          elevation: 24.0,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.white,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Are you sure you want to update the location of ${widget.organizationName}? You must be at this location to proceed.",
+                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.fromLTRB(0, 0, 8.0, 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(
+                            color: CustomColors.errorAlertTitleTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _updateOrganizationLocationBloc.updateOrganizationLocation(
+                              widget.organizationId,
+                              currentLongitude,
+                              currentLatitude,
+                              loggedUsername,
+                              getCurrentDate() + " " + getCurrentTime());
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(
+                            color: CustomColors.errorAlertTitleTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget userDetailsResponse() {
+    return StreamBuilder<ResponseList<UserDetails>>(
+      stream: _userDetailsBloc.userDetailsStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isLoading = true;
+                });
+              });
+              break;
+
+            case Status.COMPLETED:
+              if (!_isLocationUpdatePermissionLoaded) {
+                _isLocationUpdatePermissionLoaded = true;
+                bool yenableupdatelocationpermission = snapshot.data!.data![0].yenableupdatelocationpermission ?? false;
+                print(yenableupdatelocationpermission);
+                _getCurrentLocation(yenableupdatelocationpermission);
+              }
+
+              break;
+            case Status.ERROR:
+              if (!_isUserDetailsErrorMessageShown) {
+                _isUserDetailsErrorMessageShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                  setState(() {
+                    _isErrorMessageShown = true;
+                  });
+                });
+              }
           }
         }
         return Container();
