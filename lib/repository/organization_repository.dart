@@ -59,7 +59,10 @@ class OrganizationRepository {
       'Content-Type': 'application/json',
     };
 
-    inputBody = {"ygpslat": minLatitude + "!" + maxLatitude, "ygpslon": minLongitude + "!" + maxLongitude};
+    inputBody = {
+      "ygpslat": minLatitude + "!" + maxLatitude,
+      "ygpslon": minLongitude + "!" + maxLongitude
+    };
 
     final response = await _provider.post("/getorgbyloc", jsonEncode(inputBody), requestHeaders);
 

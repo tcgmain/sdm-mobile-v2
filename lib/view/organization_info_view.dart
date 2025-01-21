@@ -2,9 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sdm/blocs/organization_info_bloc.dart';
-import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
-import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/widgets/appbar.dart';
@@ -41,22 +39,16 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
   String routeName = "Not Assigned";
   String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
-  bool _isRouteLoading = false;
   late OrganizationInfoBloc _organizationInfoBloc;
-  late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isErrorMessageShown = false;
-  bool _isRouteErrorMessageShown = false;
 
   @override
   void initState() {
     super.initState();
     _organizationInfoBloc = OrganizationInfoBloc();
-    _routeOrganizationBloc = RouteOrganizationBloc();
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
-    _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
     setState(() {
       _isLoading = true;
-      _isRouteLoading = true;
     });
   }
 
@@ -115,7 +107,6 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
       body: SafeArea(
         child: Stack(
           children: [
-            routeResponse(),
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
               child: StreamBuilder<ResponseList<Organization>>(
@@ -425,7 +416,7 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
                 },
               ),
             ),
-            if (_isLoading || _isRouteLoading) const Loading(),
+            if (_isLoading) const Loading(),
           ],
         ),
       ),
@@ -489,43 +480,4 @@ class _OrganizationInfoViewState extends State<OrganizationInfoView> {
     );
   }
 
-  Widget routeResponse() {
-    return StreamBuilder<ResponseList<RouteOrganization>>(
-      stream: _routeOrganizationBloc.routeOrganizationStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isRouteLoading = true;
-                });
-              });
-            case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isRouteLoading = false;
-                });
-              });
-              if (snapshot.data!.data!.isNotEmpty) {
-                routeName = snapshot.data!.data![0].namebsprRoute.toString();
-              }
-              break;
-            case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!_isRouteErrorMessageShown) {
-                  _isRouteErrorMessageShown = true;
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  setState(() {
-                    _isRouteLoading = false;
-                  });
-                }
-              });
-              break;
-          }
-        }
-        return Container();
-      },
-    );
-  }
 }

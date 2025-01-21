@@ -11,6 +11,7 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/text_field.dart' as text_field;
 
 class RouteOrganization2View extends StatefulWidget {
   final String userNummer;
@@ -44,6 +45,9 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
   late RouteOrganization2Bloc _routeOrganization2Bloc;
   bool _isLoading = false;
   bool _isErrorMessageShown = false;
+  final TextEditingController _searchController = TextEditingController();
+  List<RouteOrganization2>? _filteredOrganizations = [];
+  List<RouteOrganization2>? _allOrganizations;
 
   @override
   void initState() {
@@ -51,12 +55,14 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
     setState(() {
       _isLoading = true;
     });
+    _searchController.addListener(_onSearchChanged);
     _routeOrganization2Bloc = RouteOrganization2Bloc();
     _routeOrganization2Bloc.getRouteOrganization(widget.routeNummer, widget.date);
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -118,6 +124,20 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
     }
   }
 
+  void _onSearchChanged() {
+    setState(() {
+      if (_searchController.text.isNotEmpty) {
+        _filteredOrganizations = _allOrganizations
+                ?.where((organization) =>
+                    organization.organizationNamebspr.toLowerCase().contains(_searchController.text.toLowerCase()))
+                .toList() ??
+            [];
+      } else {
+        _filteredOrganizations = _allOrganizations ?? [];
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,6 +164,18 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                   const SizedBox(
                     height: 10,
                   ),
+                  text_field.TextField(
+                      controller: _searchController,
+                      obscureText: false,
+                      inputType: 'none',
+                      isRequired: true,
+                      fillColor: CustomColors.textFieldFillColor,
+                      filled: true,
+                      labelText: "Type to search organizations...",
+                      onChangedFunction: () {}),
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Expanded(
                     child: StreamBuilder<ResponseList<RouteOrganization2>>(
                       stream: _routeOrganization2Bloc.routeOrganization2Stream,
@@ -164,195 +196,233 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                 });
                               });
 
-                              int noOfOrganizations = snapshot.data!.data!.length;
-                              if (noOfOrganizations == 0) {
+                              _allOrganizations = snapshot.data!.data!;
+                              _filteredOrganizations = _searchController.text.isNotEmpty
+                                  ? _allOrganizations!
+                                      .where((organization) => organization.organizationNamebspr
+                                          .toLowerCase()
+                                          .contains(_searchController.text.toLowerCase()))
+                                      .toList()
+                                  : _allOrganizations!;
+
+                              final totalOrganizations = _filteredOrganizations!.length;
+                              if (_filteredOrganizations!.isEmpty) {
                                 return Center(
                                   child: Text(
-                                    "No organizations have been assigned for this route.",
+                                    widget.isTeamMemberUi == false
+                                        ? "No organizations found for you."
+                                        : "No organizations found for ${widget.username}.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                   ),
                                 );
                               } else {
-                                return SlidableAutoCloseBehavior(
-                                  closeWhenOpened: true,
-                                  closeWhenTapped: false,
-                                  child: ListView.builder(
-                                    itemCount: snapshot.data!.data!.length,
-                                    itemBuilder: (context, index) {
-                                      final organizations = snapshot.data!.data![index];
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            'Total Organizations: $totalOrganizations',
+                                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                                          )),
+                                    ),
+                                    Expanded(
+                                      child: SlidableAutoCloseBehavior(
+                                        closeWhenOpened: true,
+                                        closeWhenTapped: false,
+                                        child: ListView.builder(
+                                          itemCount: _filteredOrganizations!.length,
+                                          itemBuilder: (context, index) {
 
-                                      final organizationId = organizations.organizationId.toString();
-                                      final organizationNummer = organizations.organizationNummer.toString();
-                                      final organizationName = organizations.organizationNamebspr.toString();
-                                      final organizationTypeId = organizations.organizationYcustypId.toString();
-                                      final organizationPhone1 = organizations.organizationYphone1.toString();
-                                      final organizationPhone2 = organizations.organizationYphone2.toString();
-                                      final organizationWhatsapp = organizations.organizationYwhtapp.toString();
-                                      final organizationAddress1 = organizations.organizationYaddressl1.toString();
-                                      final organizationAddress2 = organizations.organizationYaddressl2.toString();
-                                      final organizationColour = organizations.organizationYselcolourSuch.toString();
-                                      final organizationLongitude = organizations.organizationYgpslon.toString();
-                                      final organizationLatitude = organizations.organizationYgpslat.toString();
-                                      final organizationDistance = organizations.organizationYvisdis.toString();
-                                      final organizationMail = organizations.organizationYemail.toString();
-                                      final ysuporgNummer = organizations.organizationYsuporgNummer.toString();
-                                      final ysuporgNamebspr = organizations.organizationYsuporgNamebspr.toString();
-                                      final organizationTypeNamebspr =
-                                          organizations.organizationYcustypNamebspr.toString();
-                                      final ownerName = organizations.organizationYowname.toString();
-                                      final ownerBirthday = organizations.organizationYorgowndob.toString();
-                                      final isMasonry = organizations.organizationYmasonry.toString();
-                                      final isWaterproofing = organizations.organizationYswaterp.toString();
-                                      final isFlooring = organizations.organizationYflooring.toString();
-                                      final organizationAssignTo = organizations.organizationYassigtoSuch.toString();
-                                      final nextVisitDueDate = organizations.nextvisitdue.toString();
-                                      final yactiv = organizations.organizationYactiv.toString();
+                                             _filteredOrganizations!
+                                                .sort((a, b) => (a.zn).compareTo(b.zn));
+                                            final organizations = _filteredOrganizations![index];
 
-                                      // Parse the nextVisitDueDate to DateTime
-                                      DateTime? nextVisitDate;
-                                      if (nextVisitDueDate != '') {
-                                        nextVisitDate = DateFormat('dd/MM/yyyy').parse(nextVisitDueDate);
-                                      }
+                                            final organizationId = organizations.organizationId.toString();
+                                            final organizationNummer = organizations.organizationNummer.toString();
+                                            final organizationName = organizations.organizationNamebspr.toString();
+                                            final organizationTypeId = organizations.organizationYcustypId.toString();
+                                            final organizationPhone1 = organizations.organizationYphone1.toString();
+                                            final organizationPhone2 = organizations.organizationYphone2.toString();
+                                            final organizationWhatsapp = organizations.organizationYwhtapp.toString();
+                                            final organizationAddress1 =
+                                                organizations.organizationYaddressl1.toString();
+                                            final organizationAddress2 =
+                                                organizations.organizationYaddressl2.toString();
+                                            final organizationColour =
+                                                organizations.organizationYselcolourSuch.toString();
+                                            final organizationLongitude = organizations.organizationYgpslon.toString();
+                                            final organizationLatitude = organizations.organizationYgpslat.toString();
+                                            final organizationDistance = organizations.organizationYvisdis.toString();
+                                            final organizationMail = organizations.organizationYemail.toString();
+                                            final ysuporgNummer = organizations.organizationYsuporgNummer.toString();
+                                            final ysuporgNamebspr =
+                                                organizations.organizationYsuporgNamebspr.toString();
+                                            final organizationTypeNamebspr =
+                                                organizations.organizationYcustypNamebspr.toString();
+                                            final ownerName = organizations.organizationYowname.toString();
+                                            final ownerBirthday = organizations.organizationYorgowndob.toString();
+                                            final isMasonry = organizations.organizationYmasonry.toString();
+                                            final isWaterproofing = organizations.organizationYswaterp.toString();
+                                            final isFlooring = organizations.organizationYflooring.toString();
+                                            final organizationAssignTo =
+                                                organizations.organizationYassigtoSuch.toString();
+                                            final nextVisitDueDate = organizations.organizationYnxtvisitdat.toString();
+                                            final yactiv = organizations.organizationYactiv.toString();
 
-                                      // Check if nextVisitDueDate is in the past
-                                      bool isPastDueDate =
-                                          nextVisitDate != null && nextVisitDate.isBefore(DateTime.now());
+                                            // Parse the nextVisitDueDate to DateTime
+                                            DateTime? nextVisitDate;
+                                            if (nextVisitDueDate != '') {
+                                              nextVisitDate = DateFormat('dd/MM/yyyy').parse(nextVisitDueDate);
+                                            }
 
-                                      return Padding(
-                                          padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                          child: Slidable(
-                                              key: const ValueKey(0),
-                                              endActionPane: ActionPane(
-                                                extentRatio: 0.2,
-                                                motion: const ScrollMotion(),
-                                                children: [
-                                                  SlidableAction(
-                                                    onPressed: (context) {
-                                                      _navigateToUpdateOrganizationView(
-                                                          organizationId,
-                                                          organizationNummer,
-                                                          organizationName,
-                                                          organizationTypeId,
-                                                          organizationMail,
-                                                          organizationPhone1,
-                                                          organizationPhone2,
-                                                          organizationWhatsapp,
-                                                          organizationAddress1,
-                                                          organizationAddress2,
-                                                          "territoryNummer",
-                                                          ysuporgNummer,
-                                                          ownerName,
-                                                          ownerBirthday,
-                                                          isMasonry,
-                                                          isWaterproofing,
-                                                          isFlooring,
-                                                          organizationColour);
-                                                    },
-                                                    backgroundColor: CustomColors.buttonColor,
-                                                    foregroundColor: CustomColors.buttonTextColor,
-                                                    icon: Icons.edit,
-                                                  ),
-                                                ],
-                                              ),
-                                              child: InkWell(
-                                                splashColor: CustomColors.buttonColor,
-                                                onTap: () {
-                                                  // Add your onPressed functionality here
+                                            // Check if nextVisitDueDate is in the past
+                                            bool isPastDueDate =
+                                                nextVisitDate != null && nextVisitDate.isBefore(DateTime.now());
 
-                                                  Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => HomeOrganizationView(
-                                                            userNummer: widget.userNummer,
-                                                            username: widget.username,
-                                                            routeNummer: widget.routeNummer,
-                                                            organizationId: organizationId,
-                                                            organizationNummer: organizationNummer,
-                                                            organizationName: organizationName,
-                                                            organizationPhone1: organizationPhone1,
-                                                            organizationPhone2: organizationPhone2,
-                                                            organizationWhatsapp: organizationWhatsapp,
-                                                            organizationAddress1: organizationAddress1,
-                                                            territoryNummer: "territoryNummer",
-                                                            organizationAddress2: organizationAddress2,
-                                                            organizationColour: organizationColour,
-                                                            organizationLongitude: organizationLongitude,
-                                                            organizationLatitude: organizationLatitude,
-                                                            organizationDistance: organizationDistance,
-                                                            organizationMail: organizationMail,
-                                                            isTeamMemberUi: widget.isTeamMemberUi,
-                                                            loggedUserNummer: widget.loggedUserNummer,
-                                                            ysuporgNummer: ysuporgNummer,
-                                                            ysuporgNamebspr: ysuporgNamebspr,
-                                                            designationNummer: widget.designationNummer,
-                                                            organizationTypeNamebspr: organizationTypeNamebspr,
-                                                            userOrganizationNummer: widget.userOrganizationNummer,
-                                                          )));
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                                                    shape: BoxShape.rectangle,
-                                                    gradient: LinearGradient(
-                                                      colors: <Color>[
-                                                        Colors.black,
-                                                        (isPastDueDate) ? CustomColors.buttonColor3 : Colors.black26,
-                                                      ],
-                                                      begin: Alignment.topCenter,
-                                                      end: Alignment.bottomCenter,
-                                                    ),
-                                                  ),
-                                                  child: ListTile(
-                                                    leading: Stack(
+                                            return Padding(
+                                                padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                                child: Slidable(
+                                                    key: const ValueKey(0),
+                                                    endActionPane: ActionPane(
+                                                      extentRatio: 0.2,
+                                                      motion: const ScrollMotion(),
                                                       children: [
-                                                        CircleAvatar(
-                                                          backgroundColor: getColor(organizationColour),
-                                                          radius: 20,
-                                                          child: const Icon(
-                                                            Icons.business,
-                                                            size: 20,
-                                                          ),
-                                                        ),
-                                                        Positioned(
-                                                          right: 0,
-                                                          bottom: 0,
-                                                          child: (yactiv == "true")
-                                                              ? const Icon(Icons.circle, color: Colors.green, size: 12)
-                                                              : const Icon(Icons.circle, color: Colors.red, size: 12),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    title: Text(organizationName,
-                                                        style: const TextStyle(color: CustomColors.textColor)),
-                                                    subtitle: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          'Assigned To: $organizationAssignTo',
-                                                          style: TextStyle(
-                                                            fontSize: getFontSize(),
-                                                            color: CustomColors.textColor2,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          'Next Visit: $nextVisitDueDate',
-                                                          style: TextStyle(
-                                                            fontSize: getFontSizeSmall(),
-                                                            color: CustomColors.textColor,
-                                                          ),
+                                                        SlidableAction(
+                                                          onPressed: (context) {
+                                                            _navigateToUpdateOrganizationView(
+                                                                organizationId,
+                                                                organizationNummer,
+                                                                organizationName,
+                                                                organizationTypeId,
+                                                                organizationMail,
+                                                                organizationPhone1,
+                                                                organizationPhone2,
+                                                                organizationWhatsapp,
+                                                                organizationAddress1,
+                                                                organizationAddress2,
+                                                                "territoryNummer",
+                                                                ysuporgNummer,
+                                                                ownerName,
+                                                                ownerBirthday,
+                                                                isMasonry,
+                                                                isWaterproofing,
+                                                                isFlooring,
+                                                                organizationColour);
+                                                          },
+                                                          backgroundColor: CustomColors.buttonColor,
+                                                          foregroundColor: CustomColors.buttonTextColor,
+                                                          icon: Icons.edit,
                                                         ),
                                                       ],
                                                     ),
-                                                    // trailing: (yactiv == "true")
-                                                    //     ? const Icon(Icons.check_circle, color: Colors.green)
-                                                    //     : const Icon(
-                                                    //         Icons.cancel,
-                                                    //         color: Colors.red,
-                                                    //       ),
-                                                  ),
-                                                ),
-                                              )));
-                                    },
-                                  ),
+                                                    child: InkWell(
+                                                      splashColor: CustomColors.buttonColor,
+                                                      onTap: () {
+                                                        // Add your onPressed functionality here
+
+                                                        Navigator.of(context).push(MaterialPageRoute(
+                                                            builder: (context) => HomeOrganizationView(
+                                                                  userNummer: widget.userNummer,
+                                                                  username: widget.username,
+                                                                  routeNummer: widget.routeNummer,
+                                                                  organizationId: organizationId,
+                                                                  organizationNummer: organizationNummer,
+                                                                  organizationName: organizationName,
+                                                                  organizationPhone1: organizationPhone1,
+                                                                  organizationPhone2: organizationPhone2,
+                                                                  organizationWhatsapp: organizationWhatsapp,
+                                                                  organizationAddress1: organizationAddress1,
+                                                                  territoryNummer: "territoryNummer",
+                                                                  organizationAddress2: organizationAddress2,
+                                                                  organizationColour: organizationColour,
+                                                                  organizationLongitude: organizationLongitude,
+                                                                  organizationLatitude: organizationLatitude,
+                                                                  organizationDistance: organizationDistance,
+                                                                  organizationMail: organizationMail,
+                                                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                                                  loggedUserNummer: widget.loggedUserNummer,
+                                                                  ysuporgNummer: ysuporgNummer,
+                                                                  ysuporgNamebspr: ysuporgNamebspr,
+                                                                  designationNummer: widget.designationNummer,
+                                                                  organizationTypeNamebspr: organizationTypeNamebspr,
+                                                                  userOrganizationNummer: widget.userOrganizationNummer,
+                                                                )));
+                                                      },
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                                                          shape: BoxShape.rectangle,
+                                                          gradient: LinearGradient(
+                                                            colors: <Color>[
+                                                              Colors.black,
+                                                              (isPastDueDate)
+                                                                  ? CustomColors.buttonColor3
+                                                                  : Colors.black26,
+                                                            ],
+                                                            begin: Alignment.topCenter,
+                                                            end: Alignment.bottomCenter,
+                                                          ),
+                                                        ),
+                                                        child: ListTile(
+                                                          leading: Stack(
+                                                            children: [
+                                                              CircleAvatar(
+                                                                backgroundColor: getColor(organizationColour),
+                                                                radius: 20,
+                                                                child: const Icon(
+                                                                  Icons.business,
+                                                                  size: 20,
+                                                                ),
+                                                              ),
+                                                              Positioned(
+                                                                right: 0,
+                                                                bottom: 0,
+                                                                child: (yactiv == "true")
+                                                                    ? const Icon(Icons.circle,
+                                                                        color: Colors.green, size: 12)
+                                                                    : const Icon(Icons.circle,
+                                                                        color: Colors.red, size: 12),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          title: Text(organizationName,
+                                                              style: const TextStyle(color: CustomColors.textColor)),
+                                                          subtitle: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                'Assigned To: $organizationAssignTo',
+                                                                style: TextStyle(
+                                                                  fontSize: getFontSize(),
+                                                                  color: CustomColors.textColor2,
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                'Next Visit: $nextVisitDueDate',
+                                                                style: TextStyle(
+                                                                  fontSize: getFontSizeSmall(),
+                                                                  color: CustomColors.textColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          // trailing: (yactiv == "true")
+                                                          //     ? const Icon(Icons.check_circle, color: Colors.green)
+                                                          //     : const Icon(
+                                                          //         Icons.cancel,
+                                                          //         color: Colors.red,
+                                                          //       ),
+                                                        ),
+                                                      ),
+                                                    )));
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 );
                               }
 

@@ -57,11 +57,10 @@ class AddOrganizationRepository {
       "ymasonry": isMasonry,
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
-      "yselcolour": organizationColor
+      "yselcolour": organizationColor,
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);
-    print("response111111111111111111111111111111111111111");
     print(response);
     return AddOrganization.fromJson(response);
   }

@@ -34,21 +34,21 @@ class SalesOrder {
   String? yprodNummer;
 
   factory SalesOrder.fromJson(Map<String, dynamic> json) => SalesOrder(
-    ysdempNummer: json["ysdemp^nummer"],
-    yunit: json["yunit"],
-    ysdorgorfrNummer: json["ysdorgorfr^nummer"],
-    ysdorgorfrNamebspr: json["ysdorgorfr^namebspr"],
+    ysdempNummer: json["ysdemp^nummer"] ?? '',
+    yunit: json["yunit"] ?? '',
+    ysdorgorfrNummer: json["ysdorgorfr^nummer"] ?? '',
+    ysdorgorfrNamebspr: json["ysdorgorfr^namebspr"] ?? '',
     yqty: json["yqty"],
-    ydat: json["ydat"],
-    ysdorgNummer: json["ysdorg^nummer"],
-    nummer: json["nummer"],
-    ysdorgNamebspr: json["ysdorg^namebspr"],
-    ysdempYpasdefBezeich: json["ysdemp^ypasdef^bezeich"],
-    such: json["such"],
-    yprodNamebspr: json["yprod^namebspr"],
-    zid: json["zid"],
-    id: json["id"],
-    yprodNummer: json["yprod^nummer"],
+    ydat: json["ydat"] ?? '',
+    ysdorgNummer: json["ysdorg^nummer"] ?? '',
+    nummer: json["nummer"] ?? '',
+    ysdorgNamebspr: json["ysdorg^namebspr"] ?? '',
+    ysdempYpasdefBezeich: json["ysdemp^ypasdef^bezeich"] ?? '',
+    such: json["such"] ?? '',
+    yprodNamebspr: json["yprod^namebspr"] ?? '',
+    zid: json["zid"] ?? '',
+    id: json["id"] ?? '',
+    yprodNummer: json["yprod^nummer"] ?? '',
   );
 
   Map<String, dynamic> toJson() => {

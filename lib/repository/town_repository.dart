@@ -8,14 +8,12 @@ class TownRepository {
   String? accessToken;
   dynamic inputBody, requestHeaders;
 
-  Future<List<Town>> getTown(String territory) async {
+  Future<List<Town>> getTown(String minLon, String maxLon, String minLat, String maxLat) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
-    inputBody = {
-      "nummer": territory
-    };
+    inputBody = {"ylatitude": "$minLat!$maxLat", "ylongtitude": "$minLon!$maxLon"};
 
-    final response = await _provider.post("/gettown", jsonEncode(inputBody), requestHeaders);
+    final response = await _provider.post("/gettownbyloc", jsonEncode(inputBody), requestHeaders);
 
     var itemArray = [];
     var resultLength = jsonDecode(jsonEncode(response)).length;

@@ -39,6 +39,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
   DateTimeRange? _selectedDateRange;
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
   bool _isLoading = false;
+  bool _isSalesOrderListLoaded = false;
 
   @override
   void initState() {
@@ -195,6 +196,7 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                             _isLoading = false;
                           });
                         });
+
                         _allSalesOrderList = snapshot.data!.data!;
                         _filteredSalesOrderList ??= _filterSalesOrders();
                         final totalOrganizations = _filteredSalesOrderList!.length;
@@ -225,13 +227,14 @@ class _SalesOrderInListViewState extends State<SalesOrderInListView> {
                                   itemCount: _filteredSalesOrderList!.length,
                                   itemBuilder: (context, index) {
                                     final salesOrderList = _filteredSalesOrderList![index];
-                                    final salesOrderNummer = salesOrderList.nummer.toString();
-                                    final salesOrderSearchWord = salesOrderList.such.toString();
-                                    final salesOrderDate = salesOrderList.ydat.toString();
+                                    String salesOrderNummer = salesOrderList.nummer.toString();
+                                    String salesOrderSearchWord = salesOrderList.such.toString();
+                                    String salesOrderDate = salesOrderList.ydat.toString();
 
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
                                       child: ListButton(
+                                        isLeftAlign: true,
                                         displayName: "$salesOrderNummer - $salesOrderSearchWord",
                                         rightPosition: salesOrderDate,
                                         onPressed: () {

@@ -7,7 +7,7 @@ class RouteOrganization2 {
     required this.routeNamebspr,
     required this.id,
     required this.nummer,
-    required this.nextvisitdue,
+    required this.organizationYnxtvisitdat,
     required this.organizationId,
     required this.organizationNummer,
     required this.organizationNamebspr,
@@ -40,6 +40,7 @@ class RouteOrganization2 {
     required this.organizationYsanmet,
     required this.organizationYvisdis,
     required this.organizationYscemet,
+    required this.zn,
   });
 
   String date;
@@ -49,7 +50,7 @@ class RouteOrganization2 {
   String routeNamebspr;
   String id;
   String nummer;
-  String nextvisitdue;
+  String organizationYnxtvisitdat;
   String organizationId;
   String organizationNummer;
   String organizationNamebspr;
@@ -82,6 +83,7 @@ class RouteOrganization2 {
   bool organizationYsanmet;
   int organizationYvisdis;
   bool organizationYscemet;
+  int zn;
 
   factory RouteOrganization2.fromJson(Map<String, dynamic> json) => RouteOrganization2(
         date: json["date"],
@@ -91,7 +93,7 @@ class RouteOrganization2 {
         routeNamebspr: json["route^namebspr"],
         id: json["id"],
         nummer: json["nummer"],
-        nextvisitdue: json["nextvisitdue"],
+        organizationYnxtvisitdat: json["organization^ynxtvisitdat"],
         organizationId: json["organization^id"],
         organizationNummer: json["organization^nummer"],
         organizationNamebspr: json["organization^namebspr"],
@@ -124,6 +126,7 @@ class RouteOrganization2 {
         organizationYsanmet: json["organization^ysanmet"],
         organizationYvisdis: json["organization^yvisdis"],
         organizationYscemet: json["organization^yscemet"],
+        zn: json["zn"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -134,7 +137,7 @@ class RouteOrganization2 {
         "route^namebspr": routeNamebspr,
         "id": id,
         "nummer": nummer,
-        "nextvisitdue": nextvisitdue,
+        "organization^ynxtvisitdat": organizationYnxtvisitdat,
         "organization^id": organizationId,
         "organization^nummer": organizationNummer,
         "organization^namebspr": organizationNamebspr,
@@ -167,5 +170,6 @@ class RouteOrganization2 {
         "organization^ysanmet": organizationYsanmet,
         "organization^yvisdis": organizationYvisdis,
         "organization^yscemet": organizationYscemet,
+        "zn": zn,
       };
 }

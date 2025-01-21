@@ -21,7 +21,9 @@ class SalesOrderListRepository {
     var itemArray = [];
     var resultLength = jsonDecode(jsonEncode(response)).length;
     for (var i = 0; i < resultLength; i++) {
-      itemArray.add(jsonDecode(jsonEncode(response))[i]);
+      if (jsonDecode(jsonEncode(response))[i]['ydat'].toString() != "") {
+        itemArray.add(jsonDecode(jsonEncode(response))[i]);
+      }
     }
 
     var list = itemArray;
@@ -41,7 +43,9 @@ class SalesOrderListRepository {
     var itemArray = [];
     var resultLength = jsonDecode(jsonEncode(response)).length;
     for (var i = 0; i < resultLength; i++) {
-      itemArray.add(jsonDecode(jsonEncode(response))[i]);
+      if (jsonDecode(jsonEncode(response))[i]['ydat'].toString() != "") {
+        itemArray.add(jsonDecode(jsonEncode(response))[i]);
+      }
     }
 
     var list = itemArray;

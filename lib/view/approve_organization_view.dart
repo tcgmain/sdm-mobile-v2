@@ -2,9 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/approve_organization_bloc.dart';
 import 'package:sdm/blocs/organization_info_bloc.dart';
-import 'package:sdm/blocs/route_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
-import 'package:sdm/models/route_organization.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
@@ -49,7 +47,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   late double organizationLatitude;
   late double organizationLongitude;
   late double organizationDistance;
-  String routeName = "Not Assigned";
   String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
   bool _isRouteLoading = false;
@@ -57,9 +54,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   bool _isSuccessMessageShown = false;
   late OrganizationInfoBloc _organizationInfoBloc;
   late ApproveOrganizationBloc _approveOrganizationBloc;
-  late RouteOrganizationBloc _routeOrganizationBloc;
   bool _isErrorMessageShown = false;
-  bool _isRouteErrorMessageShown = false;
   late String organizationNameMessage;
   late String superiorOrganizationNummer;
   late String organizationNummer;
@@ -71,9 +66,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     super.initState();
     _organizationInfoBloc = OrganizationInfoBloc();
     _approveOrganizationBloc = ApproveOrganizationBloc();
-    _routeOrganizationBloc = RouteOrganizationBloc();
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
-    _routeOrganizationBloc.getRouteOrganizationByOrg(widget.organizationNummer);
     setState(() {
       _isLoading = true;
       _isRouteLoading = true;
@@ -85,7 +78,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     super.dispose();
     _approveOrganizationBloc.dispose();
     _organizationInfoBloc.dispose();
-    _routeOrganizationBloc.dispose();
   }
 
   void _launchEmail(String email) async {
@@ -125,7 +117,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
         child: Stack(
           children: [
             approveOrganizationResponse(),
-            routeResponse(),
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
               child: StreamBuilder<ResponseList<Organization>>(
@@ -280,21 +271,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                                         Expanded(
                                           child: Text(
                                             "Assigned To: $yassigto",
-                                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const Divider(
-                                      color: CustomColors.textColorGrey,
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.route, color: CustomColors.textColor),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            "Assigned Route: $routeName",
                                             style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
                                           ),
                                         ),
@@ -681,43 +657,4 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     );
   }
 
-  Widget routeResponse() {
-    return StreamBuilder<ResponseList<RouteOrganization>>(
-      stream: _routeOrganizationBloc.routeOrganizationStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isRouteLoading = true;
-                });
-              });
-            case Status.COMPLETED:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isRouteLoading = false;
-                });
-              });
-              if (snapshot.data!.data!.isNotEmpty) {
-                routeName = snapshot.data!.data![0].namebsprRoute.toString();
-              }
-              break;
-            case Status.ERROR:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!_isRouteErrorMessageShown) {
-                  _isRouteErrorMessageShown = true;
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                  setState(() {
-                    _isRouteLoading = false;
-                  });
-                }
-              });
-              break;
-          }
-        }
-        return Container();
-      },
-    );
-  }
 }

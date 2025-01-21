@@ -32,21 +32,6 @@ class RouteOrganizationBloc {
     }
   }
 
-  //Getting organization response by organization nummer
-  getRouteOrganizationByOrg(String organizationNummer) async {
-    routeOrganizationSink.add(ResponseList.loading(''));
-    try {
-      List<RouteOrganization> res = await _routeOrganizationRepository.getRouteOrganizationByOrg(organizationNummer);
-      routeOrganizationSink.add(ResponseList.completed(res));
-
-      print("ROUTE ORGANIZATION BY ORG SUCCESS");
-    } catch (e) {
-      routeOrganizationSink.add(ResponseList.error(e.toString()));
-      print("ROUTE ORGANIZATION BY ORG ERROR");
-      print(e);
-    }
-  }
-
   dispose() {
     _routeOrganizationController?.close();
   }

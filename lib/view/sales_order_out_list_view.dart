@@ -196,6 +196,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                             _isLoading = false;
                           });
                         });
+
                         _allSalesOrderList = snapshot.data!.data!;
                         _filteredSalesOrderList ??= _filterSalesOrders();
                         final totalOrganizations = _filteredSalesOrderList!.length;
@@ -233,6 +234,7 @@ class _SalesOrderOutListViewState extends State<SalesOrderOutListView> {
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 3, top: 3),
                                       child: ListButton(
+                                        isLeftAlign: true,
                                         displayName: "$salesOrderNummer - $salesOrderSearchWord",
                                         rightPosition: salesOrderDate,
                                         onPressed: () {

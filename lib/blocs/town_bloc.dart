@@ -17,11 +17,11 @@ class TownBloc {
     _townRepository = TownRepository();
   }
 
-  getTown(String territory) async {
+  getTown(String minLon, String maxLon, String minLat, String maxLat) async {
    
     townSink.add(ResponseList.loading(''));
     try {
-      List<Town> res = await _townRepository.getTown(territory);
+      List<Town> res = await _townRepository.getTown(minLon, maxLon, minLat, maxLat);
       townSink.add(ResponseList.completed(res));
 
       print("TOWN SUCCESS");

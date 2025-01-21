@@ -10,18 +10,14 @@ import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
 import 'package:sdm/blocs/organization_location_bloc.dart';
 import 'package:sdm/blocs/organization_type_bloc.dart';
-import 'package:sdm/blocs/route_list_bloc.dart';
 import 'package:sdm/blocs/territory_bloc.dart';
 import 'package:sdm/blocs/town_bloc.dart';
-import 'package:sdm/blocs/update_route_bloc.dart';
 import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
-import 'package:sdm/models/route_list.dart';
 import 'package:sdm/models/territory.dart';
 import 'package:sdm/models/town.dart';
-import 'package:sdm/models/update_route.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/utils/validations.dart';
@@ -60,15 +56,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late OrganizationTypeBloc _organizationTypeBloc;
   late AddOrganizationBloc _addOrganizationBloc;
   late AddGoodsManagementBloc _addGoodsManagementBloc;
-  late RouteListBloc _routeListBloc;
-  late UpdateRouteBloc _updateRouteBloc;
   late TerritoryBloc _territoryBloc;
   late TownBloc _townBloc;
   List<CustomerType>? _allCustomerTypes;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
-  bool _isFinalSuccessMessageShown = false;
   bool _isAddGoodsManagementAPICall = false;
   bool _isAddOrganizationErrorMessageShown = false;
   bool _isNearbyOrganizationErrorMessageShown = false;
@@ -82,33 +75,24 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isGoodsManagementSuccessShown = false;
   bool _isGoodsManagementErrorShown = false;
   bool _isCustomerTypeLoading = false;
-  bool _isRouteLoading = false;
   bool _isTerritoryLoading = false;
   bool _isTownLoading = false;
-  bool _isUpdateRouteLoading = false;
-  bool _isUpdateRouteErrorShown = false;
   bool _isLoadingNearlyOrganizations = false;
   bool _isSubmitPressed = false;
   String organizationType = "";
   String organizationColor = "";
 
   List<Organization> _superiorOrganizations = [];
-  List<RouteList> _routeList = [];
   List<Territory> _territoryList = [];
   List<Town> _townList = [];
-  bool _isRouteErrorShown = false;
   bool _isTerritoryErrorShown = false;
   Organization? _selectedSuperiorOrganization;
   Territory? _selectedTerritory;
-  Town? _selectedTown;
+  Town? _nearbyTown;
   bool _isOrganizationsLoaded = false;
-  bool _isRoutesLoaded = false;
   bool _isTerritoryLoaded = false;
   bool _isTownLoaded = false;
-  bool _isUpdateRouteCompleted = false;
   bool _isUpdateOrganizationCompleted = false;
-  RouteList? _selectedRoute;
-  bool _isUpdateRouteLoaded = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -191,13 +175,19 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     longitude = position.longitude.toString();
 
     if (position.latitude < 0 || position.longitude < 0) {
+      print(position.latitude);
+      print(position.longitude);
       showErrorAlertDialogWithBack(context, "You are not permitted to add organization from this location");
     } else {
-      calculateLatLngRange(position.latitude, position.longitude, 100);
+      calculateLatLngRangeforNearbyOrg(position.latitude, position.longitude, 100);
+
+      Map<String, double> geoTownMinRange = calculateLatLngRangeForTown(position.latitude, position.longitude, 4);
+      _townBloc.getTown(geoTownMinRange['minLon'].toString(), geoTownMinRange['maxLon'].toString(),
+          geoTownMinRange['minLat'].toString(), geoTownMinRange['maxLat'].toString());
     }
   }
 
-  void calculateLatLngRange(double lat, double lon, double distanceInMeters) {
+  void calculateLatLngRangeforNearbyOrg(double lat, double lon, double distanceInMeters) {
     const double earthRadius = 6371.0;
     const double degreeToRad = pi / 180;
     const double latAdjustment = earthRadius * degreeToRad;
@@ -214,6 +204,64 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       (lat - latRange).toString(),
       (lat + latRange).toString(),
     );
+  }
+
+  Map<String, double> calculateLatLngRangeForTown(double latitude, double longitude, double radiusKm) {
+    const double earthRadiusKm = 6371.0; // Radius of the Earth in km
+
+    // Convert latitude and longitude from degrees to radians
+    double latRad = latitude * (pi / 180);
+    double lonRad = longitude * (pi / 180);
+
+    // Calculate latitude bounds
+    double latDiff = (radiusKm / earthRadiusKm) * (180 / pi);
+    double minLat = latitude - latDiff;
+    double maxLat = latitude + latDiff;
+
+    // Calculate longitude bounds
+    double lonDiff = (radiusKm / earthRadiusKm) * (180 / pi) / cos(latRad);
+    double minLon = longitude - lonDiff;
+    double maxLon = longitude + lonDiff;
+
+    return {
+      'minLat': minLat,
+      'maxLat': maxLat,
+      'minLon': minLon,
+      'maxLon': maxLon,
+    };
+  }
+
+  Town? _getNearestTown(List<Town> towns, double currentLat, double currentLng) {
+     if (towns.isEmpty) return null;
+
+  Town? nearestTown;
+  double shortestDistance = double.infinity;
+
+  for (var town in towns) {
+    double distance = _calculateDistance(currentLat, currentLng, double.parse(town.ylatitude.toString()), double.parse(town.ylongtitude.toString()));
+    if (distance < shortestDistance) {
+      shortestDistance = distance;
+      nearestTown = town;
+    }
+  }
+    return nearestTown;
+  }
+
+// Haversine Formula to calculate distance
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double R = 6371; // Earth radius in km
+    double dLat = _degToRad(lat2 - lat1);
+    double dLon = _degToRad(lon2 - lon1);
+
+    double a =
+        sin(dLat / 2) * sin(dLat / 2) + cos(_degToRad(lat1)) * cos(_degToRad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return R * c;
+  }
+
+  double _degToRad(double deg) {
+    return deg * (pi / 180);
   }
 
   getNearlyOrganizationsResponse() {
@@ -296,7 +344,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     organizationColor = "";
 
     _selectedSuperiorOrganization = null;
-    _selectedRoute = null;
 
     _isSubmitPressed = false;
   }
@@ -308,8 +355,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _customerTypeBloc = CustomerTypeBloc();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
-    _routeListBloc = RouteListBloc();
-    _updateRouteBloc = UpdateRouteBloc();
     _territoryBloc = TerritoryBloc();
     _townBloc = TownBloc();
     _organizationLocationBloc = OrganizationLocationBloc();
@@ -318,11 +363,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _getCurrentLocation();
 
     _organizationTypeBloc.getOrganizationByType("Distributor");
-    _routeListBloc.getRouteList("");
     _territoryBloc.getTerritory(widget.loggedUserNummer);
     setState(() {
       _isSuperiorOrganizationLoading = true;
-      _isRouteLoading = true;
       _isTerritoryLoading = true;
       _isLoadingNearlyOrganizations = true;
     });
@@ -355,8 +398,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address2FocusNode.dispose();
     _organizationLocationBloc.dispose();
     _organizationTypeBloc.dispose();
-    _routeListBloc.dispose();
-    _updateRouteBloc.dispose();
     super.dispose();
   }
 
@@ -531,9 +572,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                         children: [
                           getNearlyOrganizationsResponse(),
                           getSuperiorOrganizationResponse(),
-                          getRouteResponse(),
                           addOrganizationResponse(),
-                          updateRouteResponse(),
                           addGoodsManagementResponse(),
                           customerTypeToggleButtons(),
                           getTerritoryResponse(),
@@ -653,14 +692,17 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                             focusNode: _address2FocusNode,
                             validator: _validateAddress2,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 25),
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                _nearbyTown != null ? _nearbyTown!.namebspr.toString() : "No town found",
+                                style: TextStyle(fontSize: getFontSize()),
+                              )),
+                          const SizedBox(height: 20),
                           buildTerritoryDropdown(),
                           const SizedBox(height: 16),
-                          _selectedTerritory != null ? buildTownDropdown() : Container(),
-                          _selectedTerritory != null ? const SizedBox(height: 16) : Container(),
                           buildSuperiorOrganizationDropdown(),
-                          const SizedBox(height: 16),
-                          buildRouteDropdown(),
                           const SizedBox(height: 16),
                           Center(
                             child: CommonAppButton(
@@ -679,10 +721,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   _isSuccessMessageShown = false;
                                   _isAddGoodsManagementAPICall = false;
                                   _isAddOrganizationErrorMessageShown = false;
-                                  _isUpdateRouteLoaded = false;
 
                                   final customerTypeId = _selectedCustomerType.toString();
-                                  final name = "${_nameController.text}_${_selectedTown!.ytsublocNamebspr.toString()}";
+                                  final name = "${_nameController.text}_${_nearbyTown!.namebspr.toString()}";
                                   final email = _emailController.text.toString();
                                   final phone1 = _phone1Controller.text.toString();
                                   final phone2 = _phone2Controller.text.toString();
@@ -690,7 +731,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   final address1 = _address1Controller.text.toString();
                                   final address2 = _address2Controller.text.toString();
                                   final territory = _selectedTerritory!.ytterritoryNummer.toString();
-                                  final town = _selectedTown!.ytsublocNummer.toString();
+                                  final town = _nearbyTown!.nummer.toString();
                                   final ownerName = _ownerNameController.text.toString();
                                   final ownerBirthday = _ownerBirthdayController.text.toString();
                                   final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
@@ -699,7 +740,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                     setState(() {
                                       _isUpdateLoading = true;
                                     });
-                                    _isUpdateRouteErrorShown = false;
                                     _isSubmitPressed = true;
 
                                     _addOrganizationBloc.addOrganization(
@@ -747,8 +787,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 _isCustomerTypeLoading ||
                 _isLoadingNearlyOrganizations ||
                 _isSuperiorOrganizationLoading ||
-                _isRouteLoading ||
-                _isUpdateRouteLoading ||
                 _isTerritoryLoading ||
                 _isTownLoading)
               const Loading(),
@@ -889,16 +927,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 organizationNummer = snapshot.data!.data!.nummer.toString();
                 organizationSearchWord = snapshot.data!.data!.such.toString();
 
-                if (_selectedRoute != null) {
-                  String selectedRouteId = _selectedRoute!.id.toString();
-                  _updateRouteBloc.updateRoute(selectedRouteId, organizationNummer);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    setState(() {
-                      _isUpdateRouteLoading = true;
-                    });
-                  });
-                }
-
                 _addGoodsManagementBloc.addGoodsManagement(organizationSearchWord, organizationNummer);
               }
               _isSubmitPressed = false;
@@ -946,14 +974,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _isGoodsManagementSuccessShown = true;
                   _isUpdateOrganizationCompleted = true;
-                  if (_selectedRoute != null) {
-                    _checkForSuccess();
-                  } else {
-                    final name = _nameController.text.toString();
-                    showSuccessAlertDialog(context, "$name has been added successfully.", () {
-                      Navigator.pop(context, true);
-                    });
-                  }
+
+                  final name = _nameController.text.toString();
+                  showSuccessAlertDialog(context, "$name has been added successfully.", () {
+                    Navigator.pop(context, true);
+                  });
                 });
               }
               break;
@@ -997,10 +1022,10 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                     _isSuperiorOrganizationLoading = false;
                     _superiorOrganizations = snapshot.data!.data!;
                     // Find the matching organization or set a default value
-                    Organization matchingOrg = _superiorOrganizations.firstWhere(
-                      (org) => org.orgnummer == widget.userOrganizationNummer,
-                      orElse: () => _superiorOrganizations.first, // Use a fallback, like the first item in the list
-                    );
+                    Organization? matchingOrg =
+                        _superiorOrganizations.where((org) => org.orgnummer == widget.userOrganizationNummer).isNotEmpty
+                            ? _superiorOrganizations.firstWhere((org) => org.orgnummer == widget.userOrganizationNummer)
+                            : null;
 
                     _selectedSuperiorOrganization = matchingOrg;
                   });
@@ -1014,47 +1039,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isSuperiorOrganizationLoading = false;
-                  });
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                });
-              }
-          }
-        }
-        return Container();
-      },
-    );
-  }
-
-  Widget getRouteResponse() {
-    return StreamBuilder<ResponseList<RouteList>>(
-      stream: _routeListBloc.routeListStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isRouteLoading = true;
-                });
-              });
-
-            case Status.COMPLETED:
-              if (!_isRoutesLoaded) {
-                _isRoutesLoaded = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isRouteLoading = false;
-                    _routeList = snapshot.data!.data!;
-                  });
-                });
-              }
-
-            case Status.ERROR:
-              if (!_isRouteErrorShown) {
-                _isRouteErrorShown = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isRouteLoading = false;
                   });
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
@@ -1096,17 +1080,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                       );
 
                       _selectedTerritory = matchingTerritory;
-
-                      _townBloc.getTown(_territoryList[0].ytterritoryNummer.toString()).then((fetchedTowns) {
-                        setState(() {
-                          _townList = fetchedTowns;
-                          _isTownLoading = false;
-                        });
-                      }).catchError((error) {
-                        setState(() {
-                          _isTownLoading = false;
-                        });
-                      });
                     }
                   });
                 });
@@ -1143,17 +1116,20 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               });
 
             case Status.COMPLETED:
-              // if (!_isTownLoaded) {
-              //   _isTownLoaded = true;
-              //   WidgetsBinding.instance.addPostFrameCallback((_) {
-              //     setState(() {
-              //       _isTownLoading = false;
-              //       _townList = snapshot.data!.data!;
-              //     });
-              //   });
-              // }
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTownLoading = false;
+                });
+              });
 
-              _townList = snapshot.data!.data!;
+              // Extract nearest town
+              Town? nearestTown =
+                  _getNearestTown(snapshot.data!.data!, double.parse(latitude), double.parse(longitude));
+              if (nearestTown != null) {
+                _nearbyTown = nearestTown;
+              }
+
+              break;
 
             case Status.ERROR:
               if (!_isTerritoryErrorShown) {
@@ -1161,54 +1137,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isTerritoryLoading = false;
-                  });
-                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                });
-              }
-          }
-        }
-        return Container();
-      },
-    );
-  }
-
-  Widget updateRouteResponse() {
-    return StreamBuilder<Response<UpdateRoute>>(
-      stream: _updateRouteBloc.updateRouteStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          switch (snapshot.data!.status!) {
-            case Status.LOADING:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                setState(() {
-                  _isUpdateRouteLoading = true;
-                });
-              });
-
-            case Status.COMPLETED:
-              if (!_isUpdateRouteLoaded) {
-                _isUpdateRouteLoaded = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isUpdateRouteLoading = false;
-                    _isUpdateRouteCompleted = true;
-                  });
-                  if (!_isSuccessMessageShown) {
-                    _isSuccessMessageShown = true;
-                  }
-                  if (_selectedRoute != null) {
-                    _checkForSuccess();
-                  }
-                });
-              }
-
-              break;
-            case Status.ERROR:
-              if (!_isUpdateRouteErrorShown) {
-                _isUpdateRouteErrorShown = true;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  setState(() {
-                    _isUpdateRouteLoading = false;
                   });
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
@@ -1349,26 +1277,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
       onChanged: (Territory? territory) {
         setState(() {
           _selectedTerritory = territory;
-          _selectedTown = null;
-          _townList = [];
-          _isTownLoading = true;
         });
-
-        if (territory != null) {
-          _townBloc.getTown(territory.ytterritoryNummer.toString()).then((fetchedTowns) {
-            setState(() {
-              _townList = fetchedTowns;
-              _isTownLoading = false;
-            });
-          }).catchError((error) {
-            setState(() {
-              _isTownLoading = false;
-            });
-          });
-        }
       },
       selectedItem: _selectedTerritory,
-      //clearButtonProps: const ClearButtonProps(isVisible: true),
       dropdownDecoratorProps: const DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "Select Territory",
@@ -1417,68 +1328,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         },
       ),
       validator: _validateTerritory,
-    );
-  }
-
-  Widget buildTownDropdown() {
-    return DropdownSearch<Town>(
-      items: _townList,
-      itemAsString: (Town u) => u.ytsublocNamebspr.toString(),
-      onChanged: (Town? town) {
-        setState(() {
-          _selectedTown = town;
-        });
-      },
-      selectedItem: _selectedTown,
-      //clearButtonProps: const ClearButtonProps(isVisible: true),
-      dropdownDecoratorProps: const DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "Select Town",
-          hintText: "Select Town",
-          fillColor: CustomColors.textFieldFillColor,
-          labelStyle: TextStyle(
-            color: CustomColors.textFieldTextColor,
-          ),
-        ),
-      ),
-      popupProps: PopupProps.bottomSheet(
-        showSearchBox: true,
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(
-            focusColor: CustomColors.buttonColor,
-            labelText: 'Search Town',
-            hintText: 'Type to Search Town...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              borderSide: const BorderSide(
-                color: CustomColors.textFieldBorderColor,
-                width: 2.0,
-              ),
-            ),
-            fillColor: CustomColors.textFieldFillColor,
-            filled: true,
-            labelStyle: const TextStyle(
-              color: CustomColors.textFieldTextColor,
-            ),
-          ),
-        ),
-        itemBuilder: (context, item, isSelected) {
-          return ListTile(
-            title: Text(
-              "${item.ytsublocNamebspr}",
-              style: TextStyle(
-                color: CustomColors.cardTextColor,
-                fontSize: getFontSize(),
-              ),
-            ),
-          );
-        },
-      ),
-      validator: _validateTown,
     );
   }
 
@@ -1541,84 +1390,5 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
         },
       ),
     );
-  }
-
-  Widget buildRouteDropdown() {
-    return DropdownSearch<RouteList>(
-      items: _routeList,
-      itemAsString: (RouteList u) => u.namebsprRoute.toString(),
-      onChanged: (RouteList? routeOrganization) {
-        setState(() {
-          _selectedRoute = routeOrganization;
-        });
-      },
-      selectedItem: _selectedRoute,
-      clearButtonProps: const ClearButtonProps(isVisible: true),
-      dropdownDecoratorProps: const DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "Select Route",
-          hintText: "Select Route",
-          fillColor: CustomColors.textFieldFillColor,
-          labelStyle: TextStyle(
-            color: CustomColors.textFieldTextColor,
-          ),
-        ),
-      ),
-      popupProps: PopupProps.bottomSheet(
-        showSearchBox: true,
-        searchFieldProps: TextFieldProps(
-          decoration: InputDecoration(
-            focusColor: CustomColors.buttonColor,
-            labelText: 'Search Route',
-            hintText: 'Type to Search Route...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50.0),
-              borderSide: const BorderSide(
-                color: CustomColors.textFieldBorderColor,
-                width: 2.0,
-              ),
-            ),
-            fillColor: CustomColors.textFieldFillColor,
-            filled: true,
-            labelStyle: const TextStyle(
-              color: CustomColors.textFieldTextColor,
-            ),
-          ),
-        ),
-        itemBuilder: (context, item, isSelected) {
-          return ListTile(
-            title: Text(
-              item.namebsprRoute.toString(),
-              style: TextStyle(
-                color: CustomColors.cardTextColor,
-                fontSize: getFontSize(),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _checkForSuccess() {
-    if (_isUpdateRouteCompleted && _isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
-      setState(() {
-        _isFinalSuccessMessageShown = true;
-      });
-      final name = _nameController.text.toString();
-      showSuccessAlertDialog(context, "$name has been added successfully.", () {
-        // Future.delayed(const Duration(milliseconds: 500), () {
-        //   setState(() {
-        //     clearFormFields();
-        //   });
-        // });
-        Navigator.pop(context, true);
-        //Navigator.pop(context, true);
-      });
-    }
   }
 }
