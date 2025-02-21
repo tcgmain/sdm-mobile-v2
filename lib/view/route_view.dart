@@ -40,6 +40,7 @@ class _RouteViewState extends State<RouteView> {
   late RouteBloc _routeBloc;
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
+  bool _isErrorMessageShown = false;
 
   @override
   void initState() {
@@ -218,6 +219,8 @@ class _RouteViewState extends State<RouteView> {
                                   _isLoading = false;
                                 });
                               });
+                              if (!_isErrorMessageShown) {
+                                _isErrorMessageShown = true;
                               if (snapshot.data!.message.toString() == "404") {
                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                   showErrorAlertDialog(context, "No routes haven't been assigned yet.");
@@ -226,6 +229,7 @@ class _RouteViewState extends State<RouteView> {
                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                                 });
+                              }
                               }
                           }
                         }

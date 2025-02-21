@@ -18,7 +18,7 @@ class UpdateStockRepository {
       "table": [
         {
           "yentdat": date.toString(), //Entry Date
-          "yprod": productnummer.toString(), //Product Code
+          "yproduct": productnummer.toString(), //Product Code
           "ycurstoc": stock.toString(), //Current Stock
           "yrecqty": "", //Reciept Quantity
           "yissqty": "", //Issue Quantity

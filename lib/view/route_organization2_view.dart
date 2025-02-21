@@ -251,6 +251,8 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                 organizations.organizationYaddressl1.toString();
                                             final organizationAddress2 =
                                                 organizations.organizationYaddressl2.toString();
+                                                final organizationTownNamebspr =
+                                                organizations.organizationYtownNamebspr.toString();
                                             final organizationColour =
                                                 organizations.organizationYselcolourSuch.toString();
                                             final organizationLongitude = organizations.organizationYgpslon.toString();
@@ -335,8 +337,9 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                                   organizationPhone2: organizationPhone2,
                                                                   organizationWhatsapp: organizationWhatsapp,
                                                                   organizationAddress1: organizationAddress1,
-                                                                  territoryNummer: "territoryNummer",
                                                                   organizationAddress2: organizationAddress2,
+                                                                  organizationYtownNamebspr: organizationTownNamebspr,
+                                                                  territoryNummer: "territoryNummer",
                                                                   organizationColour: organizationColour,
                                                                   organizationLongitude: organizationLongitude,
                                                                   organizationLatitude: organizationLatitude,
@@ -349,6 +352,8 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                                   designationNummer: widget.designationNummer,
                                                                   organizationTypeNamebspr: organizationTypeNamebspr,
                                                                   userOrganizationNummer: widget.userOrganizationNummer,
+                                                                    ownerName: ownerName,
+                                                            ownerBirthday: ownerBirthday,
                                                                 )));
                                                       },
                                                       child: Container(

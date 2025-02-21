@@ -980,13 +980,4 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
       ),
     );
   }
-
-  void _checkForSuccess() {
-    if (_isUpdateOrganizationCompleted && !_isFinalSuccessMessageShown) {
-      setState(() {
-        _isFinalSuccessMessageShown = true;
-      });
-      showSuccessAlertDialogUpdateOrganization(context, "${widget.organizationName} has been updated.");
-    }
-  }
 }

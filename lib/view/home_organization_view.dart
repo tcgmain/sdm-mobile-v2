@@ -21,6 +21,7 @@ class HomeOrganizationView extends StatefulWidget {
   final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
+  final String organizationYtownNamebspr;
   final String territoryNummer;
   final String organizationColour;
   final String organizationLongitude;
@@ -34,6 +35,8 @@ class HomeOrganizationView extends StatefulWidget {
   final String designationNummer;
   final String organizationTypeNamebspr;
   final String userOrganizationNummer;
+  final String ownerName;
+  final String ownerBirthday;
 
   const HomeOrganizationView({
     super.key,
@@ -48,6 +51,7 @@ class HomeOrganizationView extends StatefulWidget {
     required this.organizationWhatsapp,
     required this.organizationAddress1,
     required this.organizationAddress2,
+    required this.organizationYtownNamebspr,
     required this.territoryNummer,
     required this.organizationColour,
     required this.organizationLongitude,
@@ -61,6 +65,8 @@ class HomeOrganizationView extends StatefulWidget {
     required this.designationNummer,
     required this.organizationTypeNamebspr,
     required this.userOrganizationNummer,
+    required this.ownerName,
+    required this.ownerBirthday,
   });
 
   @override
@@ -97,6 +103,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
             organizationWhatsapp: widget.organizationWhatsapp,
             organizationAddress1: widget.organizationAddress1,
             organizationAddress2: widget.organizationAddress2,
+            organizationYtownNamebspr: widget.organizationYtownNamebspr,
             organizationColour: widget.organizationColour,
             organizationLongitude: widget.organizationLongitude,
             organizationLatitude: widget.organizationLatitude,
@@ -105,8 +112,10 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
             isTeamMemberUi: widget.isTeamMemberUi,
             loggedUserNummer: widget.loggedUserNummer,
             ysuporgNummer: widget.ysuporgNummer,
-            ysuporgNamebspr: widget.ysuporgNamebspr, 
+            ysuporgNamebspr: widget.ysuporgNamebspr,
             organizationTypeNamebspr: widget.organizationTypeNamebspr,
+            ownerName: widget.ownerName,
+            ownerBirthday: widget.ownerBirthday,
           ),
     StockView(
       userNummer: widget.userNummer,
@@ -123,7 +132,7 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
       loggedUserNummer: widget.loggedUserNummer,
       ysuporgNummer: widget.ysuporgNummer,
       ysuporgNamebspr: widget.ysuporgNamebspr,
-      designationNummer: widget.designationNummer, 
+      designationNummer: widget.designationNummer,
       userOrganizationNummer: widget.userOrganizationNummer,
     ),
     SalesOrderListView(
@@ -166,15 +175,15 @@ class _HomeOrganizationViewState extends State<HomeOrganizationView> {
               onTabChange: _navigateBottomBar,
               padding: const EdgeInsets.all(16),
               tabs: [
-                isDataViewer(widget.designationNummer) == true ? 
-                const GButton(
-                  icon: Icons.info,
-                  text: 'Organization Info',
-                ):
-                const GButton(
-                  icon: Icons.flag,
-                  text: 'Mark Visit',
-                ),
+                isDataViewer(widget.designationNummer) == true
+                    ? const GButton(
+                        icon: Icons.info,
+                        text: 'Organization Info',
+                      )
+                    : const GButton(
+                        icon: Icons.flag,
+                        text: 'Mark Visit',
+                      ),
                 const GButton(
                   icon: Icons.list_alt_rounded,
                   text: 'View Stock',

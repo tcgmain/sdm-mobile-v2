@@ -33,6 +33,9 @@ class UserDetailsBloc {
       SharedPreferences prefsUserDesignationNummer = await SharedPreferences.getInstance();
       await prefsUserDesignationNummer.setString('userDesignationNummer', res[0].yorgNummer.toString());
 
+      SharedPreferences prefsUserTerritoryNumber= await SharedPreferences.getInstance();
+      await prefsUserTerritoryNumber.setString('userTerritoryNumber', res[0].ytterritoryNummer.toString());
+
       print("USER DETAILS SUCCESS");
     } catch (e) {
       userDetailsSink.add(ResponseList.error(e.toString()));

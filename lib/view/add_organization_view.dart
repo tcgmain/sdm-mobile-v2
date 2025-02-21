@@ -93,6 +93,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isTerritoryLoaded = false;
   bool _isTownLoaded = false;
   bool _isUpdateOrganizationCompleted = false;
+  bool _isTownErrorShown = false;
 
   final _formKey = GlobalKey<FormState>();
   String? _selectedCustomerType;
@@ -175,8 +176,6 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     longitude = position.longitude.toString();
 
     if (position.latitude < 0 || position.longitude < 0) {
-      print(position.latitude);
-      print(position.longitude);
       showErrorAlertDialogWithBack(context, "You are not permitted to add organization from this location");
     } else {
       calculateLatLngRangeforNearbyOrg(position.latitude, position.longitude, 100);
@@ -232,18 +231,19 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   Town? _getNearestTown(List<Town> towns, double currentLat, double currentLng) {
-     if (towns.isEmpty) return null;
+    if (towns.isEmpty) return null;
 
-  Town? nearestTown;
-  double shortestDistance = double.infinity;
+    Town? nearestTown;
+    double shortestDistance = double.infinity;
 
-  for (var town in towns) {
-    double distance = _calculateDistance(currentLat, currentLng, double.parse(town.ylatitude.toString()), double.parse(town.ylongtitude.toString()));
-    if (distance < shortestDistance) {
-      shortestDistance = distance;
-      nearestTown = town;
+    for (var town in towns) {
+      double distance = _calculateDistance(
+          currentLat, currentLng, double.parse(town.ylatitude.toString()), double.parse(town.ylongtitude.toString()));
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestTown = town;
+      }
     }
-  }
     return nearestTown;
   }
 
@@ -1132,11 +1132,11 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
               break;
 
             case Status.ERROR:
-              if (!_isTerritoryErrorShown) {
-                _isTerritoryErrorShown = true;
+              if (!_isTownErrorShown) {
+                _isTownErrorShown = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
-                    _isTerritoryLoading = false;
+                    _isTownLoading = false;
                   });
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });

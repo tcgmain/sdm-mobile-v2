@@ -13,6 +13,7 @@ class RouteOrganization {
       this.yaddressl2,
       this.territory,
       this.town,
+      this.townNamebspr,
       this.colour,
       this.longitude,
       this.latitude,
@@ -54,6 +55,7 @@ class RouteOrganization {
   String? yaddressl2;
   String? territory;
   String? town;
+  String? townNamebspr;
   String? colour;
   String? longitude;
   String? latitude;
@@ -97,6 +99,7 @@ class RouteOrganization {
       yaddressl2: json["ysdmorg^yaddressl2"] ?? '',
       territory: json["ysdmorg^yterritory"] ?? '',
       town: json["ysdmorg^ytown"] ?? '',
+      townNamebspr: json["ysdmorg^ytown^namebspr"] ?? '',
       colour: json["ysdmorg^yselcolour^such"] ?? '',
       longitude: json["ysdmorg^ygpslon"] ?? '',
       latitude: json["ysdmorg^ygpslat"] ?? '',
@@ -138,6 +141,7 @@ class RouteOrganization {
         "ysdmorg^yaddressl2": yaddressl2 ?? '',
         "ysdmorg^yterritory": territory ?? '',
         "ysdmorg^ytown": town ?? '',
+        "ysdmorg^ytown^namebspr": townNamebspr ?? '',
         "ysdmorg^yselcolour^such": colour ?? '',
         "ysdmorg^ygpslon": longitude ?? '',
         "ysdmorg^ygpslat": latitude ?? '',

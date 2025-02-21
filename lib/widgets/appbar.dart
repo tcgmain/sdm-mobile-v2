@@ -7,6 +7,7 @@ import 'package:sdm/view/change_password_view.dart';
 import 'package:sdm/view/home_v2_view.dart';
 import 'package:sdm/view/home_view.dart';
 import 'package:sdm/view/login_view.dart';
+import 'package:sdm/view/notification_view.dart';
 import 'package:sdm/view/profile_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,7 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isHomePage;
   final List<Widget>? customActions;
   final bool? isPendingApprovalDisabled;
+  final bool? isNotificationScreen;
 
   const CommonAppBar({
     super.key,
@@ -24,6 +26,7 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
     required this.isHomePage,
     this.customActions,
     this.isPendingApprovalDisabled,
+    this.isNotificationScreen,
   });
 
   @override
@@ -44,6 +47,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
   void initState() {
     super.initState();
     _loadUserPreferences();
+
   }
 
   Future<void> _loadUserPreferences() async {
@@ -120,6 +124,34 @@ class _CommonAppBarState extends State<CommonAppBar> {
                       );
                     });
             },
+          ),
+        if(widget.isNotificationScreen != true)
+          // Notification Icon with Badge
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationView(),
+                    ),
+                  );
+                },
+              ),
+              const Positioned(
+                right: 10,
+                top: 10,
+                child: CircleAvatar(
+                  radius: 8,
+                  backgroundColor: Colors.blue,
+                  child: Text(
+                    '1', // Replace with actual notification count
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         if (widget.customActions != null) ...widget.customActions!,
         PopupMenuButton<String>(

@@ -1,11 +1,16 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:sdm/blocs/mark_visit_bloc.dart';
+import 'package:sdm/blocs/town_bloc.dart';
 import 'package:sdm/blocs/update_organization_location_bloc.dart';
 import 'package:sdm/blocs/user_details_bloc.dart';
 import 'package:sdm/models/mark_visit.dart';
+import 'package:sdm/models/town.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/models/user_details.dart';
 import 'package:sdm/networking/response.dart';
@@ -15,6 +20,7 @@ import 'package:sdm/view/visit_history_view.dart';
 import 'package:sdm/widgets/app_button.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
+import 'package:sdm/widgets/birthday_popup.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/icon_button.dart';
 import 'package:sdm/widgets/loading.dart';
@@ -38,6 +44,7 @@ class MarkVisitView extends StatefulWidget {
   final String organizationWhatsapp;
   final String organizationAddress1;
   final String organizationAddress2;
+  final String organizationYtownNamebspr;
   final String organizationColour;
   final String organizationLongitude;
   final String organizationLatitude;
@@ -47,6 +54,8 @@ class MarkVisitView extends StatefulWidget {
   final String loggedUserNummer;
   final String ysuporgNummer;
   final String ysuporgNamebspr;
+  final String ownerName;
+  final String ownerBirthday;
 
   const MarkVisitView({
     super.key,
@@ -61,6 +70,7 @@ class MarkVisitView extends StatefulWidget {
     required this.organizationWhatsapp,
     required this.organizationAddress1,
     required this.organizationAddress2,
+    required this.organizationYtownNamebspr,
     required this.organizationColour,
     required this.organizationLongitude,
     required this.organizationLatitude,
@@ -71,6 +81,8 @@ class MarkVisitView extends StatefulWidget {
     required this.ysuporgNummer,
     required this.ysuporgNamebspr,
     required this.organizationTypeNamebspr,
+    required this.ownerName,
+    required this.ownerBirthday,
   });
 
   @override
@@ -81,6 +93,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   String _locationMessage = "";
   bool _isSuccessMessageShown = false;
   bool _isErrorMessageShown = false;
+  late TownBloc _townBloc;
   late double organizationLatitude = double.parse(widget.organizationLatitude);
   late double organizationLongitude = double.parse(widget.organizationLongitude);
   late double organizationDistance = double.parse(widget.organizationDistance);
@@ -93,18 +106,26 @@ class _MarkVisitViewState extends State<MarkVisitView> {
   late UpdateOrganizationLocationBloc _updateOrganizationLocationBloc;
   String currentLatitude = "";
   String currentLongitude = "";
+  String currentTownNummer = "";
+  String currentTownNamebspr = "";
   late UserDetailsBloc _userDetailsBloc;
   bool _isUserDetailsErrorMessageShown = false;
   bool _isLocationUpdatePermissionLoaded = false;
+  bool _isTownLoading = false;
+  Town? _nearbyTown;
+  bool _isTownErrorShown = false;
+  bool _isUpdateLocationCompleted = false;
+  bool _isBirthdayMessageShown = false;
 
   @override
   void initState() {
     super.initState();
     _markVisitBloc = MarkVisitBloc();
     _updateOrganizationLocationBloc = UpdateOrganizationLocationBloc();
-
+    _townBloc = TownBloc();
     _userDetailsBloc = UserDetailsBloc();
     getUserPermission();
+    showBirthdayPopup();
   }
 
   @override
@@ -112,7 +133,33 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     _markVisitBloc.dispose();
     _updateOrganizationLocationBloc.dispose();
     _userDetailsBloc.dispose();
+    _townBloc.dispose();
     super.dispose();
+  }
+
+  showBirthdayPopup(){
+     DateTime currentDate = DateTime.now();
+  String birthdayString = widget.ownerBirthday;
+
+  try {
+    DateTime userBirthDate = DateFormat("dd/MM/yyyy").parse(birthdayString);
+
+    if (currentDate.day == userBirthDate.day && currentDate.month == userBirthDate.month) {
+      if (!_isBirthdayMessageShown) {
+        _isBirthdayMessageShown = true;
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (context) => BirthdayPopup(
+              ownerName: widget.ownerName,
+            ),
+          );
+        });
+      }
+    }
+  } catch (e) {
+    print("Error parsing or comparing birthday: $e");
+  }
   }
 
   getUserPermission() async {
@@ -125,7 +172,66 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     String fullAddress = "";
     if (widget.organizationAddress1.isNotEmpty) fullAddress += widget.organizationAddress1;
     if (widget.organizationAddress2.isNotEmpty) fullAddress += ", ${widget.organizationAddress2}";
+    if (widget.organizationAddress2.isNotEmpty) fullAddress += ", ${widget.organizationYtownNamebspr}";
     return fullAddress;
+  }
+
+  Map<String, double> calculateLatLngRangeForTown(double latitude, double longitude, double radiusKm) {
+    const double earthRadiusKm = 6371.0; // Radius of the Earth in km
+
+    // Convert latitude and longitude from degrees to radians
+    double latRad = latitude * (pi / 180);
+
+    // Calculate latitude bounds
+    double latDiff = (radiusKm / earthRadiusKm) * (180 / pi);
+    double minLat = latitude - latDiff;
+    double maxLat = latitude + latDiff;
+
+    // Calculate longitude bounds
+    double lonDiff = (radiusKm / earthRadiusKm) * (180 / pi) / cos(latRad);
+    double minLon = longitude - lonDiff;
+    double maxLon = longitude + lonDiff;
+
+    return {
+      'minLat': minLat,
+      'maxLat': maxLat,
+      'minLon': minLon,
+      'maxLon': maxLon,
+    };
+  }
+
+  Town? _getNearestTown(List<Town> towns, double currentLat, double currentLng) {
+    if (towns.isEmpty) return null;
+
+    Town? nearestTown;
+    double shortestDistance = double.infinity;
+
+    for (var town in towns) {
+      double distance = _calculateDistance(
+          currentLat, currentLng, double.parse(town.ylatitude.toString()), double.parse(town.ylongtitude.toString()));
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestTown = town;
+      }
+    }
+    return nearestTown;
+  }
+
+  // Haversine Formula to calculate distance
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double R = 6371; // Earth radius in km
+    double dLat = _degToRad(lat2 - lat1);
+    double dLon = _degToRad(lon2 - lon1);
+
+    double a =
+        sin(dLat / 2) * sin(dLat / 2) + cos(_degToRad(lat1)) * cos(_degToRad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return R * c;
+  }
+
+  double _degToRad(double deg) {
+    return deg * (pi / 180);
   }
 
   Future<void> _getCurrentLocation(bool isLocUpdPermissionEnable) async {
@@ -187,7 +293,66 @@ class _MarkVisitViewState extends State<MarkVisitView> {
           _showLocationUpdateButton = false;
         }
       });
+
+      if (position.latitude < 0 || position.longitude < 0) {
+        showErrorAlertDialogWithBack(context, "You are not permitted to mark visit in this location");
+      } else {
+        setState(() {
+          _isTownLoading = true;
+        });
+        Map<String, double> geoTownMinRange = calculateLatLngRangeForTown(position.latitude, position.longitude, 4);
+        _townBloc.getTown(geoTownMinRange['minLon'].toString(), geoTownMinRange['maxLon'].toString(),
+            geoTownMinRange['minLat'].toString(), geoTownMinRange['maxLat'].toString());
+      }
     }
+  }
+
+  Widget getTownResponse() {
+    return StreamBuilder<ResponseList<Town>>(
+      stream: _townBloc.townStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTownLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTownLoading = false;
+                });
+              });
+
+              // Extract nearest town
+              Town? nearestTown =
+                  _getNearestTown(snapshot.data!.data!, double.parse(currentLatitude), double.parse(currentLongitude));
+              if (nearestTown != null) {
+                _nearbyTown = nearestTown;
+                currentTownNummer = _nearbyTown!.nummer.toString();
+                currentTownNamebspr = _nearbyTown!.namebspr.toString();
+              }
+
+              break;
+
+            case Status.ERROR:
+              if (!_isTownErrorShown) {
+                _isTownErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTownLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
   }
 
   void _launchEmail(String email) async {
@@ -407,15 +572,28 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                     CommonAppButton(
                         buttonText: "Update Location",
                         onPressed: () {
-                          showConfirmationPopup(context, currentLongitude, currentLatitude);
+                          showConfirmationPopup(context, currentLongitude, currentLatitude, currentTownNummer);
                         }),
+                  if (_showLocationUpdateButton)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            _nearbyTown != null
+                                ? "Now you are in ${_nearbyTown!.namebspr}"
+                                : "No town found in your location",
+                            style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
+                          )),
+                    ),
                   markVisitResponse(),
                   updateLocationResponse(),
-                  userDetailsResponse()
+                  userDetailsResponse(),
+                  getTownResponse()
                 ],
               ),
             ),
-            if (_isLoading) const Loading(),
+            if (_isLoading || _isTownLoading) const Loading(),
           ],
         ),
       ),
@@ -562,42 +740,49 @@ class _MarkVisitViewState extends State<MarkVisitView> {
               });
               break;
             case Status.COMPLETED:
-              String latitude = snapshot.data!.data!.ygpslat.toString();
-              String longitude = snapshot.data!.data!.ygpslon.toString();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showSuccessAlertDialog(context, "${widget.organizationName}'s location has been updated successfully.",
-                    () {
-                  //WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MarkVisitView(
-                              username: widget.username,
-                              userNummer: widget.userNummer,
-                              routeNummer: widget.routeNummer,
-                              organizationId: widget.organizationId,
-                              organizationNummer: widget.organizationNummer,
-                              organizationName: widget.organizationName,
-                              organizationPhone1: widget.organizationPhone1,
-                              organizationPhone2: widget.organizationPhone2,
-                              organizationWhatsapp: widget.organizationWhatsapp,
-                              organizationAddress1: widget.organizationAddress1,
-                              organizationAddress2: widget.organizationAddress2,
-                              organizationColour: widget.organizationColour,
-                              organizationLongitude: longitude,
-                              organizationLatitude: latitude,
-                              organizationDistance: widget.organizationDistance,
-                              organizationMail: widget.organizationMail,
-                              isTeamMemberUi: widget.isTeamMemberUi,
-                              loggedUserNummer: widget.loggedUserNummer,
-                              ysuporgNummer: widget.ysuporgNummer,
-                              ysuporgNamebspr: widget.ysuporgNamebspr,
-                              organizationTypeNamebspr: widget.organizationTypeNamebspr,
-                            )),
-                  );
-                  //});
+              if (!_isUpdateLocationCompleted) {
+                _isUpdateLocationCompleted = true;
+
+                String latitude = snapshot.data!.data!.ygpslat.toString();
+                String longitude = snapshot.data!.data!.ygpslon.toString();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showSuccessAlertDialog(
+                      context, "${widget.organizationName}'s location has been updated successfully.", () {
+                    //WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MarkVisitView(
+                                username: widget.username,
+                                userNummer: widget.userNummer,
+                                routeNummer: widget.routeNummer,
+                                organizationId: widget.organizationId,
+                                organizationNummer: widget.organizationNummer,
+                                organizationName: widget.organizationName,
+                                organizationPhone1: widget.organizationPhone1,
+                                organizationPhone2: widget.organizationPhone2,
+                                organizationWhatsapp: widget.organizationWhatsapp,
+                                organizationAddress1: widget.organizationAddress1,
+                                organizationAddress2: widget.organizationAddress2,
+                                organizationYtownNamebspr: currentTownNamebspr,
+                                organizationColour: widget.organizationColour,
+                                organizationLongitude: longitude,
+                                organizationLatitude: latitude,
+                                organizationDistance: widget.organizationDistance,
+                                organizationMail: widget.organizationMail,
+                                isTeamMemberUi: widget.isTeamMemberUi,
+                                loggedUserNummer: widget.loggedUserNummer,
+                                ysuporgNummer: widget.ysuporgNummer,
+                                ysuporgNamebspr: widget.ysuporgNamebspr,
+                                organizationTypeNamebspr: widget.organizationTypeNamebspr,
+                                ownerName: widget.ownerName,
+                                ownerBirthday: widget.ownerBirthday,
+                              )),
+                    );
+                    //});
+                  });
                 });
-              });
+              }
 
               break;
             case Status.ERROR:
@@ -620,7 +805,8 @@ class _MarkVisitViewState extends State<MarkVisitView> {
     );
   }
 
-  showConfirmationPopup(BuildContext context, String currentLongitude, String currentLatitude) {
+  showConfirmationPopup(
+      BuildContext context, String currentLongitude, String currentLatitude, String currentTownNummer) {
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -688,6 +874,7 @@ class _MarkVisitViewState extends State<MarkVisitView> {
                               widget.organizationId,
                               currentLongitude,
                               currentLatitude,
+                              currentTownNummer,
                               loggedUsername,
                               getCurrentDate() + " " + getCurrentTime());
                         },

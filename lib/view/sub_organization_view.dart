@@ -215,18 +215,15 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                           subOrganizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       String subOrganizationAddress2 =
                                           subOrganizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                        String territoryNummer =
+                                      String subOrganizationTownNamebspr =
+                                          subOrganizations.ytownNamebspr?.toString() ?? 'Unnamed Route';
+                                      String territoryNummer =
                                           subOrganizations.yterritory?.toString() ?? 'Unnamed Route';
-                                      String subOrganizationColour =
-                                          subOrganizations.colour?.toString() ?? '';
-                                      String subOrganizationLongitude =
-                                          subOrganizations.longitude?.toString() ?? '';
-                                      String subOrganizationLatitude =
-                                          subOrganizations.latitude?.toString() ?? '';
-                                      String subOrganizationDistance =
-                                          subOrganizations.distance?.toString() ?? '';
-                                      String subOrganizationMail =
-                                          subOrganizations.yemail?.toString() ?? '';
+                                      String subOrganizationColour = subOrganizations.colour?.toString() ?? '';
+                                      String subOrganizationLongitude = subOrganizations.longitude?.toString() ?? '';
+                                      String subOrganizationLatitude = subOrganizations.latitude?.toString() ?? '';
+                                      String subOrganizationDistance = subOrganizations.distance?.toString() ?? '';
+                                      String subOrganizationMail = subOrganizations.yemail?.toString() ?? '';
                                       String subOrganizationSuperiorOrgNummer =
                                           subOrganizations.ysuporgNummer?.toString() ?? '';
                                       String subOrganizationSuperiorOrgNamebspr =
@@ -241,7 +238,6 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                       String isWaterproofing = subOrganizations.ywaterpr?.toString() ?? '';
                                       String isFlooring = subOrganizations.yflooring?.toString() ?? '';
 
-
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: Slidable(
@@ -254,25 +250,25 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                             children: [
                                               SlidableAction(
                                                 onPressed: (context) {
-                                                    _navigateToUpdateOrganizationView(
-                                                            subOrganizationId,
-                                                            subOrganizationNummer,
-                                                            subOrganizationName,
-                                                            subOrganizationCustomerTypeId,
-                                                            subOrganizationMail,
-                                                            subOrganizationPhone1,
-                                                            subOrganizationPhone2,
-                                                            subOrganizationWhatsapp,
-                                                            subOrganizationAddress1,
-                                                            subOrganizationAddress2,
-                                                            territoryNummer,
-                                                            subOrganizationSuperiorOrgNummer,
-                                                            ownerName,
-                                                            ownerBirthday,
-                                                            isMasonry,
-                                                            isWaterproofing,
-                                                            isFlooring,
-                                                            subOrganizationColour);
+                                                  _navigateToUpdateOrganizationView(
+                                                      subOrganizationId,
+                                                      subOrganizationNummer,
+                                                      subOrganizationName,
+                                                      subOrganizationCustomerTypeId,
+                                                      subOrganizationMail,
+                                                      subOrganizationPhone1,
+                                                      subOrganizationPhone2,
+                                                      subOrganizationWhatsapp,
+                                                      subOrganizationAddress1,
+                                                      subOrganizationAddress2,
+                                                      territoryNummer,
+                                                      subOrganizationSuperiorOrgNummer,
+                                                      ownerName,
+                                                      ownerBirthday,
+                                                      isMasonry,
+                                                      isWaterproofing,
+                                                      isFlooring,
+                                                      subOrganizationColour);
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,
                                                 foregroundColor: CustomColors.buttonTextColor,
@@ -296,6 +292,7 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                         organizationWhatsapp: subOrganizationWhatsapp,
                                                         organizationAddress1: subOrganizationAddress1,
                                                         organizationAddress2: subOrganizationAddress2,
+                                                        organizationYtownNamebspr: subOrganizationTownNamebspr,
                                                         organizationColour: subOrganizationColour,
                                                         organizationLongitude: subOrganizationLongitude,
                                                         organizationLatitude: subOrganizationLatitude,
@@ -307,8 +304,10 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                         ysuporgNamebspr: subOrganizationSuperiorOrgNamebspr,
                                                         designationNummer: widget.designationNummer,
                                                         organizationTypeNamebspr: subOrganizationCustomerTypeNamebspr,
-                                                        userOrganizationNummer: widget.userOrganizationNummer, 
+                                                        userOrganizationNummer: widget.userOrganizationNummer,
                                                         territoryNummer: '',
+                                                        ownerName: ownerName,
+                                                        ownerBirthday: ownerBirthday,
                                                       )));
                                             },
                                           ),

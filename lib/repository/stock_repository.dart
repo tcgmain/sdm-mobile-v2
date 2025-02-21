@@ -19,6 +19,8 @@ class StockRepository {
         {"yprodnummer": "", 
         "yprodsuch": "", 
         "yproddesc": "", 
+        "productbrand": "",
+        "yproductcategory": "",
         "ycurstoc": "", 
         "ylastud": "", 
         "ylastub": ""}

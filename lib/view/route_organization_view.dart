@@ -258,6 +258,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                           organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       final organizationAddress2 =
                                           organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                           final organizationTownNamebspr =
+                                          organizations.townNamebspr?.toString() ?? 'Unnamed Route';
                                       final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
                                       final organizationLongitude =
                                           organizations.longitude?.toString() ?? 'Unnamed Route';
@@ -344,6 +346,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                             organizationPhone2: organizationPhone2,
                                                             organizationWhatsapp: organizationWhatsapp,
                                                             organizationAddress1: organizationAddress1,
+                                                            organizationYtownNamebspr: organizationTownNamebspr,
                                                             territoryNummer: "territoryNummer",
                                                             organizationAddress2: organizationAddress2,
                                                             organizationColour: organizationColour,
@@ -358,6 +361,8 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                             designationNummer: widget.designationNummer,
                                                             organizationTypeNamebspr: organizationTypeNamebspr,
                                                             userOrganizationNummer: widget.userOrganizationNummer,
+                                                            ownerName: ownerName,
+                                                            ownerBirthday: ownerBirthday,
                                                           )));
                                                 },
                                                 child: Container(

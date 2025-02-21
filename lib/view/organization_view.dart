@@ -311,6 +311,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                 organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                             String organizationAddress2 =
                                                 organizations.yaddressl2?.toString() ?? 'Unnamed Route';
+                                                String organizationYtownNamebspr =
+                                                organizations.ytownNamebspr?.toString() ?? 'Unnamed Route';
                                             String territoryNummer =
                                                 organizations.yterritory?.toString() ?? 'Unnamed Route';
                                             String organizationColour =
@@ -396,6 +398,7 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                                     organizationWhatsapp: organizationWhatsapp,
                                                                     organizationAddress1: organizationAddress1,
                                                                     organizationAddress2: organizationAddress2,
+                                                                    organizationYtownNamebspr: organizationYtownNamebspr,
                                                                     territoryNummer: territoryNummer,
                                                                     organizationColour: organizationColour,
                                                                     organizationLongitude: organizationLongitude,
@@ -410,6 +413,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                                     organizationTypeNamebspr: organizationTypeNamebspr,
                                                                     userOrganizationNummer:
                                                                         widget.userOrganizationNummer,
+                                                                    ownerName: ownerName,
+                                                                    ownerBirthday: ownerBirthday
                                                                   )));
                                                         },
                                                         child: Container(

@@ -3,7 +3,7 @@ import 'package:sdm/models/Bdnotification.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/repository/bdnotification_repository.dart';
 
-class BdnotificationBlock {
+class BdnotificationBloc {
   late BdnotificationRepository _bdnotificationRepository;
   StreamController<ResponseList<Bdnotification>>? _bdnotification_controller;
 
@@ -15,7 +15,7 @@ class BdnotificationBlock {
   Stream<ResponseList<Bdnotification>> get bdnotificationStream =>
       _bdnotification_controller!.stream;
 
-  BdnotificationBlock() {
+  BdnotificationBloc() {
     _bdnotification_controller =
         StreamController<ResponseList<Bdnotification>>.broadcast();
     _bdnotificationRepository = BdnotificationRepository();
@@ -27,7 +27,7 @@ class BdnotificationBlock {
           await _bdnotificationRepository.getBdnotification(yterritoryNummer);
       if (_bdnotification_controller?.isClosed ?? true) return;
       bdnotificationSink.add(ResponseList.completed(res));
-      print("Retrieved Birthday Details Successfully!");
+      print("Birthday SUCCESS");
     } catch (e) {
       if (_bdnotification_controller?.isClosed ?? true) return;
       bdnotificationSink.add(ResponseList.error(e.toString()));

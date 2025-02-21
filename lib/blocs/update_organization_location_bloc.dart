@@ -19,14 +19,17 @@ class UpdateOrganizationLocationBloc {
     _updateOrganizationLocationRepository = UpdateOrganizationLocationRepository();
   }
 
-  updateOrganizationLocation(id, longitude, latitude, updatedBy, updatedOn) async {
+  updateOrganizationLocation(id, longitude, latitude, currentTownNummer, updatedBy, updatedOn) async {
     if (_updateOrganizationLocationController?.isClosed ?? true) return;
     updateOrganizationLocationSink.add(Response.loading(''));
     try {
       UpdateOrganization res = await _updateOrganizationLocationRepository.updateOrganizationLocation(
         id,
         longitude,
-        latitude,updatedBy, updatedOn
+        latitude, 
+        currentTownNummer, 
+        updatedBy, 
+        updatedOn
       );
       if (_updateOrganizationLocationController?.isClosed ?? true) return;
       updateOrganizationLocationSink.add(Response.completed(res));

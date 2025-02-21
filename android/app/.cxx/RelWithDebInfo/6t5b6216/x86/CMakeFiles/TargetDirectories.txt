@@ -1,0 +1,2 @@
+D:/Projects/SDM/Mobile Application/LIVE/sdm/android/app/.cxx/RelWithDebInfo/6t5b6216/x86/CMakeFiles/edit_cache.dir
+D:/Projects/SDM/Mobile Application/LIVE/sdm/android/app/.cxx/RelWithDebInfo/6t5b6216/x86/CMakeFiles/rebuild_cache.dir

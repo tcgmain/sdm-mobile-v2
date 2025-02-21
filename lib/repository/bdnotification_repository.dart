@@ -14,7 +14,6 @@ class BdnotificationRepository {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    print('yyyy');
     inputBody = <String, String>{"yterritory^nummer": yterritory_nummer};
 
     final response = await _provider.post("/getorgbyterritory", jsonEncode(inputBody), requestHeaders);

@@ -28,6 +28,7 @@ class RouteOrganization2 {
     required this.organizationYaddressl2,
     required this.organizationYaddressl3,
     required this.organizationYaddressl4,
+    required this.organizationYtownNamebspr,
     required this.organizationYphone1,
     required this.organizationYphone2,
     required this.organizationYemail,
@@ -71,6 +72,7 @@ class RouteOrganization2 {
   String organizationYaddressl2;
   String organizationYaddressl3;
   String organizationYaddressl4;
+  String organizationYtownNamebspr;
   String organizationYphone1;
   String organizationYphone2;
   String organizationYemail;
@@ -114,6 +116,7 @@ class RouteOrganization2 {
         organizationYaddressl2: json["organization^yaddressl2"],
         organizationYaddressl3: json["organization^yaddressl3"],
         organizationYaddressl4: json["organization^yaddressl4"],
+        organizationYtownNamebspr: json["organization^ytown^namebspr"],
         organizationYphone1: json["organization^yphone1"],
         organizationYphone2: json["organization^yphone2"],
         organizationYemail: json["organization^yemail"],
@@ -158,6 +161,7 @@ class RouteOrganization2 {
         "organization^yaddressl2": organizationYaddressl2,
         "organization^yaddressl3": organizationYaddressl3,
         "organization^yaddressl4": organizationYaddressl4,
+        "organization^ytown^namebspr": organizationYtownNamebspr,
         "organization^yphone1": organizationYphone1,
         "organization^yphone2": organizationYphone2,
         "organization^yemail": organizationYemail,

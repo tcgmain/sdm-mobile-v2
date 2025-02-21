@@ -16,6 +16,7 @@ class UserDetails {
     this.yorgNummer,
     this.designationNummer,
     this.yenableupdatelocationpermission,
+    this.ytterritoryNummer,
   });
 
   String? ynic;
@@ -34,25 +35,26 @@ class UserDetails {
   String? yorgNummer;
   String? designationNummer;
   bool? yenableupdatelocationpermission;
+  String? ytterritoryNummer;
 
   factory UserDetails.fromJson(Map<String, dynamic> json) => UserDetails(
-        ynic: json["ypasdef^passmitarb^ynic"],
-        email: json["ypasdef^passmitarb^email"],
-        str: json["ypasdef^passmitarb^str"],
-        yusrloc: json["ypasdef^yusrloc^namebspr"],
-        ydes: json["ypasdef^passmitarb^ydes"],
-        bezeich: json["ypasdef^bezeich"],
-        ydepcodelNamebspr: json["ypasdef^passmitarb^ydepcodel^namebspr"],
-        nummer: json["nummer"],
-        namebspr: json["ypasdef^namebspr"],
-        yepf: json["ypasdef^passmitarb^yepf"],
-        id: json["id"],
-        ydepcodel: json["ypasdef^passmitarb^ydepcodel"],
-        yhrisid: json["ypasdef^passmitarb^yhrisid"],
-        yorgNummer: json["yorg^nummer"],
-        designationNummer: json["ypasdef^passmitarb^ytitle^nummer"],
-        yenableupdatelocationpermission: json["yenableupdatelocationpermission"],
-      );
+      ynic: json["ypasdef^passmitarb^ynic"],
+      email: json["ypasdef^passmitarb^email"],
+      str: json["ypasdef^passmitarb^str"],
+      yusrloc: json["ypasdef^yusrloc^namebspr"],
+      ydes: json["ypasdef^passmitarb^ydes"],
+      bezeich: json["ypasdef^bezeich"],
+      ydepcodelNamebspr: json["ypasdef^passmitarb^ydepcodel^namebspr"],
+      nummer: json["nummer"],
+      namebspr: json["ypasdef^namebspr"],
+      yepf: json["ypasdef^passmitarb^yepf"],
+      id: json["id"],
+      ydepcodel: json["ypasdef^passmitarb^ydepcodel"],
+      yhrisid: json["ypasdef^passmitarb^yhrisid"],
+      yorgNummer: json["yorg^nummer"],
+      designationNummer: json["ypasdef^passmitarb^ytitle^nummer"],
+      yenableupdatelocationpermission: json["yenableupdatelocationpermission"],
+      ytterritoryNummer: json["ytterritory^nummer"]);
 
   Map<String, dynamic> toJson() => {
         "ypasdef^passmitarb^ynic": ynic,
@@ -71,5 +73,6 @@ class UserDetails {
         "yorg^nummer": yorgNummer,
         "ypasdef^passmitarb^ytitle^nummer": designationNummer,
         "yenableupdatelocationpermission": yenableupdatelocationpermission,
+        "ytterritory^nummer": ytterritoryNummer,
       };
 }

@@ -12,6 +12,7 @@ class UpdateOrganizationLocationRepository {
     String id,
     String longitude,
     String latitude,
+    String currentTownNummer,
     String updatedBy,
     String updatedOn,
   ) async {
@@ -21,6 +22,7 @@ class UpdateOrganizationLocationRepository {
       "id": id,
       "ygpslat": latitude,
       "ygpslon": longitude,
+      "ytown": currentTownNummer,
       "locationupdatedby": updatedBy,
       "locationupdatedon": updatedOn
     };

@@ -49,7 +49,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
   late double organizationDistance;
   String superiorOrganization = "Not Assigned";
   bool _isLoading = false;
-  bool _isRouteLoading = false;
   bool _isApproveLoading = false;
   bool _isSuccessMessageShown = false;
   late OrganizationInfoBloc _organizationInfoBloc;
@@ -69,7 +68,6 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
     _organizationInfoBloc.getOrganizationInfo(widget.organizationNummer);
     setState(() {
       _isLoading = true;
-      _isRouteLoading = true;
     });
   }
 
@@ -450,7 +448,7 @@ class _ApproveOrganizationViewState extends State<ApproveOrganizationView> {
                 },
               ),
             ),
-            if (_isLoading || _isApproveLoading || _isRouteLoading) const Loading(),
+            if (_isLoading || _isApproveLoading ) const Loading(),
           ],
         ),
       ),

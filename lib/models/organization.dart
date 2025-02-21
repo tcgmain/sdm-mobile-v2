@@ -13,6 +13,7 @@ class Organization {
       this.yaddressl2,
       this.yterritory,
       this.ytown,
+      this.ytownNamebspr,
       this.colour,
       this.longitude,
       this.latitude,
@@ -58,6 +59,7 @@ class Organization {
   String? yaddressl1;
   String? yaddressl2;
   String? ytown;
+  String? ytownNamebspr;
   String? yterritory;
   String? colour;
   String? longitude;
@@ -105,6 +107,7 @@ class Organization {
       yaddressl1: json["yaddressl1"] ?? '',
       yaddressl2: json["yaddressl2"] ?? '',
       ytown: json["ytown"],
+      ytownNamebspr: json["ytown^namebspr"] ?? '',
       yterritory: json["yterritory"] ?? '',
       colour: json["yselcolour^such"] ?? '',
       longitude: json["ygpslon"] ?? '',
@@ -154,6 +157,7 @@ class Organization {
         "yaddressl2": yaddressl2,
         "yterritory": yterritory,
         "ytown": ytown,
+        "ytown^namebspr": ytownNamebspr,
         "yselcolour^such": colour,
         "ygpslon": longitude,
         "ygpslat": latitude,
