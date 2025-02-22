@@ -34,16 +34,22 @@ class Product {
     this.ycurstoc,
     this.yprodnummer,
     this.yproddesc,
+    this.productbrand,
+    this.yproductcategory,
     this.ylastud,
     this.ylastub,
+    this.yiscompetitor
   });
 
   String? yprodsuch;
   double? ycurstoc;
   String? yprodnummer;
   String? yproddesc;
+  String? productbrand;
+  String? yproductcategory;
   String? ylastud;
   String? ylastub;
+  bool? yiscompetitor;
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -51,8 +57,11 @@ class Product {
       ycurstoc: json["ycurstoc"]?.toDouble(),
       yprodnummer: json["yprodnummer"],
       yproddesc: json["yproddesc"],
+      productbrand: json["productbrand"],
+      yproductcategory: json["yproductcategory"],
       ylastud: json["ylastud"],
       ylastub: json["ylastub"],
+      yiscompetitor: json["yiscompetitor"],
     );
   }
 
@@ -61,7 +70,10 @@ class Product {
         "ycurstoc": ycurstoc,
         "yprodnummer": yprodnummer,
         "yproddesc": yproddesc,
+        "productbrand": productbrand,
+        "yproductcategory": yproductcategory,
         "ylastud": ylastud,
         "ylastub": ylastub,
+        "yiscompetitor": yiscompetitor,
       };
 }

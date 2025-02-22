@@ -21,6 +21,7 @@ class StockRepository {
         "yproddesc": "", 
         "productbrand": "",
         "yproductcategory": "",
+        "yiscompetitor": "",
         "ycurstoc": "", 
         "ylastud": "", 
         "ylastub": ""}

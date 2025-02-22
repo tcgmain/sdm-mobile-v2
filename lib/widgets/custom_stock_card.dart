@@ -10,6 +10,7 @@ class CustomStockCard extends StatelessWidget {
   final VoidCallback onPressedUpdate;
   final String lastUpdatedDate;
   final String lastUpdatedUser;
+  final bool? isCompetitorProduct;
 
   const CustomStockCard({
     super.key,
@@ -20,6 +21,7 @@ class CustomStockCard extends StatelessWidget {
     required this.onPressedUpdate,
     required this.lastUpdatedDate,
     required this.lastUpdatedUser,
+    this.isCompetitorProduct,
   });
 
   @override
@@ -30,7 +32,7 @@ class CustomStockCard extends StatelessWidget {
         border: Border.all(color: Colors.white),
         gradient: LinearGradient(
           colors: [
-            Colors.grey.shade400,
+            isCompetitorProduct == true ? Colors.yellow.shade400 : Colors.grey.shade400,
             Colors.white,
           ],
           begin: Alignment.topCenter,

@@ -84,14 +84,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
 
   List<Organization> _superiorOrganizations = [];
   List<Territory> _territoryList = [];
-  List<Town> _townList = [];
   bool _isTerritoryErrorShown = false;
   Organization? _selectedSuperiorOrganization;
   Territory? _selectedTerritory;
   Town? _nearbyTown;
   bool _isOrganizationsLoaded = false;
   bool _isTerritoryLoaded = false;
-  bool _isTownLoaded = false;
   bool _isUpdateOrganizationCompleted = false;
   bool _isTownErrorShown = false;
 

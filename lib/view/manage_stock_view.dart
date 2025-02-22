@@ -111,14 +111,24 @@ class _ManageStockViewState extends State<ManageStockView> {
     });
   }
 
+  Map<String, List<Product>> _groupProductsByCategory(List<Product> products) {
+    final Map<String, List<Product>> categorizedProducts = {};
+    for (var product in products) {
+      final category = product.yproductcategory ?? 'Uncategorized';
+      if (!categorizedProducts.containsKey(category)) {
+        categorizedProducts[category] = [];
+      }
+      categorizedProducts[category]!.add(product);
+    }
+    return categorizedProducts;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonAppBar(
         title: 'Manage Stock',
-        onBackButtonPressed: () {
-          Navigator.pop(context);
-        },
+        onBackButtonPressed: () => Navigator.pop(context),
         isHomePage: false,
       ),
       body: SafeArea(
@@ -131,15 +141,16 @@ class _ManageStockViewState extends State<ManageStockView> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: text_field.TextField(
-                        controller: _searchController,
-                        obscureText: false,
-                        inputType: 'none',
-                        isRequired: true,
-                        myFocusNode: _searchFocusNode,
-                        fillColor: CustomColors.textFieldFillColor,
-                        filled: true,
-                        labelText: "Type to search product...",
-                        onChangedFunction: () {}),
+                      controller: _searchController,
+                      obscureText: false,
+                      inputType: 'none',
+                      isRequired: true,
+                      myFocusNode: _searchFocusNode,
+                      fillColor: CustomColors.textFieldFillColor,
+                      filled: true,
+                      labelText: "Type to search product...",
+                      onChangedFunction: () {},
+                    ),
                   ),
                   Expanded(
                     child: StreamBuilder<Response<Stock>>(
@@ -153,94 +164,172 @@ class _ManageStockViewState extends State<ManageStockView> {
                                   _isLoading = true;
                                 });
                               });
-
                             case Status.COMPLETED:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
+                              if (_isLoading) {
+                                _isLoading = false;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {});
                                 });
-                              });
+                              }
                               _allProducts = snapshot.data!.data!.table;
                               _filteredProducts ??= _allProducts;
 
                               if (_filteredProducts!.isEmpty) {
-                                return Center(
-                                  child: Text(
-                                    "No products found",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: getFontSize(), color: CustomColors.textColor),
-                                  ),
+                                return const Center(
+                                  child: Text("No products found"),
                                 );
                               } else {
+                                final categorizedProducts = _groupProductsByCategory(_filteredProducts!);
                                 return Scrollbar(
                                   thickness: 5,
-                                  interactive: true,
-                                  //thumbVisibility: true,
-                                  trackVisibility: true,
-                                  child: ListView.builder(
-                                    itemCount: _filteredProducts!.length,
-                                    itemBuilder: (context, index) {
-                                      final products = _filteredProducts![index];
-                                      final productCode = products.yprodnummer.toString();
-                                      final productName = products.yproddesc.toString();
-                                      final availableStock = products.ycurstoc.toString();
-                                      final lastUpdatedDate = products.ylastud.toString();
-                                      final lastUpdatedUser = products.ylastub.toString();
-                                      //final TextEditingController newStockController = TextEditingController();
-                                      if (!_stockControllers.containsKey(productCode)) {
-                                        _stockControllers[productCode] = TextEditingController();
+                                  child: ListView(
+                                    children: _groupProductsByCategory(_filteredProducts!).entries.map((categoryEntry) {
+                                      final category = categoryEntry.key;
+                                      final categoryProducts = categoryEntry.value;
+
+                                      final Map<String, List<Product>> brands = {};
+                                      for (var product in categoryProducts) {
+                                        final brand = product.productbrand ?? 'Unknown Brand';
+                                        brands.putIfAbsent(brand, () => []).add(product);
                                       }
-                                      final TextEditingController newStockController = _stockControllers[productCode]!;
+
                                       return Padding(
-                                        padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                        child: GestureDetector(
-                                          onTap: () => _handleStockFieldTap(newStockController),
-                                          child: CustomStockCard(
-                                            productId: productCode,
-                                            productName: productName,
-                                            availableStock: availableStock,
-                                            newStockController: newStockController,
-                                            lastUpdatedDate: lastUpdatedDate,
-                                            lastUpdatedUser: lastUpdatedUser,
-                                            onPressedUpdate: () {
-                                              _isStockUpdatErrorShown = false;
-                                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                                setState(() {
-                                                  _isLoading = false;
-                                                });
-                                              });
-                                              _updateStockBloc
-                                                  .updateStock(
-                                                goodsManagementId,
-                                                getCurrentDate(),
-                                                productCode,
-                                                newStockController.text.toString(),
-                                                widget.visitNummer,
-                                              )
-                                                  .then((_) {
-                                                _updateStockCallback(products, double.parse(newStockController.text),
-                                                    getCurrentDate(), widget.username);
-                                                newStockController.clear();
-                                              });
-                                            },
+                                        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                Colors.black,
+                                                Colors.black26,
+                                              ], // Black gradient for category
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                            borderRadius: BorderRadius.circular(5),
+                                            // boxShadow: [
+                                            //   BoxShadow(
+                                            //     color: Colors.black26,
+                                            //     //blurRadius: 5,
+                                            //     offset: Offset(2, 2),
+                                            //   ),
+                                            // ],
+                                          ),
+                                          child: ExpansionTile(
+                                            collapsedIconColor: Colors.white,
+                                            iconColor: CustomColors.textColor,
+                                            title: Text(
+                                              category,
+                                              style: TextStyle(
+                                                color: CustomColors.textColor,
+                                                fontSize: getFontSize(),
+                                                //fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            children: brands.entries.map((brandEntry) {
+                                              final brand = brandEntry.key;
+                                              final brandProducts = brandEntry.value;
+
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10.0,
+                                                    right: 10.0,
+                                                    bottom: 5.0), // Indent brand under category
+                                                child: Container(
+                                                  margin: const EdgeInsets.symmetric(vertical: 2.0),
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        Colors.grey.shade900,
+                                                        Colors.grey.shade700,
+                                                      ], // Lighter shade for brand
+                                                      begin: Alignment.topCenter,
+                                                      end: Alignment.bottomCenter,
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(5),
+                                                  ),
+                                                  child: ExpansionTile(
+                                                    collapsedIconColor: CustomColors.textColor,
+                                                    iconColor: CustomColors.textColor,
+                                                    title: Text(
+                                                      brand,
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: getFontSize(),
+                                                        //fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    children: brandProducts.map((product) {
+                                                      final productCode = product.yprodnummer.toString();
+                                                      final productName = product.yproddesc.toString();
+                                                      final availableStock = product.ycurstoc.toString();
+                                                      final lastUpdatedDate = product.ylastud.toString();
+                                                      final lastUpdatedUser = product.ylastub.toString();
+                                                      final isCompetitorProduct = product.yiscompetitor;
+
+                                                      if (!_stockControllers.containsKey(productCode)) {
+                                                        _stockControllers[productCode] = TextEditingController();
+                                                      }
+                                                      final newStockController = _stockControllers[productCode]!;
+
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+                                                        child: GestureDetector(
+                                                          onTap: () => _handleStockFieldTap(newStockController),
+                                                          child: CustomStockCard(
+                                                            productId: productCode,
+                                                            productName: productName,
+                                                            availableStock: availableStock,
+                                                            newStockController: newStockController,
+                                                            lastUpdatedDate: lastUpdatedDate,
+                                                            lastUpdatedUser: lastUpdatedUser,
+                                                            isCompetitorProduct: isCompetitorProduct,
+                                                            onPressedUpdate: () {
+                                                              _updateStockBloc
+                                                                  .updateStock(
+                                                                goodsManagementId,
+                                                                getCurrentDate(),
+                                                                productCode,
+                                                                newStockController.text.toString(),
+                                                                widget.visitNummer,
+                                                              )
+                                                                  .then((_) {
+                                                                _updateStockCallback(
+                                                                  product,
+                                                                  double.parse(newStockController.text),
+                                                                  getCurrentDate(),
+                                                                  widget.username,
+                                                                );
+                                                                newStockController.clear();
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
                                           ),
                                         ),
                                       );
-                                    },
+                                    }).toList(),
                                   ),
                                 );
                               }
-
                             case Status.ERROR:
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                                if (!_isStockViewErrorShown) {
-                                  _isStockViewErrorShown = true;
+                              if (!_isStockViewErrorShown) {
+                                _isStockViewErrorShown = true;
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
                                   showErrorAlertDialog(context, snapshot.data!.message.toString());
-                                }
-                              });
+                                });
+                              }
+
+                              return Container();
                           }
                         }
                         return Container();
@@ -248,7 +337,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                     ),
                   ),
                   updateStockResponse(),
-                  organizationIdResponse()
+                  organizationIdResponse(),
                 ],
               ),
             ),
