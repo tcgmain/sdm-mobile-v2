@@ -119,7 +119,7 @@ getCurrentDate() {
 
 getCurrentTime() {
   var now = DateTime.now();
-  var formatterTime = DateFormat('kk:mm');
+  var formatterTime = DateFormat('HH:mm');
   String time = formatterTime.format(now);
   return time;
 }
