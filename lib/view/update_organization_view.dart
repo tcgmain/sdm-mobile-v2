@@ -1,10 +1,13 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
+import 'package:sdm/blocs/organization_category_bloc.dart';
 import 'package:sdm/blocs/organization_type_bloc.dart';
+import 'package:sdm/blocs/territory_bloc.dart';
 import 'package:sdm/blocs/update_organization_bloc.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/organization_category.dart';
 import 'package:sdm/models/territory.dart';
 import 'package:sdm/models/update_organization.dart';
 import 'package:sdm/networking/response.dart';
@@ -42,6 +45,13 @@ class UpdateOrganizationView extends StatefulWidget {
   final String userOrganizationNummer;
   final String designationNummer;
   final String organizationColor;
+  final bool isSelCement;
+  final bool isSelTileAdhesive;
+  final bool isSelOtherWaterProofer;
+  final bool isSelCementWaterProofer;
+  final bool isSelSandMetal;
+  final bool isSelPaint;
+  final String organizationCategory;
 
   const UpdateOrganizationView({
     super.key,
@@ -69,6 +79,13 @@ class UpdateOrganizationView extends StatefulWidget {
     required this.userOrganizationNummer,
     required this.designationNummer,
     required this.organizationColor,
+    required this.isSelCement,
+    required this.isSelTileAdhesive,
+    required this.isSelOtherWaterProofer,
+    required this.isSelCementWaterProofer,
+    required this.isSelSandMetal,
+    required this.isSelPaint,
+    required this.organizationCategory,
   });
 
   @override
@@ -83,22 +100,33 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   bool _isUpdatePressed = false;
   late CustomerTypeBloc _customerTypeBloc;
   List<CustomerType>? _allCustomerTypes;
+  List<OrganizationCategory>? _allOrganizationCategories;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
   bool _isErrorMessageShown = false;
   bool _isOrganizationsLoaded = false;
+  bool _isTerritoryLoaded = false;
   bool _isOrganizationTypeToggleShown = false;
   bool _isCustomerTypeErrorMessageShown = false;
   bool _isUpdateOrganizationCompleted = false;
   bool _isFinalSuccessMessageShown = false;
   bool _isSuperiorOrganizationErrorShown = false;
+  bool _isTerritoryLoading = false;
+  bool _isOrganizationCategoryLoading = false;
+  bool _isTerritoryErrorShown = false;
+  bool _isOrganizationCategoryErrorMessageShown = false;
+  bool isOrgCategoryLoaded = false;
 
   //late String organizationNummer;
   late String organizationSearchWord;
   late UpdateOrganizationBloc _updateOrganizationBloc;
   late OrganizationTypeBloc _organizationTypeBloc;
+  late TerritoryBloc _territoryBloc;
+  late OrganizationCategoryBloc _organizationCategoryBloc;
   Organization? _selectedSuperiorOrganization;
+  OrganizationCategory? _selectedCategory;
+  String? _selectedOrgCategory;
   Territory? _selectedTerritory;
   String organizationType = "";
   String organizationColor = "";
@@ -129,6 +157,13 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   late bool isWaterproofing;
   late bool isFlooring;
 
+  bool isSelCement = false;
+  bool isSelTileAdhesive = false;
+  bool isSelOtherWaterProofer = false;
+  bool isSelCementWaterProofer = false;
+  bool isSelSandMetal = false;
+  bool isSelPaint = false;
+
   final Map<String, bool?> _validationStatus = {
     'email': null,
     'phone1': null,
@@ -153,7 +188,10 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     setState(() {
       _isCustomerTypeLoading = true;
       _isSuperiorOrganizationLoading = true;
+      _isTerritoryLoading = true;
+      _isOrganizationCategoryLoading = true;
     });
+
     _ownerNameController = TextEditingController(text: widget.ownerName.toString());
     _ownerBirthdayController = TextEditingController(text: widget.ownerBirthday.toString());
     _emailController = TextEditingController(text: widget.organizationMail.toString());
@@ -169,11 +207,22 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     isWaterproofing = widget.isWaterproofing;
     isFlooring = widget.isFlooring;
 
+    isSelCement = widget.isSelCement;
+    isSelTileAdhesive = widget.isSelTileAdhesive;
+    isSelOtherWaterProofer = widget.isSelOtherWaterProofer;
+    isSelCementWaterProofer = widget.isSelCementWaterProofer;
+    isSelSandMetal = widget.isSelSandMetal;
+    isSelPaint = widget.isSelPaint;
+
     _customerTypeBloc = CustomerTypeBloc();
     _updateOrganizationBloc = UpdateOrganizationBloc();
     _organizationTypeBloc = OrganizationTypeBloc();
+    _organizationCategoryBloc = OrganizationCategoryBloc();
+    _territoryBloc = TerritoryBloc();
     _customerTypeBloc.getCustomerType();
     _organizationTypeBloc.getOrganizationByType("Distributor");
+    _territoryBloc.getTerritory(widget.loggedUserNummer);
+    _organizationCategoryBloc.getOrganizationCategory();
   }
 
   @override
@@ -197,6 +246,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     _address1FocusNode.dispose();
     _address2FocusNode.dispose();
     _organizationTypeBloc.dispose();
+    _territoryBloc.dispose();
+    _organizationCategoryBloc.dispose();
     super.dispose();
   }
 
@@ -344,6 +395,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                               style: TextStyle(fontSize: getFontSizeLarge(), color: CustomColors.cardTextColor),
                             ),
                             getSuperiorOrganizationResponse(),
+                            getTerritoryResponse(),
                             updateOrganizationResponse(),
                             const SizedBox(height: 16),
                             customerTypeToggleButtons(),
@@ -374,6 +426,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                   isFlooring = value;
                                 });
                               }),
+                            const SizedBox(height: 16),
+                            organizationCategorySelection(),
                             const SizedBox(height: 16),
                             _buildValidatedTextFormField(
                               controller: _ownerNameController,
@@ -450,6 +504,42 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                             const SizedBox(height: 16),
                             if (widget.organizationNummer != "5") buildSuperiorOrganizationDropdown(),
                             if (widget.organizationNummer != "5") const SizedBox(height: 16),
+                            const Align(
+                                alignment: Alignment.centerLeft,
+                                child:
+                                    Text('Selling Product List', style: TextStyle(color: CustomColors.cardTextColor1))),
+                            const SizedBox(height: 8),
+                            _buildToggleSwitch('Cement', isSelCement, (value) {
+                              setState(() {
+                                isSelCement = value;
+                              });
+                            }),
+                            _buildToggleSwitch('Tile Adhesive', isSelTileAdhesive, (value) {
+                              setState(() {
+                                isSelTileAdhesive = value;
+                              });
+                            }),
+                            _buildToggleSwitch('Cement Based Water Proofer', isSelCementWaterProofer, (value) {
+                              setState(() {
+                                isSelCementWaterProofer = value;
+                              });
+                            }),
+                            _buildToggleSwitch('Other Water Proofer', isSelOtherWaterProofer, (value) {
+                              setState(() {
+                                isSelOtherWaterProofer = value;
+                              });
+                            }),
+                            _buildToggleSwitch('Sand / Metal', isSelSandMetal, (value) {
+                              setState(() {
+                                isSelSandMetal = value;
+                              });
+                            }),
+                            _buildToggleSwitch('Paint', isSelPaint, (value) {
+                              setState(() {
+                                isSelPaint = value;
+                              });
+                            }),
+                            const SizedBox(height: 16),
                             Center(
                               child: CommonAppButton(
                                 buttonText: 'Update',
@@ -473,6 +563,7 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
 
                                       final customerTypeId = _selectedCustomerType.toString();
                                       final ownerName = _ownerNameController.text.toString();
+                                      final ownerBirthday = _ownerBirthdayController.text.toString();
                                       final email = _emailController.text.toString();
                                       final phone1 = _phone1Controller.text.toString();
                                       final phone2 = _phone2Controller.text.toString();
@@ -485,11 +576,12 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                       } else {
                                         superiorOrganization = "";
                                       }
-
+                                      String territoryNummer = _selectedTerritory!.ytterritoryNummer.toString();
                                       _updateOrganizationBloc.updateOrganization(
                                           widget.organizationId,
                                           email,
                                           ownerName,
+                                          ownerBirthday,
                                           phone1,
                                           phone2,
                                           whatsapp,
@@ -500,7 +592,15 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                                           isWaterproofing.toString(),
                                           isFlooring.toString(),
                                           organizationColor,
-                                          superiorOrganization);
+                                          superiorOrganization,
+                                          territoryNummer,
+                                          isSelCement.toString(),
+                                          isSelTileAdhesive.toString(),
+                                          isSelOtherWaterProofer.toString(),
+                                          isSelCementWaterProofer.toString(),
+                                          isSelSandMetal.toString(),
+                                          isSelPaint.toString(),
+                                          _selectedOrgCategory);
 
                                       if (organizationType != "Project" || organizationType != "(4147,12,0)") {
                                         isMasonry = false;
@@ -519,7 +619,8 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
                   ),
                 ),
               ),
-              if (_isCustomerTypeLoading || _isUpdateLoading || _isSuperiorOrganizationLoading) const Loading(),
+              if (_isCustomerTypeLoading || _isUpdateLoading || _isSuperiorOrganizationLoading || _isTerritoryLoading)
+                const Loading(),
             ],
           ),
         ));
@@ -701,22 +802,30 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
   }
 
   Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-            width: 150,
-            child: Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor))),
-        Switch(
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Switch(
             value: value,
             onChanged: onChanged,
             activeTrackColor: CustomColors.buttonColor,
             activeColor: Colors.white,
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: Colors.grey,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      ],
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ],
+      ),
     );
   }
 
@@ -859,6 +968,58 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
     );
   }
 
+  Widget getTerritoryResponse() {
+    return StreamBuilder<ResponseList<Territory>>(
+      stream: _territoryBloc.territoryStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isTerritoryLoading = true;
+                });
+              });
+
+            case Status.COMPLETED:
+              if (!_isTerritoryLoaded) {
+                print("EEEEEEEEEE");
+                _isTerritoryLoaded = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTerritoryLoading = false;
+
+                    _territoryList = snapshot.data!.data!
+                        .where((territory) => territory.ytterritoryNamebspr!.trim().isNotEmpty)
+                        .toList();
+
+                    Territory matchingTerritory = _territoryList.firstWhere(
+                      (territory) => territory.ytterritoryNummer == widget.territoryNummer,
+                      orElse: () => _territoryList.first,
+                    );
+
+                    _selectedTerritory = matchingTerritory;
+                  });
+                });
+              }
+
+            case Status.ERROR:
+              if (!_isTerritoryErrorShown) {
+                _isTerritoryErrorShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isTerritoryLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
   Widget buildTerritoryDropdown() {
     return DropdownSearch<Territory>(
       items: _territoryList,
@@ -978,6 +1139,91 @@ class _UpdateOrganizationViewState extends State<UpdateOrganizationView> {
           );
         },
       ),
+    );
+  }
+
+  Widget organizationCategorySelection() {
+    return StreamBuilder<ResponseList<OrganizationCategory>>(
+      stream: _organizationCategoryBloc.organizationCategoryStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isOrganizationCategoryLoading = true;
+                });
+              });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isOrganizationCategoryLoading = false;
+                });
+              });
+              if (!isOrgCategoryLoaded) {
+                isOrgCategoryLoaded = true;
+                _allOrganizationCategories = snapshot.data!.data!;
+                OrganizationCategory matchingOrgCat = _allOrganizationCategories!.firstWhere(
+                  (org) => org.vaufzelemNummer == widget.organizationCategory,
+                  orElse: () => _allOrganizationCategories!.first,
+                );
+                if (widget.organizationCategory != "") {
+                  _selectedCategory = matchingOrgCat;
+                  _selectedOrgCategory = _selectedCategory!.vaufzelemId.toString();
+                }
+              }
+
+              return Column(
+                children: [
+                  DropdownButtonFormField<OrganizationCategory>(
+                    value: _selectedCategory,
+                    decoration: InputDecoration(
+                      labelText: "Organization Category",
+                      labelStyle: const TextStyle(color: CustomColors.cardTextColor1),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: CustomColors.cardTextColor1),
+                      ),
+                      suffixIcon: _selectedCategory == null ? null : const Icon(Icons.check, color: Colors.green),
+                    ),
+                    isExpanded: true,
+                    onChanged: (OrganizationCategory? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                        _selectedOrgCategory = _selectedCategory!.vaufzelemId.toString();
+                      });
+                    },
+                    items: _allOrganizationCategories!.map((category) {
+                      return DropdownMenuItem<OrganizationCategory>(
+                        value: category,
+                        child: Text(
+                          category.aebez.toString(),
+                          style: TextStyle(
+                            fontSize: getFontSize(),
+                            color: CustomColors.cardTextColor1,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            case Status.ERROR:
+              if (!_isOrganizationCategoryErrorMessageShown) {
+                _isOrganizationCategoryErrorMessageShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isOrganizationCategoryLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+
+              return Container();
+          }
+        }
+        return Container();
+      },
     );
   }
 }

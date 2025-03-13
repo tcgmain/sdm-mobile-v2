@@ -260,6 +260,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                                                     ),
                                                     children: brandProducts.map((product) {
                                                       final productCode = product.yprodnummer.toString();
+                                                      final productSearchWord = product.yprodsuch.toString();
                                                       final productName = product.yproddesc.toString();
                                                       final availableStock = product.ycurstoc.toString();
                                                       final lastUpdatedDate = product.ylastud.toString();
@@ -277,7 +278,7 @@ class _ManageStockViewState extends State<ManageStockView> {
                                                         child: GestureDetector(
                                                           onTap: () => _handleStockFieldTap(newStockController),
                                                           child: CustomStockCard(
-                                                            productId: productCode,
+                                                            productId: productSearchWord,
                                                             productName: productName,
                                                             availableStock: availableStock,
                                                             newStockController: newStockController,

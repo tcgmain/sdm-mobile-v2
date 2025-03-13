@@ -37,8 +37,10 @@ class RouteOrganization {
       this.yscemet,
       this.ystilea,
       this.yswaterp,
+      this.yscemwaterp,
       this.ysanmet,
-      this.yspaint
+      this.yspaint,
+      this.organizationYorgcategoryNummer,
       
       });
 
@@ -79,8 +81,10 @@ class RouteOrganization {
   bool? yscemet;
   bool? ystilea;
   bool? yswaterp;
+  bool? yscemwaterp;
   bool? ysanmet;
   bool? yspaint;
+  String? organizationYorgcategoryNummer;
 
   factory RouteOrganization.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) {
@@ -124,8 +128,10 @@ class RouteOrganization {
       yscemet: json["ysdmorg^yscemet"] ?? '',
       ystilea: json["ysdmorg^ystilea"] ?? '',
       yswaterp: json["ysdmorg^yswaterp"] ?? '',
+      yscemwaterp: json["ysdmorg^yscemwaterp"] ?? '',
       ysanmet: json["ysdmorg^ysanmet"] ?? '',
       yspaint: json["ysdmorg^yspaint"] ?? '',
+      organizationYorgcategoryNummer: json["organization^yorgcategory^nummer"],
     );
   }
 
@@ -166,7 +172,9 @@ class RouteOrganization {
         "ysdmorg^yscemet": yscemet ?? '',
         "ysdmorg^ystilea": ystilea ?? '',
         "ysdmorg^yswaterp": yswaterp ?? '',
+        "ysdmorg^yscemwaterp": yscemwaterp ?? '',
         "ysdmorg^ysanmet": ysanmet ?? '',
         "ysdmorg^yspaint": yspaint ?? '',
+        "organization^yorgcategory^nummer": organizationYorgcategoryNummer,
       };
 }

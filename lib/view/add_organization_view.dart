@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:sdm/blocs/add_goods_management_bloc.dart';
 import 'package:sdm/blocs/add_organization_bloc.dart';
 import 'package:sdm/blocs/customer_type_bloc.dart';
+import 'package:sdm/blocs/organization_category_bloc.dart';
 import 'package:sdm/blocs/organization_location_bloc.dart';
 import 'package:sdm/blocs/organization_type_bloc.dart';
 import 'package:sdm/blocs/territory_bloc.dart';
@@ -16,6 +17,7 @@ import 'package:sdm/models/add_goods_management.dart';
 import 'package:sdm/models/add_organization.dart';
 import 'package:sdm/models/customer_type.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/organization_category.dart';
 import 'package:sdm/models/territory.dart';
 import 'package:sdm/models/town.dart';
 import 'package:sdm/networking/response.dart';
@@ -54,11 +56,14 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   late CustomerTypeBloc _customerTypeBloc;
   late OrganizationLocationBloc _organizationLocationBloc;
   late OrganizationTypeBloc _organizationTypeBloc;
+  late OrganizationCategoryBloc _organizationCategoryBloc;
   late AddOrganizationBloc _addOrganizationBloc;
   late AddGoodsManagementBloc _addGoodsManagementBloc;
   late TerritoryBloc _territoryBloc;
   late TownBloc _townBloc;
+  OrganizationCategory? _selectedCategory;
   List<CustomerType>? _allCustomerTypes;
+  List<OrganizationCategory>? _allOrganizationCategories;
   late String latitude;
   late String longitude;
   bool _isSuccessMessageShown = false;
@@ -66,6 +71,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isAddOrganizationErrorMessageShown = false;
   bool _isNearbyOrganizationErrorMessageShown = false;
   bool _isCustomerTypeErrorMessageShown = false;
+  bool _isOrganizationCategoryErrorMessageShown = false;
   bool _isNearbyOrganizationPopupShown = false;
   late String organizationNummer;
   late String organizationSearchWord;
@@ -75,6 +81,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool _isGoodsManagementSuccessShown = false;
   bool _isGoodsManagementErrorShown = false;
   bool _isCustomerTypeLoading = false;
+  bool _isOrganizationCategoryLoading = false;
   bool _isTerritoryLoading = false;
   bool _isTownLoading = false;
   bool _isLoadingNearlyOrganizations = false;
@@ -121,6 +128,13 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   bool isMasonry = false;
   bool isWaterproofing = false;
   bool isFlooring = false;
+
+  bool isSelCement = false;
+  bool isSelTileAdhesive = false;
+  bool isSelOtherWaterProofer = false;
+  bool isSelCementWaterProofer = false;
+  bool isSelSandMetal = false;
+  bool isSelPaint = false;
 
   final Map<String, bool?> _validationStatus = {
     'name': null,
@@ -351,6 +365,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     super.initState();
     _organizationTypeBloc = OrganizationTypeBloc();
     _customerTypeBloc = CustomerTypeBloc();
+    _organizationCategoryBloc = OrganizationCategoryBloc();
     _addOrganizationBloc = AddOrganizationBloc();
     _addGoodsManagementBloc = AddGoodsManagementBloc();
     _territoryBloc = TerritoryBloc();
@@ -361,11 +376,13 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _getCurrentLocation();
 
     _organizationTypeBloc.getOrganizationByType("Distributor");
+    _organizationCategoryBloc.getOrganizationCategory();
     _territoryBloc.getTerritory(widget.loggedUserNummer);
     setState(() {
       _isSuperiorOrganizationLoading = true;
       _isTerritoryLoading = true;
       _isLoadingNearlyOrganizations = true;
+      _isOrganizationCategoryLoading = true;
     });
   }
 
@@ -396,6 +413,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     _address2FocusNode.dispose();
     _organizationLocationBloc.dispose();
     _organizationTypeBloc.dispose();
+    _organizationCategoryBloc.dispose();
     super.dispose();
   }
 
@@ -586,6 +604,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 ),
                               ),
                             ),
+                          //Contractor Detials List
                           if (organizationType == "Project") const SizedBox(height: 20),
                           if (organizationType == "Project")
                             const Align(
@@ -611,6 +630,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                 isFlooring = value;
                               });
                             }),
+
+                          const SizedBox(height: 16),
+                          organizationCategorySelection(),
                           const SizedBox(height: 16),
                           _buildValidatedTextFormField(
                             controller: _nameController,
@@ -701,6 +723,42 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                           buildTerritoryDropdown(),
                           const SizedBox(height: 16),
                           buildSuperiorOrganizationDropdown(),
+                          const SizedBox(height: 20),
+                          const Align(
+                              alignment: Alignment.centerLeft,
+                              child:
+                                  Text('Selling Product List', style: TextStyle(color: CustomColors.cardTextColor1))),
+                          const SizedBox(height: 8),
+                          _buildToggleSwitch('Cement', isSelCement, (value) {
+                            setState(() {
+                              isSelCement = value;
+                            });
+                          }),
+                          _buildToggleSwitch('Tile Adhesive', isSelTileAdhesive, (value) {
+                            setState(() {
+                              isSelTileAdhesive = value;
+                            });
+                          }),
+                          _buildToggleSwitch('Cement Based Water Proofer', isSelCementWaterProofer, (value) {
+                            setState(() {
+                              isSelCementWaterProofer = value;
+                            });
+                          }),
+                          _buildToggleSwitch('Other Water Proofer', isSelOtherWaterProofer, (value) {
+                            setState(() {
+                              isSelOtherWaterProofer = value;
+                            });
+                          }),
+                          _buildToggleSwitch('Sand / Metal', isSelSandMetal, (value) {
+                            setState(() {
+                              isSelSandMetal = value;
+                            });
+                          }),
+                          _buildToggleSwitch('Paint', isSelPaint, (value) {
+                            setState(() {
+                              isSelPaint = value;
+                            });
+                          }),
                           const SizedBox(height: 16),
                           Center(
                             child: CommonAppButton(
@@ -721,6 +779,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   _isAddOrganizationErrorMessageShown = false;
 
                                   final customerTypeId = _selectedCustomerType.toString();
+                                  final organizationCategory = _selectedCategory!.vaufzelemId.toString();
                                   final name = "${_nameController.text}_${_nearbyTown!.namebspr.toString()}";
                                   final email = _emailController.text.toString();
                                   final phone1 = _phone1Controller.text.toString();
@@ -733,6 +792,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                   final ownerName = _ownerNameController.text.toString();
                                   final ownerBirthday = _ownerBirthdayController.text.toString();
                                   final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
+                                  final selCement = isSelCement.toString();
+                                  final selTileAdhesive = isSelTileAdhesive.toString();
+                                  final selOtherWaterProofer = isSelOtherWaterProofer.toString();
+                                  final selCementWaterProofer = isSelCementWaterProofer.toString();
+                                  final selSandMetal = isSelSandMetal.toString();
+                                  final selPaint = isSelPaint.toString();
 
                                   if (!_isSubmitPressed) {
                                     setState(() {
@@ -754,6 +819,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         latitude,
                                         longitude,
                                         customerTypeId,
+                                        organizationCategory,
                                         widget.loggedUserNummer,
                                         widget.userOrganizationNummer,
                                         ownerName,
@@ -762,7 +828,13 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                                         isWaterproofing.toString(),
                                         isFlooring.toString(),
                                         organizationColor,
-                                        superiorOrganization);
+                                        superiorOrganization,
+                                        selCement,
+                                        selTileAdhesive,
+                                        selOtherWaterProofer,
+                                        selCementWaterProofer,
+                                        selSandMetal,
+                                        selPaint);
 
                                     if (organizationType != "Project" || organizationType != "(4147,12,0)") {
                                       isMasonry = false;
@@ -854,6 +926,80 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isCustomerTypeLoading = false;
+                  });
+                  showErrorAlertDialog(context, snapshot.data!.message.toString());
+                });
+              }
+
+              return Container();
+          }
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget organizationCategorySelection() {
+    return StreamBuilder<ResponseList<OrganizationCategory>>(
+      stream: _organizationCategoryBloc.organizationCategoryStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          switch (snapshot.data!.status!) {
+            case Status.LOADING:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isOrganizationCategoryLoading = true;
+                });
+              });
+            case Status.COMPLETED:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _isOrganizationCategoryLoading = false;
+                });
+              });
+              _allOrganizationCategories = snapshot.data!.data!;
+              return Column(
+                children: [
+                  DropdownButtonFormField<OrganizationCategory>(
+                    value: _selectedCategory,
+                    decoration: InputDecoration(
+                      labelText: "Organization Category",
+                      labelStyle: const TextStyle(color: CustomColors.cardTextColor1),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: CustomColors.cardTextColor1), 
+                      ),
+                      suffixIcon: _selectedCategory == null
+                          ? null
+                          : const Icon(Icons.check, color: Colors.green), 
+                    ),
+                    isExpanded: true,
+                    onChanged: (OrganizationCategory? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                      });
+                    },
+                    items: _allOrganizationCategories!.map((category) {
+                      return DropdownMenuItem<OrganizationCategory>(
+                        value: category,
+                        child: Text(
+                          category.aebez.toString(),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: CustomColors.cardTextColor1,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              );
+            case Status.ERROR:
+              if (!_isOrganizationCategoryErrorMessageShown) {
+                _isOrganizationCategoryErrorMessageShown = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _isOrganizationCategoryLoading = false;
                   });
                   showErrorAlertDialog(context, snapshot.data!.message.toString());
                 });
@@ -1067,14 +1213,16 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   setState(() {
                     _isTerritoryLoading = false;
-                    _territoryList = snapshot.data!.data!;
-                    print(_territoryList.length.toString());
+
+                    _territoryList = snapshot.data!.data!
+                        .where((territory) => territory.ytterritoryNamebspr!.trim().isNotEmpty)
+                        .toList();
 
                     if (_territoryList.length == 1) {
                       // Find the matching organization or set a default value
                       Territory matchingTerritory = _territoryList.firstWhere(
                         (territory) => territory.ytterritoryNamebspr == widget.userOrganizationNummer,
-                        orElse: () => _territoryList.first, // Use a fallback, like the first item in the list
+                        orElse: () => _territoryList.first,
                       );
 
                       _selectedTerritory = matchingTerritory;
@@ -1249,22 +1397,30 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
   }
 
   Widget _buildToggleSwitch(String title, bool value, ValueChanged<bool> onChanged) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-            width: 150,
-            child: Text(title, style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor))),
-        Switch(
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(fontSize: getFontSize(), color: CustomColors.cardTextColor),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Switch(
             value: value,
             onChanged: onChanged,
             activeTrackColor: CustomColors.buttonColor,
             activeColor: Colors.white,
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: Colors.grey,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-      ],
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ],
+      ),
     );
   }
 

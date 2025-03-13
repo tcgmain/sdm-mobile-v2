@@ -88,24 +88,32 @@ class _OrganizationViewState extends State<OrganizationView> {
   }
 
   Future<void> _navigateToUpdateOrganizationView(
-      organizationId,
-      organizationNummer,
-      organizationName,
-      organizationTypeId,
-      organizationMail,
-      organizationPhone1,
-      organizationPhone2,
-      organizationWhatsapp,
-      organizationAddress1,
-      organizationAddress2,
-      territoryNummer,
-      superiorOrganizationNummer,
-      ownerName,
-      ownerBirthday,
-      ymasonry,
-      ywaterpr,
-      yflooring,
-      organizationColor) async {
+    organizationId,
+    organizationNummer,
+    organizationName,
+    organizationTypeId,
+    organizationMail,
+    organizationPhone1,
+    organizationPhone2,
+    organizationWhatsapp,
+    organizationAddress1,
+    organizationAddress2,
+    territoryNummer,
+    superiorOrganizationNummer,
+    ownerName,
+    ownerBirthday,
+    ymasonry,
+    ywaterpr,
+    yflooring,
+    organizationColor,
+    isSelCement,
+    isSelTileAdhesive,
+    isSelOtherWaterProofer,
+    isSelCementWaterProofer,
+    isSelSandMetal,
+    isSelPaint,
+    organizationCategory
+  ) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -134,6 +142,13 @@ class _OrganizationViewState extends State<OrganizationView> {
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
+                isSelCement: bool.parse(isSelCement),
+                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+                isSelSandMetal: bool.parse(isSelSandMetal),
+                isSelPaint: bool.parse(isSelPaint),
+                organizationCategory: organizationCategory
               )),
     );
     if (result == true) {
@@ -311,10 +326,10 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                 organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                             String organizationAddress2 =
                                                 organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                                String organizationYtownNamebspr =
+                                            String organizationYtownNamebspr =
                                                 organizations.ytownNamebspr?.toString() ?? 'Unnamed Route';
                                             String territoryNummer =
-                                                organizations.yterritory?.toString() ?? 'Unnamed Route';
+                                                organizations.yterritoryNummer?.toString() ?? 'Unnamed Route';
                                             String organizationColour =
                                                 organizations.colour?.toString() ?? 'Unnamed Route';
                                             String organizationLongitude =
@@ -342,6 +357,14 @@ class _OrganizationViewState extends State<OrganizationView> {
                                             String isWaterproofing =
                                                 organizations.ywaterpr?.toString() ?? 'Unnamed Route';
                                             String isFlooring = organizations.yflooring?.toString() ?? 'Unnamed Route';
+                                            String isSelCement = organizations.yscemet?.toString() ?? '';
+                                            String isSelTileAdhesive = organizations.ystilea?.toString() ?? '';
+                                            String isSelOtherWaterProofer = organizations.yswaterp?.toString() ?? '';
+                                            String isSelCementWaterProofer =
+                                                organizations.yscemwaterp?.toString() ?? '';
+                                            String isSelSandMetal = organizations.ysanmet?.toString() ?? '';
+                                            String isSelPaint = organizations.yspaint?.toString() ?? '';
+                                            String organizationCategory = organizations.yorgcategoryNummer?.toString() ?? '';
 
                                             return Padding(
                                               padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -355,24 +378,32 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                     SlidableAction(
                                                       onPressed: (context) {
                                                         _navigateToUpdateOrganizationView(
-                                                            organizationId,
-                                                            organizationNummer,
-                                                            organizationName,
-                                                            organizationTypeId,
-                                                            organizationMail,
-                                                            organizationPhone1,
-                                                            organizationPhone2,
-                                                            organizationWhatsapp,
-                                                            organizationAddress1,
-                                                            organizationAddress2,
-                                                            territoryNummer,
-                                                            ysuporgNummer,
-                                                            ownerName,
-                                                            ownerBirthday,
-                                                            isMasonry,
-                                                            isWaterproofing,
-                                                            isFlooring,
-                                                            organizationColour);
+                                                          organizationId,
+                                                          organizationNummer,
+                                                          organizationName,
+                                                          organizationTypeId,
+                                                          organizationMail,
+                                                          organizationPhone1,
+                                                          organizationPhone2,
+                                                          organizationWhatsapp,
+                                                          organizationAddress1,
+                                                          organizationAddress2,
+                                                          territoryNummer,
+                                                          ysuporgNummer,
+                                                          ownerName,
+                                                          ownerBirthday,
+                                                          isMasonry,
+                                                          isWaterproofing,
+                                                          isFlooring,
+                                                          organizationColour,
+                                                          isSelCement,
+                                                          isSelTileAdhesive,
+                                                          isSelOtherWaterProofer,
+                                                          isSelCementWaterProofer,
+                                                          isSelSandMetal,
+                                                          isSelPaint,
+                                                          organizationCategory
+                                                        );
                                                       },
                                                       backgroundColor: CustomColors.buttonColor,
                                                       foregroundColor: CustomColors.buttonTextColor,
@@ -387,35 +418,33 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                         onTap: () {
                                                           Navigator.of(context).push(MaterialPageRoute(
                                                               builder: (context) => HomeOrganizationView(
-                                                                    userNummer: widget.userNummer,
-                                                                    username: widget.username,
-                                                                    routeNummer: "",
-                                                                    organizationId: organizationId,
-                                                                    organizationNummer: organizationNummer,
-                                                                    organizationName: organizationName,
-                                                                    organizationPhone1: organizationPhone1,
-                                                                    organizationPhone2: organizationPhone2,
-                                                                    organizationWhatsapp: organizationWhatsapp,
-                                                                    organizationAddress1: organizationAddress1,
-                                                                    organizationAddress2: organizationAddress2,
-                                                                    organizationYtownNamebspr: organizationYtownNamebspr,
-                                                                    territoryNummer: territoryNummer,
-                                                                    organizationColour: organizationColour,
-                                                                    organizationLongitude: organizationLongitude,
-                                                                    organizationLatitude: organizationLatitude,
-                                                                    organizationDistance: organizationDistance,
-                                                                    organizationMail: organizationMail,
-                                                                    isTeamMemberUi: widget.isTeamMemberUi,
-                                                                    loggedUserNummer: widget.loggedUserNummer,
-                                                                    ysuporgNummer: ysuporgNummer,
-                                                                    ysuporgNamebspr: ysuporgNamebspr,
-                                                                    designationNummer: widget.designationNummer,
-                                                                    organizationTypeNamebspr: organizationTypeNamebspr,
-                                                                    userOrganizationNummer:
-                                                                        widget.userOrganizationNummer,
-                                                                    ownerName: ownerName,
-                                                                    ownerBirthday: ownerBirthday
-                                                                  )));
+                                                                  userNummer: widget.userNummer,
+                                                                  username: widget.username,
+                                                                  routeNummer: "",
+                                                                  organizationId: organizationId,
+                                                                  organizationNummer: organizationNummer,
+                                                                  organizationName: organizationName,
+                                                                  organizationPhone1: organizationPhone1,
+                                                                  organizationPhone2: organizationPhone2,
+                                                                  organizationWhatsapp: organizationWhatsapp,
+                                                                  organizationAddress1: organizationAddress1,
+                                                                  organizationAddress2: organizationAddress2,
+                                                                  organizationYtownNamebspr: organizationYtownNamebspr,
+                                                                  territoryNummer: territoryNummer,
+                                                                  organizationColour: organizationColour,
+                                                                  organizationLongitude: organizationLongitude,
+                                                                  organizationLatitude: organizationLatitude,
+                                                                  organizationDistance: organizationDistance,
+                                                                  organizationMail: organizationMail,
+                                                                  isTeamMemberUi: widget.isTeamMemberUi,
+                                                                  loggedUserNummer: widget.loggedUserNummer,
+                                                                  ysuporgNummer: ysuporgNummer,
+                                                                  ysuporgNamebspr: ysuporgNamebspr,
+                                                                  designationNummer: widget.designationNummer,
+                                                                  organizationTypeNamebspr: organizationTypeNamebspr,
+                                                                  userOrganizationNummer: widget.userOrganizationNummer,
+                                                                  ownerName: ownerName,
+                                                                  ownerBirthday: ownerBirthday)));
                                                         },
                                                         child: Container(
                                                           decoration: const BoxDecoration(

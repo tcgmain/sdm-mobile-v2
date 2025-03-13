@@ -19,8 +19,30 @@ class UpdateOrganizationBloc {
     _updateOrganizationRepository = UpdateOrganizationRepository();
   }
 
-  updateOrganization(id, email, ownerName, phone1, phone2, whatsapp, address1, address2, customerTypeId,
-      isMasonry, isWaterproofing, isFlooring, organizationColor, superiorOrganization) async {
+  updateOrganization(
+      id,
+      email,
+      ownerName,
+      ownerBirthday,
+      phone1,
+      phone2,
+      whatsapp,
+      address1,
+      address2,
+      customerTypeId,
+      isMasonry,
+      isWaterproofing,
+      isFlooring,
+      organizationColor,
+      superiorOrganization,
+      territoryNummer,
+      selCement,
+      selTileAdhesive,
+      selOtherWaterProofer,
+      selCementWaterProofer,
+      selSandMetal,
+      selPaint,
+      organizationCategory) async {
     if (_updateOrganizationController?.isClosed ?? true) return;
     updateOrganizationSink.add(Response.loading(''));
     try {
@@ -28,6 +50,7 @@ class UpdateOrganizationBloc {
           id,
           email,
           ownerName,
+          ownerBirthday,
           phone1,
           phone2,
           whatsapp,
@@ -37,7 +60,16 @@ class UpdateOrganizationBloc {
           isMasonry,
           isWaterproofing,
           isFlooring,
-          organizationColor, superiorOrganization);
+          organizationColor,
+          superiorOrganization,
+          territoryNummer,
+          selCement,
+          selTileAdhesive,
+          selOtherWaterProofer,
+          selCementWaterProofer,
+          selSandMetal,
+          selPaint,
+          organizationCategory);
       if (_updateOrganizationController?.isClosed ?? true) return;
       updateOrganizationSink.add(Response.completed(res));
       print("UPDATE ORGANIZATION SUCCESS");

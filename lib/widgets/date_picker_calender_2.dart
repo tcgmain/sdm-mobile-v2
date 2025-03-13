@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sdm/utils/constants.dart';
 
 class CustomDatePicker {
   static Widget buildDateSelectionFormField({
@@ -19,7 +20,7 @@ class CustomDatePicker {
           controller: controller,
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: const TextStyle(color: Colors.black), 
+            labelStyle: const TextStyle(color: CustomColors.cardTextColor1), 
             suffixIcon: validationStatus[fieldName] == null
                 ? null
                 : validationStatus[fieldName]!

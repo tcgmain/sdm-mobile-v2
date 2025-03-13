@@ -1,51 +1,55 @@
 class Organization {
-  Organization(
-      {this.id,
-      this.such,
-      this.yassigto,
-      this.yassigtoNummer,
-      this.yassigtoNamebspr,
-      this.namebspr,
-      this.orgnummer,
-      this.yphone1,
-      this.yphone2,
-      this.yaddressl1,
-      this.yaddressl2,
-      this.yterritory,
-      this.ytown,
-      this.ytownNamebspr,
-      this.colour,
-      this.longitude,
-      this.latitude,
-      this.distance,
-      this.yemail,
-      this.yactiv,
-      this.ylev,
-      this.ysuporgNummer,
-      this.ysuporgNamebspr,
-      this.ycustypSuch,
-      this.ycustypId,
-      this.ycustypNamebspr,
-      this.yowname,
-      this.yorgowndob,
-      this.ymasonry,
-      this.ywaterpr,
-      this.yflooring,
-      this.ywhtapp,
-      this.erfass,
-      this.yorgappu,
-      this.yorgappdt,
-      this.yscemet,
-      this.ystilea,
-      this.yswaterp,
-      this.ysanmet,
-      this.yspaint,
-      this.ycuname,
-      this.ymnginv,
-      this.yselrec,
-      this.ycusid,
-      this.ysuporgSuch,
-      });
+  Organization({
+    this.id,
+    this.such,
+    this.yassigto,
+    this.yassigtoNummer,
+    this.yassigtoNamebspr,
+    this.namebspr,
+    this.orgnummer,
+    this.yphone1,
+    this.yphone2,
+    this.yaddressl1,
+    this.yaddressl2,
+    this.yterritory,
+    this.ytown,
+    this.ytownNamebspr,
+    this.colour,
+    this.longitude,
+    this.latitude,
+    this.distance,
+    this.yemail,
+    this.yactiv,
+    this.ylev,
+    this.ysuporgNummer,
+    this.ysuporgNamebspr,
+    this.ycustypSuch,
+    this.ycustypId,
+    this.ycustypNamebspr,
+    this.yowname,
+    this.yorgowndob,
+    this.ymasonry,
+    this.ywaterpr,
+    this.yflooring,
+    this.ywhtapp,
+    this.erfass,
+    this.yorgappu,
+    this.yorgappdt,
+    this.yscemet,
+    this.ystilea,
+    this.yswaterp,
+    this.yscemwaterp,
+    this.ysanmet,
+    this.yspaint,
+    this.ycuname,
+    this.ymnginv,
+    this.yselrec,
+    this.ycusid,
+    this.ysuporgSuch,
+    this.yterritoryNamebspr,
+    this.yterritoryNummer,
+    this.yorgcategoryNummer,
+  });
 
   String? id;
   String? such;
@@ -85,6 +89,7 @@ class Organization {
   bool? yscemet;
   bool? ystilea;
   bool? yswaterp;
+  bool? yscemwaterp;
   bool? ysanmet;
   bool? yspaint;
   String? ycuname;
@@ -92,6 +97,9 @@ class Organization {
   bool? yselrec;
   String? ycusid;
   String? ysuporgSuch;
+  String? yterritoryNamebspr;
+  String? yterritoryNummer;
+  String? yorgcategoryNummer;
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
@@ -133,6 +141,7 @@ class Organization {
       yscemet: json["yscemet"],
       ystilea: json["ystilea"],
       yswaterp: json["yswaterp"],
+      yscemwaterp: json["yscemwaterp"],
       ysanmet: json["ysanmet"],
       yspaint: json["yspaint"],
       ycuname: json["ycuname"] ?? '',
@@ -140,6 +149,9 @@ class Organization {
       yselrec: json["yselrec"],
       ycusid: json["ycusid"] ?? '',
       ysuporgSuch: json["ysuporg^such"] ?? '',
+      yterritoryNamebspr: json["yterritory^namebspr"] ?? '',
+      yterritoryNummer: json["yterritory^nummer"] ?? '',
+      yorgcategoryNummer: json["yorgcategory^nummer"] ?? '',
     );
   }
 
@@ -182,6 +194,7 @@ class Organization {
         "yscemet": yscemet ?? '',
         "ystilea": ystilea ?? '',
         "yswaterp": yswaterp ?? '',
+        "yscemwaterp": yscemwaterp ?? '',
         "ysanmet": ysanmet ?? '',
         "yspaint": yspaint ?? '',
         "ycuname": ycuname ?? '',
@@ -189,6 +202,8 @@ class Organization {
         "yselrec": yselrec ?? '',
         "ycusid": ycusid ?? '',
         "ysuporg^such": ysuporgSuch ?? '',
+        "yterritory^namebspr": yterritoryNamebspr ?? '',
+        "yterritory^nummer": yterritoryNummer ?? '',
+        "yorgcategory^nummer": yorgcategoryNummer ?? ''
       };
-      
 }

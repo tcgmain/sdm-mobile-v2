@@ -58,7 +58,7 @@ class _StockViewState extends State<StockView> {
       _filteredProducts = _allProducts
           ?.where((products) =>
               products.yproddesc!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-              products.yprodnummer!.toLowerCase().contains(_searchController.text.toLowerCase()))
+              products.yprodsuch!.toLowerCase().contains(_searchController.text.toLowerCase()))
           .toList();
     });
   }
@@ -90,7 +90,9 @@ class _StockViewState extends State<StockView> {
                         fillColor: CustomColors.textFieldFillColor,
                         filled: true,
                         labelText: "Type to search product...",
-                        onChangedFunction: () {}),
+                        onChangedFunction: () {},
+                        showClearButton: true,
+                        ),
                   ),
                   Expanded(
                     child: StreamBuilder<Response<Stock>>(
@@ -219,7 +221,7 @@ class ProductDataSource extends DataGridSource {
   void buildDataGridRows() {
     dataGridRows = products
         .map<DataGridRow>((product) => DataGridRow(cells: [
-              DataGridCell<String>(columnName: 'productName', value: "${product.yprodnummer} - ${product.yproddesc}"),
+              DataGridCell<String>(columnName: 'productName', value: "${product.yprodsuch} - ${product.yproddesc}"),
               DataGridCell<double>(columnName: 'availableStock', value: product.ycurstoc),
             ]))
         .toList();
@@ -236,12 +238,12 @@ class ProductDataSource extends DataGridSource {
     return DataGridRowAdapter(cells: [
       Container(
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.all(8.0),
+        //padding: const EdgeInsets.all(8.0),
         child: Text(row.getCells()[0].value.toString(), style: TextStyle(fontSize: getFontSize())),
       ),
       Container(
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(8.0),
+        //padding: const EdgeInsets.all(8.0),
         child: Text(row.getCells()[1].value.toString(), style: TextStyle(fontSize: getFontSize())),
       ),
     ]);

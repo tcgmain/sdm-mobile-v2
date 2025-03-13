@@ -25,7 +25,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String version = "1.7";
+  String version = "1.8";
   late LoginBloc _loginBloc;
   late UserDetailsBloc _userDetailsBloc;
   bool _showPassword = true;

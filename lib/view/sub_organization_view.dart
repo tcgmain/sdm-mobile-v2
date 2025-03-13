@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sdm/blocs/sub_organization_bloc.dart';
 import 'package:sdm/models/organization.dart';
+import 'package:sdm/models/organization_category.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_organization_view.dart';
@@ -86,7 +87,14 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
       ymasonry,
       ywaterpr,
       yflooring,
-      organizationColor) async {
+      organizationColor,
+      isSelCement,
+      isSelTileAdhesive,
+      isSelOtherWaterProofer,
+      isSelCementWaterProofer,
+      isSelSandMetal,
+      isSelPaint,
+      organizationCategory) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -115,6 +123,13 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
+                isSelCement: bool.parse(isSelCement),
+                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+                isSelSandMetal: bool.parse(isSelSandMetal),
+                isSelPaint: bool.parse(isSelPaint),
+                organizationCategory: organizationCategory,
               )),
     );
     if (result == true) {
@@ -237,6 +252,14 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                       String isMasonry = subOrganizations.ymasonry?.toString() ?? '';
                                       String isWaterproofing = subOrganizations.ywaterpr?.toString() ?? '';
                                       String isFlooring = subOrganizations.yflooring?.toString() ?? '';
+                                      String isSelCement = subOrganizations.yscemet?.toString() ?? '';
+                                      String isSelTileAdhesive = subOrganizations.ystilea?.toString() ?? '';
+                                      String isSelOtherWaterProofer = subOrganizations.yswaterp?.toString() ?? '';
+                                      String isSelCementWaterProofer = subOrganizations.yscemwaterp?.toString() ?? '';
+                                      String isSelSandMetal = subOrganizations.ysanmet?.toString() ?? '';
+                                      String isSelPaint = subOrganizations.yspaint?.toString() ?? '';
+                                      String organizationCategory =
+                                          subOrganizations.yorgcategoryNummer?.toString() ?? '';
 
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -268,7 +291,14 @@ class _SubOrganizationViewState extends State<SubOrganizationView> {
                                                       isMasonry,
                                                       isWaterproofing,
                                                       isFlooring,
-                                                      subOrganizationColour);
+                                                      subOrganizationColour,
+                                                      isSelCement,
+                                                      isSelTileAdhesive,
+                                                      isSelOtherWaterProofer,
+                                                      isSelCementWaterProofer,
+                                                      isSelSandMetal,
+                                                      isSelPaint,
+                                                      organizationCategory);
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,
                                                 foregroundColor: CustomColors.buttonTextColor,

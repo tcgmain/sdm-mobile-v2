@@ -33,6 +33,7 @@ class AddOrganizationBloc {
       latitude,
       longitude,
       customerTypeId,
+      organizationCategory,
       assignToNummer,
       userOrganizationNummer,
       ownerName,
@@ -41,7 +42,13 @@ class AddOrganizationBloc {
       isWaterproofing,
       isFlooring,
       organizationColor,
-      superiorOrganization) async {
+      superiorOrganization,
+      selCement,
+      selTileAdhesive,
+      selOtherWaterProofer,
+      selCementWaterProofer,
+      selSandMetal,
+      selPaint) async {
     if (_addOrganizationController?.isClosed ?? true) return;
     addOrganizationSink.add(Response.loading(''));
     try {
@@ -59,6 +66,7 @@ class AddOrganizationBloc {
           latitude,
           longitude,
           customerTypeId,
+          organizationCategory,
           assignToNummer,
           userOrganizationNummer,
           ownerName,
@@ -67,7 +75,14 @@ class AddOrganizationBloc {
           isWaterproofing,
           isFlooring,
           organizationColor,
-          superiorOrganization);
+          superiorOrganization,
+          selCement,
+          selTileAdhesive,
+          selOtherWaterProofer,
+          selCementWaterProofer,
+          selSandMetal,
+          selPaint
+          );
       if (_addOrganizationController?.isClosed ?? true) return;
       addOrganizationSink.add(Response.completed(res));
       print("ADD ORGANIZATION SUCCESS");

@@ -67,24 +67,32 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
   }
 
   Future<void> _navigateToUpdateOrganizationView(
-      organizationId,
-      organizationNummer,
-      organizationName,
-      organizationTypeId,
-      organizationMail,
-      organizationPhone1,
-      organizationPhone2,
-      organizationWhatsapp,
-      organizationAddress1,
-      organizationAddress2,
-      territoryNummer,
-      superiorOrganizationNummer,
-      ownerName,
-      ownerBirthday,
-      isMasonry,
-      isWaterproofing,
-      isFlooring,
-      organizationColor) async {
+    organizationId,
+    organizationNummer,
+    organizationName,
+    organizationTypeId,
+    organizationMail,
+    organizationPhone1,
+    organizationPhone2,
+    organizationWhatsapp,
+    organizationAddress1,
+    organizationAddress2,
+    territoryNummer,
+    superiorOrganizationNummer,
+    ownerName,
+    ownerBirthday,
+    isMasonry,
+    isWaterproofing,
+    isFlooring,
+    organizationColor,
+    isSelCement,
+    isSelTileAdhesive,
+    isSelOtherWaterProofer,
+    isSelCementWaterProofer,
+    isSelSandMetal,
+    isSelPaint,
+    organizationCategory
+  ) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -113,6 +121,13 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
                 superiorOrganizationNummer: superiorOrganizationNummer,
+                isSelCement: bool.parse(isSelCement),
+                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+                isSelSandMetal: bool.parse(isSelSandMetal),
+                isSelPaint: bool.parse(isSelPaint),
+                organizationCategory: organizationCategory,
               )),
     );
 
@@ -235,11 +250,8 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                         child: ListView.builder(
                                           itemCount: _filteredOrganizations!.length,
                                           itemBuilder: (context, index) {
-
-                                             _filteredOrganizations!
-                                                .sort((a, b) => (a.zn).compareTo(b.zn));
+                                            _filteredOrganizations!.sort((a, b) => (a.zn).compareTo(b.zn));
                                             final organizations = _filteredOrganizations![index];
-
                                             final organizationId = organizations.organizationId.toString();
                                             final organizationNummer = organizations.organizationNummer.toString();
                                             final organizationName = organizations.organizationNamebspr.toString();
@@ -251,7 +263,7 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                 organizations.organizationYaddressl1.toString();
                                             final organizationAddress2 =
                                                 organizations.organizationYaddressl2.toString();
-                                                final organizationTownNamebspr =
+                                            final organizationTownNamebspr =
                                                 organizations.organizationYtownNamebspr.toString();
                                             final organizationColour =
                                                 organizations.organizationYselcolourSuch.toString();
@@ -272,7 +284,14 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                             final organizationAssignTo =
                                                 organizations.organizationYassigtoSuch.toString();
                                             final nextVisitDueDate = organizations.organizationYnxtvisitdat.toString();
-                                            final yactiv = organizations.organizationYactiv.toString();
+                                            final yactiv = organizations.organizationYactiv;
+                                            final isSelCement = organizations.organizationYscemet.toString();
+                                            final isSelTileAdhesive = organizations.organizationYstilea.toString();
+                                            final isSelOtherWaterProofer = organizations.organizationYswaterp.toString();
+                                            final isSelCementWaterProofer = organizations.organizationYscemwaterp.toString();
+                                            final isSelSandMetal = organizations.organizationYsanmet.toString();
+                                            final isSelPaint = organizations.organizationYspaint.toString();
+                                            final organizationCategory = organizations.organizationYorgcategoryNummer.toString() ;
 
                                             // Parse the nextVisitDueDate to DateTime
                                             DateTime? nextVisitDate;
@@ -295,24 +314,32 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                         SlidableAction(
                                                           onPressed: (context) {
                                                             _navigateToUpdateOrganizationView(
-                                                                organizationId,
-                                                                organizationNummer,
-                                                                organizationName,
-                                                                organizationTypeId,
-                                                                organizationMail,
-                                                                organizationPhone1,
-                                                                organizationPhone2,
-                                                                organizationWhatsapp,
-                                                                organizationAddress1,
-                                                                organizationAddress2,
-                                                                "territoryNummer",
-                                                                ysuporgNummer,
-                                                                ownerName,
-                                                                ownerBirthday,
-                                                                isMasonry,
-                                                                isWaterproofing,
-                                                                isFlooring,
-                                                                organizationColour);
+                                                              organizationId,
+                                                              organizationNummer,
+                                                              organizationName,
+                                                              organizationTypeId,
+                                                              organizationMail,
+                                                              organizationPhone1,
+                                                              organizationPhone2,
+                                                              organizationWhatsapp,
+                                                              organizationAddress1,
+                                                              organizationAddress2,
+                                                              "territoryNummer",
+                                                              ysuporgNummer,
+                                                              ownerName,
+                                                              ownerBirthday,
+                                                              isMasonry,
+                                                              isWaterproofing,
+                                                              isFlooring,
+                                                              organizationColour,
+                                                              isSelCement,
+                                                              isSelTileAdhesive,
+                                                              isSelOtherWaterProofer,
+                                                              isSelCementWaterProofer,
+                                                              isSelSandMetal,
+                                                              isSelPaint,
+                                                              organizationCategory
+                                                            );
                                                           },
                                                           backgroundColor: CustomColors.buttonColor,
                                                           foregroundColor: CustomColors.buttonTextColor,
@@ -352,8 +379,8 @@ class _RouteOrganization2ViewState extends State<RouteOrganization2View> {
                                                                   designationNummer: widget.designationNummer,
                                                                   organizationTypeNamebspr: organizationTypeNamebspr,
                                                                   userOrganizationNummer: widget.userOrganizationNummer,
-                                                                    ownerName: ownerName,
-                                                            ownerBirthday: ownerBirthday,
+                                                                  ownerName: ownerName,
+                                                                  ownerBirthday: ownerBirthday,
                                                                 )));
                                                       },
                                                       child: Container(

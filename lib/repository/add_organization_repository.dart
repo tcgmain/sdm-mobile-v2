@@ -23,6 +23,7 @@ class AddOrganizationRepository {
       String latitude,
       String longitude,
       String customerTypeId,
+      String organizationCategory,
       String assignToNummer,
       String userOrganizationNummer,
       String ownerName,
@@ -31,7 +32,13 @@ class AddOrganizationRepository {
       String isWaterproofing,
       String isFlooring,
       String organizationColor,
-      String superiorOrganization) async {
+      String superiorOrganization,
+      String selCement,
+      String selTileAdhesive,
+      String selOtherWaterProofer,
+      String selCementWaterProofer,
+      String selSandMetal,
+      String selPaint) async {
     requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = <String, String>{
@@ -58,6 +65,13 @@ class AddOrganizationRepository {
       "ywaterpr": isWaterproofing,
       "yflooring": isFlooring,
       "yselcolour": organizationColor,
+      "yorgcategory": organizationCategory,
+      "yscemet": selCement,
+      "ystilea": selTileAdhesive,
+      "yswaterp": selOtherWaterProofer,
+      "yscemwaterp": selCementWaterProofer,
+      "ysanmet": selSandMetal,
+      "yspaint": selPaint
     };
 
     final response = await _provider.post("/addorganization", jsonEncode(inputBody), requestHeaders);

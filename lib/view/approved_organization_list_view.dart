@@ -77,24 +77,32 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
   }
 
   Future<void> _navigateToUpdateOrganizationView(
-      organizationId,
-      organizationNummer,
-      organizationName,
-      organizationTypeId,
-      organizationMail,
-      organizationPhone1,
-      organizationPhone2,
-      organizationWhatsapp,
-      organizationAddress1,
-      organizationAddress2,
-      territoryNummer,
-      superiorOrganizationNummer,
-      ownerName,
-      ownerBirthday,
-      ymasonry,
-      ywaterpr,
-      yflooring,
-      organizationColor) async {
+    organizationId,
+    organizationNummer,
+    organizationName,
+    organizationTypeId,
+    organizationMail,
+    organizationPhone1,
+    organizationPhone2,
+    organizationWhatsapp,
+    organizationAddress1,
+    organizationAddress2,
+    territoryNummer,
+    superiorOrganizationNummer,
+    ownerName,
+    ownerBirthday,
+    ymasonry,
+    ywaterpr,
+    yflooring,
+    organizationColor,
+    isSelCement,
+    isSelTileAdhesive,
+    isSelOtherWaterProofer,
+    isSelCementWaterProofer,
+    isSelSandMetal,
+    isSelPaint,
+    organizationCategory
+  ) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -123,6 +131,13 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                 userOrganizationNummer: widget.userOrganizationNummer,
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
+                isSelCement: bool.parse(isSelCement),
+                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+                isSelSandMetal: bool.parse(isSelSandMetal),
+                isSelPaint: bool.parse(isSelPaint),
+                organizationCategory: organizationCategory,
               )),
     );
     if (result == true) {
@@ -249,6 +264,14 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                       String creationDate = organizations.erfass?.toString() ?? 'Unnamed Route';
                                       String approvedBy = organizations.yorgappu?.toString() ?? 'Unnamed Route';
                                       String approvedDate = organizations.yorgappdt?.toString() ?? 'Unnamed Route';
+                                      String isSelCement = organizations.yscemet?.toString() ?? '';
+                                      String isSelTileAdhesive = organizations.ystilea?.toString() ?? '';
+                                      String isSelOtherWaterProofer = organizations.yswaterp?.toString() ?? '';
+                                      String isSelCementWaterProofer = organizations.yscemwaterp?.toString() ?? '';
+                                      String isSelSandMetal = organizations.ysanmet?.toString() ?? '';
+                                      String isSelPaint = organizations.yspaint?.toString() ?? '';
+                                      String organizationCategory = organizations.yorgcategoryNummer?.toString() ?? '';
+                                      
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 3, top: 3),
                                         child: Slidable(
@@ -261,24 +284,32 @@ class _ApprovedOrganizationListViewState extends State<ApprovedOrganizationListV
                                               SlidableAction(
                                                 onPressed: (context) {
                                                   _navigateToUpdateOrganizationView(
-                                                      organizationId,
-                                                      organizationNummer,
-                                                      organizationName,
-                                                      organizationTypeId,
-                                                      organizationMail,
-                                                      organizationPhone1,
-                                                      organizationPhone2,
-                                                      organizationWhatsapp,
-                                                      organizationAddress1,
-                                                      organizationAddress2,
-                                                      territoryNummer,
-                                                      ysuporgNummer,
-                                                      ownerName,
-                                                      ownerBirthday,
-                                                      isMasonry,
-                                                      isWaterproofing,
-                                                      isFlooring,
-                                                      organizationColor);
+                                                    organizationId,
+                                                    organizationNummer,
+                                                    organizationName,
+                                                    organizationTypeId,
+                                                    organizationMail,
+                                                    organizationPhone1,
+                                                    organizationPhone2,
+                                                    organizationWhatsapp,
+                                                    organizationAddress1,
+                                                    organizationAddress2,
+                                                    territoryNummer,
+                                                    ysuporgNummer,
+                                                    ownerName,
+                                                    ownerBirthday,
+                                                    isMasonry,
+                                                    isWaterproofing,
+                                                    isFlooring,
+                                                    organizationColor,
+                                                    isSelCement,
+                                                    isSelTileAdhesive,
+                                                    isSelOtherWaterProofer,
+                                                    isSelCementWaterProofer,
+                                                    isSelSandMetal,
+                                                    isSelPaint,
+                                                    organizationCategory
+                                                  );
                                                 },
                                                 backgroundColor: CustomColors.buttonColor,
                                                 foregroundColor: CustomColors.buttonTextColor,

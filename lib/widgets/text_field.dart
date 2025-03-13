@@ -17,7 +17,7 @@ class TextField extends StatelessWidget {
   final String? labelText;
   final Widget? suffixIcon;
   final bool? autoFocus;
-  final bool showClearButton;
+  final bool? showClearButton;
 
   const TextField({
     required this.controller,
@@ -32,12 +32,14 @@ class TextField extends StatelessWidget {
     this.labelText,
     this.suffixIcon,
     this.autoFocus,
-    this.showClearButton = false,
+    this.showClearButton = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final focusNode = myFocusNode ?? FocusNode();
+    bool showClearButtonOption = false;
+    if (showClearButton == true) showClearButtonOption = true;
 
     return TextFormField(
       style: const TextStyle(color: CustomColors.textFieldTextColor, fontWeight: FontWeight.bold),
@@ -55,7 +57,7 @@ class TextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(50.0),
             borderSide: BorderSide.none,
           ),
-          suffixIcon: showClearButton && controller.text.isNotEmpty
+          suffixIcon: showClearButtonOption && controller.text.isNotEmpty
               ? Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

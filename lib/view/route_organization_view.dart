@@ -101,24 +101,32 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
   }
 
   Future<void> _navigateToUpdateOrganizationView(
-      organizationId,
-      organizationNummer,
-      organizationName,
-      organizationTypeId,
-      organizationMail,
-      organizationPhone1,
-      organizationPhone2,
-      organizationWhatsapp,
-      organizationAddress1,
-      organizationAddress2,
-      territoryNummer,
-      superiorOrganizationNummer,
-      ownerName,
-      ownerBirthday,
-      isMasonry,
-      isWaterproofing,
-      isFlooring,
-      organizationColor) async {
+    organizationId,
+    organizationNummer,
+    organizationName,
+    organizationTypeId,
+    organizationMail,
+    organizationPhone1,
+    organizationPhone2,
+    organizationWhatsapp,
+    organizationAddress1,
+    organizationAddress2,
+    territoryNummer,
+    superiorOrganizationNummer,
+    ownerName,
+    ownerBirthday,
+    isMasonry,
+    isWaterproofing,
+    isFlooring,
+    organizationColor,
+    isSelCement,
+    isSelTileAdhesive,
+    isSelOtherWaterProofer,
+    isSelCementWaterProofer,
+    isSelSandMetal,
+    isSelPaint,
+    organizationCategory
+  ) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -147,6 +155,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                 designationNummer: widget.designationNummer,
                 organizationColor: organizationColor,
                 superiorOrganizationNummer: superiorOrganizationNummer,
+                isSelCement: bool.parse(isSelCement),
+                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+                isSelSandMetal: bool.parse(isSelSandMetal),
+                isSelPaint: bool.parse(isSelPaint),
+                organizationCategory: organizationCategory,
               )),
     );
 
@@ -258,7 +273,7 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                           organizations.yaddressl1?.toString() ?? 'Unnamed Route';
                                       final organizationAddress2 =
                                           organizations.yaddressl2?.toString() ?? 'Unnamed Route';
-                                           final organizationTownNamebspr =
+                                      final organizationTownNamebspr =
                                           organizations.townNamebspr?.toString() ?? 'Unnamed Route';
                                       final organizationColour = organizations.colour?.toString() ?? 'Unnamed Route';
                                       final organizationLongitude =
@@ -282,6 +297,13 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                           organizations.yassigtoSuch?.toString() ?? 'Unnamed Route';
                                       final nextVisitDueDate = organizations.ynxtvisitdat?.toString() ?? '';
                                       final yactiv = organizations.yactiv.toString();
+                                      final isSelCement = organizations.yscemet?.toString() ?? '';
+                                      final isSelTileAdhesive = organizations.ystilea?.toString() ?? '';
+                                      final isSelOtherWaterProofer = organizations.yswaterp?.toString() ?? '';
+                                      final isSelCementWaterProofer = organizations.yscemwaterp?.toString() ?? '';
+                                      final isSelSandMetal = organizations.ysanmet?.toString() ?? '';
+                                      final isSelPaint = organizations.yspaint?.toString() ?? '';
+                                      final organizationCategory = organizations.organizationYorgcategoryNummer.toString() ;
 
                                       // Parse the nextVisitDueDate to DateTime
                                       DateTime? nextVisitDate;
@@ -304,24 +326,32 @@ class _RouteOrganizationViewState extends State<RouteOrganizationView> {
                                                   SlidableAction(
                                                     onPressed: (context) {
                                                       _navigateToUpdateOrganizationView(
-                                                          organizationId,
-                                                          organizationNummer,
-                                                          organizationName,
-                                                          organizationTypeId,
-                                                          organizationMail,
-                                                          organizationPhone1,
-                                                          organizationPhone2,
-                                                          organizationWhatsapp,
-                                                          organizationAddress1,
-                                                          organizationAddress2,
-                                                          "territoryNummer",
-                                                          ysuporgNummer,
-                                                          ownerName,
-                                                          ownerBirthday,
-                                                          isMasonry,
-                                                          isWaterproofing,
-                                                          isFlooring,
-                                                          organizationColour);
+                                                        organizationId,
+                                                        organizationNummer,
+                                                        organizationName,
+                                                        organizationTypeId,
+                                                        organizationMail,
+                                                        organizationPhone1,
+                                                        organizationPhone2,
+                                                        organizationWhatsapp,
+                                                        organizationAddress1,
+                                                        organizationAddress2,
+                                                        "territoryNummer",
+                                                        ysuporgNummer,
+                                                        ownerName,
+                                                        ownerBirthday,
+                                                        isMasonry,
+                                                        isWaterproofing,
+                                                        isFlooring,
+                                                        organizationColour,
+                                                        isSelCement,
+                                                        isSelTileAdhesive,
+                                                        isSelOtherWaterProofer,
+                                                        isSelCementWaterProofer,
+                                                        isSelSandMetal,
+                                                        isSelPaint,
+                                                        organizationCategory
+                                                      );
                                                     },
                                                     backgroundColor: CustomColors.buttonColor,
                                                     foregroundColor: CustomColors.buttonTextColor,

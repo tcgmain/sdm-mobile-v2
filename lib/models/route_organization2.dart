@@ -16,6 +16,7 @@ class RouteOrganization2 {
     required this.organizationYgpslat,
     required this.organizationYgpslon,
     required this.organizationYwaterpr,
+    required this.organizationYscemwaterp,
     required this.organizationYflooring,
     required this.organizationYassigtoSuch,
     required this.organizationYowname,
@@ -42,6 +43,7 @@ class RouteOrganization2 {
     required this.organizationYvisdis,
     required this.organizationYscemet,
     required this.zn,
+    required this.organizationYorgcategoryNummer,
   });
 
   String date;
@@ -60,6 +62,7 @@ class RouteOrganization2 {
   String organizationYgpslat;
   String organizationYgpslon;
   bool organizationYwaterpr;
+  bool organizationYscemwaterp;
   bool organizationYflooring;
   String organizationYassigtoSuch;
   String organizationYowname;
@@ -86,6 +89,7 @@ class RouteOrganization2 {
   int organizationYvisdis;
   bool organizationYscemet;
   int zn;
+  String organizationYorgcategoryNummer;
 
   factory RouteOrganization2.fromJson(Map<String, dynamic> json) => RouteOrganization2(
         date: json["date"],
@@ -104,6 +108,7 @@ class RouteOrganization2 {
         organizationYgpslat: json["organization^ygpslat"],
         organizationYgpslon: json["organization^ygpslon"],
         organizationYwaterpr: json["organization^ywaterpr"],
+        organizationYscemwaterp: json["organization^yscemwaterp"], 
         organizationYflooring: json["organization^yflooring"],
         organizationYassigtoSuch: json["organization^yassigto^such"],
         organizationYowname: json["organization^yowname"],
@@ -130,6 +135,7 @@ class RouteOrganization2 {
         organizationYvisdis: json["organization^yvisdis"],
         organizationYscemet: json["organization^yscemet"],
         zn: json["zn"],
+        organizationYorgcategoryNummer: json["organization^yorgcategory^nummer"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -149,6 +155,7 @@ class RouteOrganization2 {
         "organization^ygpslat": organizationYgpslat,
         "organization^ygpslon": organizationYgpslon,
         "organization^ywaterpr": organizationYwaterpr,
+        "organization^yscemwaterp": organizationYscemwaterp,
         "organization^yflooring": organizationYflooring,
         "organization^yassigto^such": organizationYassigtoSuch,
         "organization^yowname": organizationYowname,
@@ -175,5 +182,6 @@ class RouteOrganization2 {
         "organization^yvisdis": organizationYvisdis,
         "organization^yscemet": organizationYscemet,
         "zn": zn,
+        "organization^yorgcategory^nummer": organizationYorgcategoryNummer,
       };
 }
