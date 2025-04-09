@@ -259,7 +259,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return nearestTown;
   }
 
-// Haversine Formula to calculate distance
+  // Haversine Formula to calculate distance
   double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const double R = 6371; // Earth radius in km
     double dLat = _degToRad(lat2 - lat1);
@@ -494,12 +494,12 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
     return null;
   }
 
-  String? _validateTown(Town? value) {
-    if (value == null) {
-      return 'Please select town';
-    }
-    return null;
-  }
+  // String? _validateTown(Town? value) {
+  //   if (value == null) {
+  //     return 'Please select town';
+  //   }
+  //   return null;
+  // }
 
   String? _validateEmail(String? value) {
     if (value!.isNotEmpty && !value.isValidEmail) {
@@ -565,293 +565,7 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
           children: [
             BackgroundImage(
               isTeamMemberUi: widget.isTeamMemberUi,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 1),
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.grey.shade400,
-                      Colors.white,
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          getNearlyOrganizationsResponse(),
-                          getSuperiorOrganizationResponse(),
-                          addOrganizationResponse(),
-                          addGoodsManagementResponse(),
-                          customerTypeToggleButtons(),
-                          getTerritoryResponse(),
-                          getTownResponse(),
-                          if (_validateCustomerType() != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  _validateCustomerType()!,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ),
-                          //Contractor Detials List
-                          if (organizationType == "Project") const SizedBox(height: 20),
-                          if (organizationType == "Project")
-                            const Align(
-                                alignment: Alignment.centerLeft,
-                                child:
-                                    Text('Contractor Details', style: TextStyle(color: CustomColors.cardTextColor1))),
-                          if (organizationType == "Project") const SizedBox(height: 8),
-                          if (organizationType == "Project")
-                            _buildToggleSwitch('Masonry', isMasonry, (value) {
-                              setState(() {
-                                isMasonry = value;
-                              });
-                            }),
-                          if (organizationType == "Project")
-                            _buildToggleSwitch('Waterproofing', isWaterproofing, (value) {
-                              setState(() {
-                                isWaterproofing = value;
-                              });
-                            }),
-                          if (organizationType == "Project")
-                            _buildToggleSwitch('Flooring', isFlooring, (value) {
-                              setState(() {
-                                isFlooring = value;
-                              });
-                            }),
-
-                          const SizedBox(height: 16),
-                          organizationCategorySelection(),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _nameController,
-                            label: 'Name',
-                            fieldName: 'name',
-                            focusNode: _nameFocusNode,
-                            validator: _validateName,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _ownerNameController,
-                            label: 'Owner Name',
-                            fieldName: 'ownerName',
-                            focusNode: _ownerNameFocusNode,
-                            validator: (value) => null,
-                          ),
-                          const SizedBox(height: 16),
-                          CustomDatePicker.buildDateSelectionFormField(
-                            controller: _ownerBirthdayController,
-                            label: 'Owner Birthday',
-                            fieldName: 'ownerBirthday',
-                            focusNode: _ownerBirthdayFocusNode,
-                            context: context,
-                            validator: (value) => null,
-                            validateField: _validateField,
-                            validationStatus: _validationStatus,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _emailController,
-                            label: 'E-mail',
-                            fieldName: 'email',
-                            keyboardType: TextInputType.emailAddress,
-                            focusNode: _emailFocusNode,
-                            validator: _validateEmail,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _phone1Controller,
-                            label: 'Phone 1',
-                            fieldName: 'phone1',
-                            keyboardType: TextInputType.phone,
-                            focusNode: _phone1FocusNode,
-                            validator: _validatePhone1,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _phone2Controller,
-                            label: 'Phone 2',
-                            fieldName: 'phone2',
-                            keyboardType: TextInputType.phone,
-                            focusNode: _phone2FocusNode,
-                            validator: _validatePhone2,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _whatsappController,
-                            label: 'Whatsapp',
-                            fieldName: 'whatsapp',
-                            keyboardType: TextInputType.phone,
-                            focusNode: _whatsappFocusNode,
-                            validator: _validateWhatsapp,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _address1Controller,
-                            label: 'Address Line 1',
-                            fieldName: 'address1',
-                            focusNode: _address1FocusNode,
-                            validator: _validateAddress1,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildValidatedTextFormField(
-                            controller: _address2Controller,
-                            label: 'Address Line 2',
-                            fieldName: 'address2',
-                            focusNode: _address2FocusNode,
-                            validator: _validateAddress2,
-                          ),
-                          const SizedBox(height: 25),
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                _nearbyTown != null ? _nearbyTown!.namebspr.toString() : "No town found",
-                                style: TextStyle(fontSize: getFontSize()),
-                              )),
-                          const SizedBox(height: 20),
-                          buildTerritoryDropdown(),
-                          const SizedBox(height: 16),
-                          buildSuperiorOrganizationDropdown(),
-                          const SizedBox(height: 20),
-                          const Align(
-                              alignment: Alignment.centerLeft,
-                              child:
-                                  Text('Selling Product List', style: TextStyle(color: CustomColors.cardTextColor1))),
-                          const SizedBox(height: 8),
-                          _buildToggleSwitch('Cement', isSelCement, (value) {
-                            setState(() {
-                              isSelCement = value;
-                            });
-                          }),
-                          _buildToggleSwitch('Tile Adhesive', isSelTileAdhesive, (value) {
-                            setState(() {
-                              isSelTileAdhesive = value;
-                            });
-                          }),
-                          _buildToggleSwitch('Cement Based Water Proofer', isSelCementWaterProofer, (value) {
-                            setState(() {
-                              isSelCementWaterProofer = value;
-                            });
-                          }),
-                          _buildToggleSwitch('Other Water Proofer', isSelOtherWaterProofer, (value) {
-                            setState(() {
-                              isSelOtherWaterProofer = value;
-                            });
-                          }),
-                          _buildToggleSwitch('Sand / Metal', isSelSandMetal, (value) {
-                            setState(() {
-                              isSelSandMetal = value;
-                            });
-                          }),
-                          _buildToggleSwitch('Paint', isSelPaint, (value) {
-                            setState(() {
-                              isSelPaint = value;
-                            });
-                          }),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: CommonAppButton(
-                              buttonText: 'Register',
-                              onPressed: () {
-                                _nameController.text = capitalizeWords(_nameController.text);
-                                _ownerNameController.text = capitalizeWords(_ownerNameController.text);
-                                _phone1Controller.text = capitalizeWords(_phone1Controller.text);
-                                _phone2Controller.text = capitalizeWords(_phone2Controller.text);
-                                _whatsappController.text = capitalizeWords(_whatsappController.text);
-                                _address1Controller.text = capitalizeWords(_address1Controller.text);
-                                _address2Controller.text = capitalizeWords(_address2Controller.text);
-
-                                final customerTypeValidation = _validateCustomerType();
-                                if (_formKey.currentState!.validate() && customerTypeValidation == null) {
-                                  _isSuccessMessageShown = false;
-                                  _isAddGoodsManagementAPICall = false;
-                                  _isAddOrganizationErrorMessageShown = false;
-
-                                  final customerTypeId = _selectedCustomerType.toString();
-                                  final organizationCategory = _selectedCategory!.vaufzelemId.toString();
-                                  final name = "${_nameController.text}_${_nearbyTown!.namebspr.toString()}";
-                                  final email = _emailController.text.toString();
-                                  final phone1 = _phone1Controller.text.toString();
-                                  final phone2 = _phone2Controller.text.toString();
-                                  final whatsapp = _whatsappController.text.toString();
-                                  final address1 = _address1Controller.text.toString();
-                                  final address2 = _address2Controller.text.toString();
-                                  final territory = _selectedTerritory!.ytterritoryNummer.toString();
-                                  final town = _nearbyTown!.nummer.toString();
-                                  final ownerName = _ownerNameController.text.toString();
-                                  final ownerBirthday = _ownerBirthdayController.text.toString();
-                                  final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
-                                  final selCement = isSelCement.toString();
-                                  final selTileAdhesive = isSelTileAdhesive.toString();
-                                  final selOtherWaterProofer = isSelOtherWaterProofer.toString();
-                                  final selCementWaterProofer = isSelCementWaterProofer.toString();
-                                  final selSandMetal = isSelSandMetal.toString();
-                                  final selPaint = isSelPaint.toString();
-
-                                  if (!_isSubmitPressed) {
-                                    setState(() {
-                                      _isUpdateLoading = true;
-                                    });
-                                    _isSubmitPressed = true;
-
-                                    _addOrganizationBloc.addOrganization(
-                                        getSearchWord(name),
-                                        name,
-                                        email,
-                                        phone1,
-                                        phone2,
-                                        whatsapp,
-                                        address1,
-                                        address2,
-                                        territory,
-                                        town,
-                                        latitude,
-                                        longitude,
-                                        customerTypeId,
-                                        organizationCategory,
-                                        widget.loggedUserNummer,
-                                        widget.userOrganizationNummer,
-                                        ownerName,
-                                        ownerBirthday,
-                                        isMasonry.toString(),
-                                        isWaterproofing.toString(),
-                                        isFlooring.toString(),
-                                        organizationColor,
-                                        superiorOrganization,
-                                        selCement,
-                                        selTileAdhesive,
-                                        selOtherWaterProofer,
-                                        selCementWaterProofer,
-                                        selSandMetal,
-                                        selPaint);
-
-                                    if (organizationType != "Project" || organizationType != "(4147,12,0)") {
-                                      isMasonry = false;
-                                      isWaterproofing = false;
-                                      isFlooring = false;
-                                    }
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: _buildFormContainer(),
             ),
             if (_isUpdateLoading ||
                 _isCustomerTypeLoading ||
@@ -861,6 +575,300 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                 _isTownLoading)
               const Loading(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFormContainer() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1),
+        gradient: LinearGradient(
+          colors: [
+            Colors.grey.shade400,
+            Colors.white,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                getNearlyOrganizationsResponse(),
+                getSuperiorOrganizationResponse(),
+                addOrganizationResponse(),
+                addGoodsManagementResponse(),
+                customerTypeToggleButtons(),
+                getTerritoryResponse(),
+                getTownResponse(),
+                if (_validateCustomerType() != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _validateCustomerType()!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                //Contractor Detials List
+                if (organizationType == "Project") const SizedBox(height: 20),
+                if (organizationType == "Project")
+                  const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Contractor Details', style: TextStyle(color: CustomColors.cardTextColor1))),
+                if (organizationType == "Project") const SizedBox(height: 8),
+                if (organizationType == "Project")
+                  _buildToggleSwitch('Masonry', isMasonry, (value) {
+                    setState(() {
+                      isMasonry = value;
+                    });
+                  }),
+                if (organizationType == "Project")
+                  _buildToggleSwitch('Waterproofing', isWaterproofing, (value) {
+                    setState(() {
+                      isWaterproofing = value;
+                    });
+                  }),
+                if (organizationType == "Project")
+                  _buildToggleSwitch('Flooring', isFlooring, (value) {
+                    setState(() {
+                      isFlooring = value;
+                    });
+                  }),
+            
+                const SizedBox(height: 16),
+                organizationCategorySelection(),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _nameController,
+                  label: 'Name',
+                  fieldName: 'name',
+                  focusNode: _nameFocusNode,
+                  validator: _validateName,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _ownerNameController,
+                  label: 'Owner Name',
+                  fieldName: 'ownerName',
+                  focusNode: _ownerNameFocusNode,
+                  validator: (value) => null,
+                ),
+                const SizedBox(height: 16),
+                CustomDatePicker.buildDateSelectionFormField(
+                  controller: _ownerBirthdayController,
+                  label: 'Owner Birthday',
+                  fieldName: 'ownerBirthday',
+                  focusNode: _ownerBirthdayFocusNode,
+                  context: context,
+                  validator: (value) => null,
+                  validateField: _validateField,
+                  validationStatus: _validationStatus,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _emailController,
+                  label: 'E-mail',
+                  fieldName: 'email',
+                  keyboardType: TextInputType.emailAddress,
+                  focusNode: _emailFocusNode,
+                  validator: _validateEmail,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _phone1Controller,
+                  label: 'Phone 1',
+                  fieldName: 'phone1',
+                  keyboardType: TextInputType.phone,
+                  focusNode: _phone1FocusNode,
+                  validator: _validatePhone1,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _phone2Controller,
+                  label: 'Phone 2',
+                  fieldName: 'phone2',
+                  keyboardType: TextInputType.phone,
+                  focusNode: _phone2FocusNode,
+                  validator: _validatePhone2,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _whatsappController,
+                  label: 'Whatsapp',
+                  fieldName: 'whatsapp',
+                  keyboardType: TextInputType.phone,
+                  focusNode: _whatsappFocusNode,
+                  validator: _validateWhatsapp,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _address1Controller,
+                  label: 'Address Line 1',
+                  fieldName: 'address1',
+                  focusNode: _address1FocusNode,
+                  validator: _validateAddress1,
+                ),
+                const SizedBox(height: 16),
+                _buildValidatedTextFormField(
+                  controller: _address2Controller,
+                  label: 'Address Line 2',
+                  fieldName: 'address2',
+                  focusNode: _address2FocusNode,
+                  validator: _validateAddress2,
+                ),
+                const SizedBox(height: 25),
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _nearbyTown != null ? _nearbyTown!.namebspr.toString() : "No town found",
+                      style: TextStyle(fontSize: getFontSize()),
+                    )),
+                const SizedBox(height: 20),
+                buildTerritoryDropdown(),
+                const SizedBox(height: 16),
+                buildSuperiorOrganizationDropdown(),
+                const SizedBox(height: 20),
+                const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Selling Product List', style: TextStyle(color: CustomColors.cardTextColor1))),
+                const SizedBox(height: 8),
+                _buildToggleSwitch('Cement', isSelCement, (value) {
+                  setState(() {
+                    isSelCement = value;
+                  });
+                }),
+                _buildToggleSwitch('Tile Adhesive', isSelTileAdhesive, (value) {
+                  setState(() {
+                    isSelTileAdhesive = value;
+                  });
+                }),
+                _buildToggleSwitch('Cement Based Water Proofer', isSelCementWaterProofer, (value) {
+                  setState(() {
+                    isSelCementWaterProofer = value;
+                  });
+                }),
+                _buildToggleSwitch('Other Water Proofer', isSelOtherWaterProofer, (value) {
+                  setState(() {
+                    isSelOtherWaterProofer = value;
+                  });
+                }),
+                _buildToggleSwitch('Sand / Metal', isSelSandMetal, (value) {
+                  setState(() {
+                    isSelSandMetal = value;
+                  });
+                }),
+                _buildToggleSwitch('Paint', isSelPaint, (value) {
+                  setState(() {
+                    isSelPaint = value;
+                  });
+                }),
+                const SizedBox(height: 16),
+                Center(
+                  child: CommonAppButton(
+                    buttonText: 'Register',
+                    onPressed: () {
+                      print("organizationCategory");
+                      print(_selectedCategory.toString());
+                      _nameController.text = capitalizeWords(_nameController.text);
+                      _ownerNameController.text = capitalizeWords(_ownerNameController.text);
+                      _phone1Controller.text = capitalizeWords(_phone1Controller.text);
+                      _phone2Controller.text = capitalizeWords(_phone2Controller.text);
+                      _whatsappController.text = capitalizeWords(_whatsappController.text);
+                      _address1Controller.text = capitalizeWords(_address1Controller.text);
+                      _address2Controller.text = capitalizeWords(_address2Controller.text);
+            
+                      final customerTypeValidation = _validateCustomerType();
+                      if (_formKey.currentState!.validate() && customerTypeValidation == null) {
+                        _isSuccessMessageShown = false;
+                        _isAddGoodsManagementAPICall = false;
+                        _isAddOrganizationErrorMessageShown = false;
+            
+                        final customerTypeId = _selectedCustomerType.toString();
+                        String organizationCategory = "";
+                        if (_selectedCategory != null) {
+                          organizationCategory = _selectedCategory!.vaufzelemId.toString();
+                        }
+            
+                        final name = "${_nameController.text}_${_nearbyTown!.namebspr.toString()}";
+                        final email = _emailController.text.toString();
+                        final phone1 = _phone1Controller.text.toString();
+                        final phone2 = _phone2Controller.text.toString();
+                        final whatsapp = _whatsappController.text.toString();
+                        final address1 = _address1Controller.text.toString();
+                        final address2 = _address2Controller.text.toString();
+                        final territory = _selectedTerritory!.ytterritoryNummer.toString();
+                        final town = _nearbyTown!.nummer.toString();
+                        final ownerName = _ownerNameController.text.toString();
+                        final ownerBirthday = _ownerBirthdayController.text.toString();
+                        final superiorOrganization = _selectedSuperiorOrganization!.orgnummer.toString();
+                        final selCement = isSelCement.toString();
+                        final selTileAdhesive = isSelTileAdhesive.toString();
+                        final selOtherWaterProofer = isSelOtherWaterProofer.toString();
+                        final selCementWaterProofer = isSelCementWaterProofer.toString();
+                        final selSandMetal = isSelSandMetal.toString();
+                        final selPaint = isSelPaint.toString();
+            
+                        if (!_isSubmitPressed) {
+                          setState(() {
+                            _isUpdateLoading = true;
+                          });
+                          _isSubmitPressed = true;
+            
+                          _addOrganizationBloc.addOrganization(
+                              getSearchWord(name),
+                              name,
+                              email,
+                              phone1,
+                              phone2,
+                              whatsapp,
+                              address1,
+                              address2,
+                              territory,
+                              town,
+                              latitude,
+                              longitude,
+                              customerTypeId,
+                              organizationCategory,
+                              widget.loggedUserNummer,
+                              widget.userOrganizationNummer,
+                              ownerName,
+                              ownerBirthday,
+                              isMasonry.toString(),
+                              isWaterproofing.toString(),
+                              isFlooring.toString(),
+                              organizationColor,
+                              superiorOrganization,
+                              selCement,
+                              selTileAdhesive,
+                              selOtherWaterProofer,
+                              selCementWaterProofer,
+                              selSandMetal,
+                              selPaint);
+            
+                          if (organizationType != "Project" || organizationType != "(4147,12,0)") {
+                            isMasonry = false;
+                            isWaterproofing = false;
+                            isFlooring = false;
+                          }
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -966,11 +974,9 @@ class _AddOrganizationViewState extends State<AddOrganizationView> {
                       labelText: "Organization Category",
                       labelStyle: const TextStyle(color: CustomColors.cardTextColor1),
                       enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: CustomColors.cardTextColor1), 
+                        borderSide: BorderSide(color: CustomColors.cardTextColor1),
                       ),
-                      suffixIcon: _selectedCategory == null
-                          ? null
-                          : const Icon(Icons.check, color: Colors.green), 
+                      suffixIcon: _selectedCategory == null ? null : const Icon(Icons.check, color: Colors.green),
                     ),
                     isExpanded: true,
                     onChanged: (OrganizationCategory? newValue) {

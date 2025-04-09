@@ -4,26 +4,33 @@ import 'package:sdm/models/team.dart';
 import 'package:sdm/networking/response.dart';
 import 'package:sdm/utils/constants.dart';
 import 'package:sdm/view/home_view.dart';
+import 'package:sdm/view/profile_view.dart';
 import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/list_button.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/side_bar.dart';
 import 'package:sdm/widgets/text_field.dart' as text_field;
 
 class TeamView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String userId;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
-  
+  final String designationNummer;
+  final String userOrganizationNummer;
 
   const TeamView({
     super.key,
     required this.userNummer,
     required this.username,
+    required this.userId,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
+    required this.designationNummer,
+    required this.userOrganizationNummer,
   });
 
   @override
@@ -36,6 +43,8 @@ class _TeamViewState extends State<TeamView> {
   List<Team>? _filteredTeam;
   List<Team>? _allTeam;
   bool _isLoading = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 
   @override
   void initState() {
@@ -43,7 +52,7 @@ class _TeamViewState extends State<TeamView> {
     _teamBloc = TeamBloc();
     _teamBloc.getTeamDetails(widget.userNummer);
     _searchController.addListener(_onSearchChanged);
-     setState(() {
+    setState(() {
       _isLoading = true;
     });
   }
@@ -66,12 +75,22 @@ class _TeamViewState extends State<TeamView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CommonAppBar(
         title: widget.isTeamMemberUi == true ? 'Team - ${widget.username}' : 'My Team',
+        isSideBarShown: true,
+        scaffoldKey: _scaffoldKey,
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
+      ),
+       drawer: CommonDrawer(
+        username: widget.username,
+        userNummer: widget.userNummer,
+        userId: widget.userId,
+        userOrganizationNummer: widget.userOrganizationNummer,
+        designationNummer: widget.designationNummer,
       ),
       body: SafeArea(
         child: Stack(
@@ -136,33 +155,80 @@ class _TeamViewState extends State<TeamView> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: ListView.builder(
-                                        itemCount: _filteredTeam!.length,
-                                        itemBuilder: (context, index) {
-                                          final team = _filteredTeam![index];
-                                          //final memberName = team.ypasdefNamebspr?.toString() ?? 'Unnamed Route';
-                                          final memberSearchWord = team.such?.toString() ?? 'Unnamed Route';
-                                          final memberOperatorId = team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
-                                          final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
-                                          final memberOrganizationNummer = team.nummer?.toString() ?? 'Unnamed Route';
-                                          //final memberDesignationNummer = team.designationNummer?.toString() ?? 'Unnamed Route';
+                                      child: Builder(
+                                        builder: (context) {
+                                          // Sort by yemplevel ascending
+                                          _filteredTeam!.sort(
+                                              (a, b) => int.parse(a.yemplevel!).compareTo(int.parse(b.yemplevel!)));
 
-                                          return Padding(
-                                            padding: const EdgeInsets.only(bottom: 3, top: 3),
-                                            child: ListButton(
-                                              displayName: memberSearchWord,
-                                              onPressed: () {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                    builder: (context) => HomePage(
+                                          return ListView.builder(
+                                            itemCount: _filteredTeam!.length,
+                                            itemBuilder: (context, index) {
+                                              final team = _filteredTeam![index];
+                                              final memberSearchWord = team.such?.toString() ?? 'Unnamed Route';
+                                              final memberOperatorId =
+                                                  team.ypasdefBezeich?.toString() ?? 'Unnamed Route';
+                                              final memberNummer = team.nummer?.toString() ?? 'Unnamed Route';
+                                              final memberOrganizationNummer =
+                                                  team.nummer?.toString() ?? 'Unnamed Route';
+                                              final memberLevel = team.yemplevel?.toString() ?? 'Unnamed Route';
+
+                                              return Padding(
+                                                  padding: const EdgeInsets.only(bottom: 3, top: 3),
+                                                  child: InkWell(
+                                                    splashColor: CustomColors.buttonColor,
+                                                    onTap: () {
+                                                      Navigator.of(context).push(MaterialPageRoute(
+                                                        builder: (context) => HomePage(
                                                           username: memberOperatorId,
                                                           userNummer: memberNummer,
+                                                          userId: widget.userId,
                                                           userOrganizationNummer: memberOrganizationNummer,
                                                           loggedUserNummer: widget.userNummer,
-                                                          isTeamMemberUi: true, 
+                                                          isTeamMemberUi: true,
                                                           designationNummer: "",
-                                                        )));
-                                              },
-                                            ),
+                                                        ),
+                                                      ));
+                                                    },
+                                                    child: Container(
+                                                      decoration: const BoxDecoration(
+                                                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                        shape: BoxShape.rectangle,
+                                                        gradient: LinearGradient(
+                                                          colors: <Color>[
+                                                            Colors.black,
+                                                            Colors.black26,
+                                                          ],
+                                                          begin: Alignment.topCenter,
+                                                          end: Alignment.bottomCenter,
+                                                        ),
+                                                      ),
+                                                      child: ListTile(
+                                                        leading: CircleAvatar(
+                                                          backgroundColor: getEmpLevelColor(memberLevel),
+                                                          radius: 20,
+                                                          child: const Icon(
+                                                            Icons.group,
+                                                            size: 20,
+                                                          ),
+                                                        ),
+                                                        title: Text(memberSearchWord,
+                                                            style: TextStyle(
+                                                                color: CustomColors.textColor,
+                                                                fontSize: getFontSize())),
+                                                        trailing: IconButton(
+                                                          icon: const Icon(Icons.info_outline, color: Colors.white),
+                                                          onPressed: () {
+                                                              Navigator.of(context).push(MaterialPageRoute(
+                                                        builder: (context) => 
+                                                        ProfileView(username: memberOperatorId),
+                                                      ));
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ));
+                                            },
                                           );
                                         },
                                       ),

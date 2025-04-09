@@ -7,20 +7,20 @@ class TeamRepository {
   final ApiProvider _provider = ApiProvider();
   String? accessToken;
   dynamic inputBody, requestHeaders;
- 
-  Future<List<Team>> getTeamDetails(String username) async {
 
-    requestHeaders = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    };
+  Future<List<Team>> getTeamDetails(String username) async {
+    requestHeaders = <String, String>{'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     inputBody = {
       "ysupv^nummer": username,
+      "ysupv^ysupv^nummer": username,
+      "ysupv^ysupv^ysupv^nummer": username,
+      "ysupv^ysupv^ysupv^ysupv^nummer": username,
+      "ysupv^ysupv^ysupv^ysupv^ysupv^nummer": username,
+      "ysupv^ysupv^ysupv^ysupv^ysupv^ysupv^nummer": username
     };
 
-
-    final response = await _provider.post("/getteam", jsonEncode(inputBody), requestHeaders);
+    final response = await _provider.post("/getteam1", jsonEncode(inputBody), requestHeaders);
 
     var itemArray = [];
     var resultLength = jsonDecode(jsonEncode(response)).length;
@@ -32,8 +32,4 @@ class TeamRepository {
     List<Team> team = list.map((obj) => Team.fromJson(obj)).toList();
     return team;
   }
-
-
-
-  
 }

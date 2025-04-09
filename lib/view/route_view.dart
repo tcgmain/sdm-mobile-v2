@@ -13,10 +13,12 @@ import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/date_picker_calender.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/side_bar.dart';
 
 class RouteView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String userId;
   final bool isTeamMemberUi;
   final String loggedUserNummer;
   final String designationNummer;
@@ -26,6 +28,7 @@ class RouteView extends StatefulWidget {
     super.key,
     required this.userNummer,
     required this.username,
+    required this.userId,
     required this.isTeamMemberUi,
     required this.loggedUserNummer,
     required this.designationNummer,
@@ -41,6 +44,7 @@ class _RouteViewState extends State<RouteView> {
   DateTime _selectedDate = DateTime.now();
   bool _isLoading = false;
   bool _isErrorMessageShown = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -89,12 +93,22 @@ class _RouteViewState extends State<RouteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CommonAppBar(
         title: widget.isTeamMemberUi == true ? 'Routes - ${widget.username} ' : 'My Routes',
+        isSideBarShown: true,
+        scaffoldKey: _scaffoldKey,
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
         isHomePage: widget.isTeamMemberUi == false ? true : false,
+      ),
+      drawer: CommonDrawer(
+        username: widget.username,
+        userNummer: widget.userNummer,
+        userId: widget.userId,
+        userOrganizationNummer: widget.userOrganizationNummer,
+        designationNummer: widget.designationNummer,
       ),
       body: SafeArea(
         child: Stack(
@@ -221,15 +235,15 @@ class _RouteViewState extends State<RouteView> {
                               });
                               if (!_isErrorMessageShown) {
                                 _isErrorMessageShown = true;
-                              if (snapshot.data!.message.toString() == "404") {
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  showErrorAlertDialog(context, "No routes haven't been assigned yet.");
-                                });
-                              } else {
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
-                                  showErrorAlertDialog(context, snapshot.data!.message.toString());
-                                });
-                              }
+                                if (snapshot.data!.message.toString() == "404") {
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    showErrorAlertDialog(context, "No routes haven't been assigned yet.");
+                                  });
+                                } else {
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    showErrorAlertDialog(context, snapshot.data!.message.toString());
+                                  });
+                                }
                               }
                           }
                         }

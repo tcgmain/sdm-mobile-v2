@@ -10,12 +10,14 @@ import 'package:sdm/widgets/appbar.dart';
 import 'package:sdm/widgets/background_decoration.dart';
 import 'package:sdm/widgets/error_alert.dart';
 import 'package:sdm/widgets/loading.dart';
+import 'package:sdm/widgets/side_bar.dart';
 import 'package:sdm/widgets/text_field.dart' as text_field;
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class OrganizationView extends StatefulWidget {
   final String userNummer;
   final String username;
+  final String userId;
   final String userOrganizationNummer;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
@@ -25,6 +27,7 @@ class OrganizationView extends StatefulWidget {
     super.key,
     required this.userNummer,
     required this.username,
+    required this.userId,
     required this.userOrganizationNummer,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
@@ -43,6 +46,7 @@ class _OrganizationViewState extends State<OrganizationView> {
   bool _isLoading = false;
   bool _onlyInactive = false;
   bool _isErrorMessageShown = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -88,68 +92,66 @@ class _OrganizationViewState extends State<OrganizationView> {
   }
 
   Future<void> _navigateToUpdateOrganizationView(
-    organizationId,
-    organizationNummer,
-    organizationName,
-    organizationTypeId,
-    organizationMail,
-    organizationPhone1,
-    organizationPhone2,
-    organizationWhatsapp,
-    organizationAddress1,
-    organizationAddress2,
-    territoryNummer,
-    superiorOrganizationNummer,
-    ownerName,
-    ownerBirthday,
-    ymasonry,
-    ywaterpr,
-    yflooring,
-    organizationColor,
-    isSelCement,
-    isSelTileAdhesive,
-    isSelOtherWaterProofer,
-    isSelCementWaterProofer,
-    isSelSandMetal,
-    isSelPaint,
-    organizationCategory
-  ) async {
+      organizationId,
+      organizationNummer,
+      organizationName,
+      organizationTypeId,
+      organizationMail,
+      organizationPhone1,
+      organizationPhone2,
+      organizationWhatsapp,
+      organizationAddress1,
+      organizationAddress2,
+      territoryNummer,
+      superiorOrganizationNummer,
+      ownerName,
+      ownerBirthday,
+      ymasonry,
+      ywaterpr,
+      yflooring,
+      organizationColor,
+      isSelCement,
+      isSelTileAdhesive,
+      isSelOtherWaterProofer,
+      isSelCementWaterProofer,
+      isSelSandMetal,
+      isSelPaint,
+      organizationCategory) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UpdateOrganizationView(
-                userNummer: widget.userNummer,
-                loggedUserNummer: widget.loggedUserNummer,
-                username: widget.username,
-                isTeamMemberUi: widget.isTeamMemberUi,
-                organizationId: organizationId,
-                organizationNummer: organizationNummer,
-                organizationName: organizationName,
-                organizationTypeId: organizationTypeId,
-                organizationMail: organizationMail,
-                organizationPhone1: organizationPhone1,
-                organizationPhone2: organizationPhone2,
-                organizationWhatsapp: organizationWhatsapp,
-                organizationAddress1: organizationAddress1,
-                organizationAddress2: organizationAddress2,
-                territoryNummer: territoryNummer,
-                superiorOrganizationNummer: superiorOrganizationNummer,
-                ownerName: ownerName,
-                ownerBirthday: ownerBirthday,
-                isMasonry: bool.parse(ymasonry),
-                isWaterproofing: bool.parse(ywaterpr),
-                isFlooring: bool.parse(yflooring),
-                userOrganizationNummer: widget.userOrganizationNummer,
-                designationNummer: widget.designationNummer,
-                organizationColor: organizationColor,
-                isSelCement: bool.parse(isSelCement),
-                isSelTileAdhesive: bool.parse(isSelTileAdhesive),
-                isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
-                isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
-                isSelSandMetal: bool.parse(isSelSandMetal),
-                isSelPaint: bool.parse(isSelPaint),
-                organizationCategory: organizationCategory
-              )),
+              userNummer: widget.userNummer,
+              loggedUserNummer: widget.loggedUserNummer,
+              username: widget.username,
+              isTeamMemberUi: widget.isTeamMemberUi,
+              organizationId: organizationId,
+              organizationNummer: organizationNummer,
+              organizationName: organizationName,
+              organizationTypeId: organizationTypeId,
+              organizationMail: organizationMail,
+              organizationPhone1: organizationPhone1,
+              organizationPhone2: organizationPhone2,
+              organizationWhatsapp: organizationWhatsapp,
+              organizationAddress1: organizationAddress1,
+              organizationAddress2: organizationAddress2,
+              territoryNummer: territoryNummer,
+              superiorOrganizationNummer: superiorOrganizationNummer,
+              ownerName: ownerName,
+              ownerBirthday: ownerBirthday,
+              isMasonry: bool.parse(ymasonry),
+              isWaterproofing: bool.parse(ywaterpr),
+              isFlooring: bool.parse(yflooring),
+              userOrganizationNummer: widget.userOrganizationNummer,
+              designationNummer: widget.designationNummer,
+              organizationColor: organizationColor,
+              isSelCement: bool.parse(isSelCement),
+              isSelTileAdhesive: bool.parse(isSelTileAdhesive),
+              isSelOtherWaterProofer: bool.parse(isSelOtherWaterProofer),
+              isSelCementWaterProofer: bool.parse(isSelCementWaterProofer),
+              isSelSandMetal: bool.parse(isSelSandMetal),
+              isSelPaint: bool.parse(isSelPaint),
+              organizationCategory: organizationCategory)),
     );
     if (result == true) {
       setState(() {
@@ -178,12 +180,15 @@ class _OrganizationViewState extends State<OrganizationView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CommonAppBar(
         title: widget.isTeamMemberUi == true
             ? 'Region - ${widget.username} '
             : isDataViewer(widget.designationNummer) == true
                 ? 'All Organizations'
                 : 'My Region',
+        isSideBarShown: true,
+        scaffoldKey: _scaffoldKey,
         onBackButtonPressed: () {
           Navigator.pop(context);
         },
@@ -201,6 +206,13 @@ class _OrganizationViewState extends State<OrganizationView> {
               ),
             )
           : Container(),
+      drawer: CommonDrawer(
+        username: widget.username,
+        userNummer: widget.userNummer,
+        userId: widget.userId,
+        userOrganizationNummer: widget.userOrganizationNummer,
+        designationNummer: widget.designationNummer,
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -364,7 +376,8 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                 organizations.yscemwaterp?.toString() ?? '';
                                             String isSelSandMetal = organizations.ysanmet?.toString() ?? '';
                                             String isSelPaint = organizations.yspaint?.toString() ?? '';
-                                            String organizationCategory = organizations.yorgcategoryNummer?.toString() ?? '';
+                                            String organizationCategory =
+                                                organizations.yorgcategoryNummer?.toString() ?? '';
 
                                             return Padding(
                                               padding: const EdgeInsets.only(bottom: 3, top: 3),
@@ -378,32 +391,31 @@ class _OrganizationViewState extends State<OrganizationView> {
                                                     SlidableAction(
                                                       onPressed: (context) {
                                                         _navigateToUpdateOrganizationView(
-                                                          organizationId,
-                                                          organizationNummer,
-                                                          organizationName,
-                                                          organizationTypeId,
-                                                          organizationMail,
-                                                          organizationPhone1,
-                                                          organizationPhone2,
-                                                          organizationWhatsapp,
-                                                          organizationAddress1,
-                                                          organizationAddress2,
-                                                          territoryNummer,
-                                                          ysuporgNummer,
-                                                          ownerName,
-                                                          ownerBirthday,
-                                                          isMasonry,
-                                                          isWaterproofing,
-                                                          isFlooring,
-                                                          organizationColour,
-                                                          isSelCement,
-                                                          isSelTileAdhesive,
-                                                          isSelOtherWaterProofer,
-                                                          isSelCementWaterProofer,
-                                                          isSelSandMetal,
-                                                          isSelPaint,
-                                                          organizationCategory
-                                                        );
+                                                            organizationId,
+                                                            organizationNummer,
+                                                            organizationName,
+                                                            organizationTypeId,
+                                                            organizationMail,
+                                                            organizationPhone1,
+                                                            organizationPhone2,
+                                                            organizationWhatsapp,
+                                                            organizationAddress1,
+                                                            organizationAddress2,
+                                                            territoryNummer,
+                                                            ysuporgNummer,
+                                                            ownerName,
+                                                            ownerBirthday,
+                                                            isMasonry,
+                                                            isWaterproofing,
+                                                            isFlooring,
+                                                            organizationColour,
+                                                            isSelCement,
+                                                            isSelTileAdhesive,
+                                                            isSelOtherWaterProofer,
+                                                            isSelCementWaterProofer,
+                                                            isSelSandMetal,
+                                                            isSelPaint,
+                                                            organizationCategory);
                                                       },
                                                       backgroundColor: CustomColors.buttonColor,
                                                       foregroundColor: CustomColors.buttonTextColor,

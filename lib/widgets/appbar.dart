@@ -18,6 +18,8 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
   final List<Widget>? customActions;
   final bool? isPendingApprovalDisabled;
   final bool? isNotificationScreen;
+  final bool? isSideBarShown;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const CommonAppBar({
     super.key,
@@ -27,6 +29,8 @@ class CommonAppBar extends StatefulWidget implements PreferredSizeWidget {
     this.customActions,
     this.isPendingApprovalDisabled,
     this.isNotificationScreen,
+    this.isSideBarShown,
+    this.scaffoldKey,
   });
 
   @override
@@ -47,7 +51,6 @@ class _CommonAppBarState extends State<CommonAppBar> {
   void initState() {
     super.initState();
     _loadUserPreferences();
-
   }
 
   Future<void> _loadUserPreferences() async {
@@ -81,12 +84,21 @@ class _CommonAppBarState extends State<CommonAppBar> {
         widget.title,
         style: TextStyle(color: CustomColors.appBarTextColor, fontSize: getFontSizeLarge()),
       ),
-      leading: widget.isHomePage
-          ? null
-          : IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: widget.onBackButtonPressed,
-            ),
+      leading: (widget.isSideBarShown == true)
+          ? IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                if (widget.scaffoldKey?.currentState != null) {
+                  widget.scaffoldKey!.currentState!.openDrawer();
+                }
+              },
+            )
+          : widget.isHomePage
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: widget.onBackButtonPressed,
+                ),
       actions: [
         if (!widget.isHomePage && widget.customActions == null)
           IconButton(
@@ -100,6 +112,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                             builder: (context) => HomeV2Page(
                                   username: username,
                                   userNummer: userNummer,
+                                  userId: userId,
                                   userOrganizationNummer: userOrganizationNummer,
                                   loggedUserNummer: userNummer,
                                   isTeamMemberUi: false,
@@ -115,6 +128,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                             builder: (context) => HomePage(
                                   username: username,
                                   userNummer: userNummer,
+                                  userId: userId,
                                   userOrganizationNummer: userOrganizationNummer,
                                   loggedUserNummer: userNummer,
                                   isTeamMemberUi: false,
@@ -125,7 +139,7 @@ class _CommonAppBarState extends State<CommonAppBar> {
                     });
             },
           ),
-        if(widget.isNotificationScreen != true)
+        if (widget.isNotificationScreen != true)
           // Notification Icon with Badge
           Stack(
             children: [
@@ -163,20 +177,20 @@ class _CommonAppBarState extends State<CommonAppBar> {
               case 'changePassword':
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangePasswordView(userId: userId)));
                 break;
-              case 'approval':
-                if (widget.isPendingApprovalDisabled != true) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ApprovalView(
-                            userNummer: userNummer,
-                            username: username,
-                            userId: userId,
-                            loggedUserNummer: userNummer,
-                            isTeamMemberUi: false,
-                            userOrganizationNummer: userOrganizationNummer,
-                            designationNummer: userDesignationNummer,
-                          )));
-                }
-                break;
+              // case 'approval':
+              //   if (widget.isPendingApprovalDisabled != true) {
+              //     Navigator.of(context).push(MaterialPageRoute(
+              //         builder: (context) => ApprovalView(
+              //               userNummer: userNummer,
+              //               username: username,
+              //               userId: userId,
+              //               loggedUserNummer: userNummer,
+              //               isTeamMemberUi: false,
+              //               userOrganizationNummer: userOrganizationNummer,
+              //               designationNummer: userDesignationNummer,
+              //             )));
+              //   }
+              //   break;
               case 'logout':
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.pushAndRemoveUntil(
@@ -210,23 +224,23 @@ class _CommonAppBarState extends State<CommonAppBar> {
                 title: Text('Change Password'),
               ),
             ),
-            PopupMenuItem<String>(
-              value: 'approval',
-              child: ListTile(
-                leading: (widget.isPendingApprovalDisabled == true)
-                    ? const Icon(
-                        Icons.check_circle,
-                        color: CustomColors.textColor2,
-                      )
-                    : const Icon(Icons.check_circle),
-                title: (widget.isPendingApprovalDisabled == true)
-                    ? const Text(
-                        'Pending Approvals',
-                        style: TextStyle(color: CustomColors.textColor2),
-                      )
-                    : const Text('Pending Approvals'),
-              ),
-            ),
+            // PopupMenuItem<String>(
+            //   value: 'approval',
+            //   child: ListTile(
+            //     leading: (widget.isPendingApprovalDisabled == true)
+            //         ? const Icon(
+            //             Icons.check_circle,
+            //             color: CustomColors.textColor2,
+            //           )
+            //         : const Icon(Icons.check_circle),
+            //     title: (widget.isPendingApprovalDisabled == true)
+            //         ? const Text(
+            //             'Pending Approvals',
+            //             style: TextStyle(color: CustomColors.textColor2),
+            //           )
+            //         : const Text('Pending Approvals'),
+            //   ),
+            // ),
             const PopupMenuItem<String>(
               value: 'logout',
               child: ListTile(

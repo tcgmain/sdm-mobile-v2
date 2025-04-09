@@ -1,16 +1,15 @@
 class Team {
-  Team({
-    this.yorgNummer,
-    this.yorgNamebspr,
-    this.ypasdefNamebspr,
-    this.ypasdefNummer,
-    this.ypasdefBezeich,
-    this.id,
-    this.nummer,
-    this.such,
-    this.designationNummer,
-    //ypasdef^passmitarb^ytitle^nummer
-  });
+  Team(
+      {this.yorgNummer,
+      this.yorgNamebspr,
+      this.ypasdefNamebspr,
+      this.ypasdefNummer,
+      this.ypasdefBezeich,
+      this.id,
+      this.nummer,
+      this.such,
+      this.designationNummer,
+      this.yemplevel});
 
   String? yorgNummer;
   String? yorgNamebspr;
@@ -21,6 +20,7 @@ class Team {
   String? nummer;
   String? such;
   String? designationNummer;
+  String? yemplevel;
 
   factory Team.fromJson(Map<String, dynamic> json) => Team(
         yorgNummer: json["yorg^nummer"],
@@ -32,6 +32,7 @@ class Team {
         nummer: json["nummer"],
         such: json["such"],
         designationNummer: json["ypasdef^passmitarb^ytitle^nummer"],
+        yemplevel: json["yemplevel"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +45,6 @@ class Team {
         "nummer": nummer,
         "such": such,
         "ypasdef^passmitarb^ytitle^nummer": designationNummer,
+        "yemplevel": yemplevel,
       };
 }

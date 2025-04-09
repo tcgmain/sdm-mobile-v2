@@ -73,6 +73,12 @@ class CustomColors {
   static const Color disabledFieldFillColor = Color(0xff3b3b3b);
   static const Color disabledTextColor = Color(0xff3b3b3b);
   static const Color disabledFieldBorderColor = Color(0xff3b3b3b);
+
+  static const Color sidebarColor1 = Color(0xFFb0161b);
+  static const Color sidebarColor2 = Color(0xFFff4b50);
+  static const Color sidebarColor3 = Color(0xFF666666);
+  static const Color sidebarColor4 = Color(0xff3b3b3b);
+  static const Color sidebarColor5 = Color(0xff141414);
 }
 
 getFontSize() {
@@ -144,6 +150,57 @@ Color getColor(String colorText) {
     default:
       return Colors.grey; // Default color if the value is unknown
   }
+}
+
+Color getEmpLevelColor(String level) {
+  int? levelInt = int.tryParse(level);
+
+  if (levelInt == null || levelInt < 1 || levelInt > 40) {
+    return Colors.grey; // Default color for invalid levels
+  }
+
+  List<Color> colors = [
+    Colors.red,
+    Colors.deepPurpleAccent,
+    Colors.orange,
+    Colors.blue,
+    Colors.yellow,
+    Colors.cyan,
+    Colors.green,
+    Colors.pink,
+    Colors.indigo,
+    Colors.teal,
+    Colors.brown,
+    Colors.amber,
+    Colors.purple,
+    Colors.lightGreen,
+    Colors.blueGrey,
+    Colors.lightBlue,
+    Colors.lime,
+    Colors.redAccent,
+    Colors.pinkAccent,
+    Colors.deepOrange,
+    Colors.greenAccent,
+    Colors.deepPurple,
+    Colors.yellowAccent,
+    Colors.orangeAccent,
+    Colors.blueAccent,
+    Colors.cyanAccent,
+    Colors.indigoAccent,
+    Colors.purpleAccent,
+    Colors.limeAccent,
+    Colors.tealAccent,
+    Colors.lightBlueAccent,
+    Colors.amberAccent,
+    Colors.orangeAccent,
+    Colors.greenAccent,
+    Colors.lightGreenAccent,
+    Colors.purpleAccent,
+    Colors.redAccent,
+    Colors.blueAccent
+  ];
+
+  return colors[levelInt - 1];  // -1 because list is 0-indexed
 }
 
 getOrganizationColor(organizationType) {

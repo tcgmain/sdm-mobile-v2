@@ -11,6 +11,7 @@ class HomeV2Page extends StatefulWidget {
   final String userNummer;
   final String userOrganizationNummer;
   final String username;
+  final String userId;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
   final String designationNummer;
@@ -21,6 +22,7 @@ class HomeV2Page extends StatefulWidget {
     required this.userNummer,
     required this.userOrganizationNummer,
     required this.username,
+    required this.userId,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
     required this.designationNummer,
@@ -56,6 +58,7 @@ class _HomeV2PageState extends State<HomeV2Page> {
       OrganizationView(
         username: widget.username,
         userNummer: widget.userNummer,
+        userId: widget.userId,
         userOrganizationNummer: widget.userOrganizationNummer,
         loggedUserNummer: widget.loggedUserNummer,
         isTeamMemberUi: widget.isTeamMemberUi,
@@ -64,8 +67,11 @@ class _HomeV2PageState extends State<HomeV2Page> {
       TeamView(
         userNummer: widget.userNummer,
         username: widget.username,
+        userId: widget.userId,
         loggedUserNummer: widget.loggedUserNummer,
         isTeamMemberUi: widget.isTeamMemberUi,
+        designationNummer: widget.designationNummer,
+        userOrganizationNummer: widget.userOrganizationNummer,
       ),
     ];
   }

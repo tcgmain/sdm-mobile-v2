@@ -25,7 +25,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String version = "1.8";
+  String version = "1.9";
   late LoginBloc _loginBloc;
   late UserDetailsBloc _userDetailsBloc;
   bool _showPassword = true;
@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
   String deviceId = "";
   bool _saveCredentials = false;
   late String username;
+  late String userId;
   bool _isErrorMessageShown = false;
   bool _isUserDetailsErrorMessageShown = false;
 
@@ -317,6 +318,7 @@ class _LoginPageState extends State<LoginPage> {
                 //Check application version
                 if (version == erpVersionNo) {
                   username = snapshot.data!.data!.ylogopr.toString();
+                  userId = snapshot.data!.data!.ypwdid.toString();
                   _userDetailsBloc.getUserDetails(username);
                 } else {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -385,6 +387,7 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) => HomeV2Page(
                                   username: username,
                                   userNummer: userNummer,
+                                  userId: userId,
                                   userOrganizationNummer: userOrganizationNummer,
                                   loggedUserNummer: userNummer,
                                   isTeamMemberUi: false,
@@ -400,6 +403,7 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) => HomePage(
                                   username: username,
                                   userNummer: userNummer,
+                                  userId: userId,
                                   userOrganizationNummer: userOrganizationNummer,
                                   loggedUserNummer: userNummer,
                                   isTeamMemberUi: false,

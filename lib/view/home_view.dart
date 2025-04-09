@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
   final String userNummer;
   final String userOrganizationNummer;
   final String username;
+  final String userId;
   final String loggedUserNummer;
   final bool isTeamMemberUi;
   final String designationNummer;
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
     required this.userNummer,
     required this.userOrganizationNummer,
     required this.username,
+    required this.userId,
     required this.loggedUserNummer,
     required this.isTeamMemberUi,
     required this.designationNummer,
@@ -36,9 +38,13 @@ class _HomePageState extends State<HomePage> {
   late final List<Widget> _pages;
 
   void _navigateBottomBar(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (widget.isTeamMemberUi && index == 2) {
+      Navigator.pop(context); // Navigate back on "Back" tab
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -50,6 +56,7 @@ class _HomePageState extends State<HomePage> {
       RouteView(
         username: widget.username,
         userNummer: widget.userNummer,
+        userId: widget.userId,
         isTeamMemberUi: widget.isTeamMemberUi,
         loggedUserNummer: widget.loggedUserNummer,
         designationNummer: widget.designationNummer,
@@ -58,18 +65,27 @@ class _HomePageState extends State<HomePage> {
       OrganizationView(
         username: widget.username,
         userNummer: widget.userNummer,
+        userId: widget.userId,
         userOrganizationNummer: widget.userOrganizationNummer,
         loggedUserNummer: widget.loggedUserNummer,
         isTeamMemberUi: widget.isTeamMemberUi,
         designationNummer: widget.designationNummer,
       ),
-      TeamView(
-        userNummer: widget.userNummer,
-        username: widget.username,
-        isTeamMemberUi: widget.isTeamMemberUi,
-        loggedUserNummer: widget.loggedUserNummer,
-      ),
     ];
+
+    if (!widget.isTeamMemberUi) {
+      _pages.add(
+        TeamView(
+          userNummer: widget.userNummer,
+          username: widget.username,
+          userId: widget.userId,
+          isTeamMemberUi: widget.isTeamMemberUi,
+          loggedUserNummer: widget.loggedUserNummer,
+          designationNummer: widget.designationNummer,
+          userOrganizationNummer: widget.userOrganizationNummer,
+        ),
+      );
+    }
   }
 
   @override
@@ -102,12 +118,18 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GButton(
                   icon: Icons.business,
-                  text: isDataViewer(widget.designationNummer) == true ? 'All Organizations' : 'Region',
+                  text: isDataViewer(widget.designationNummer) ? 'All Organizations' : 'Region',
                 ),
-                const GButton(
-                  icon: Icons.people,
-                  text: 'Team',
-                )
+                if (widget.isTeamMemberUi)
+                  const GButton(
+                    icon: Icons.arrow_back,
+                    text: 'Back',
+                  )
+                else
+                  const GButton(
+                    icon: Icons.people,
+                    text: 'Team',
+                  ),
               ],
             ),
           ),
